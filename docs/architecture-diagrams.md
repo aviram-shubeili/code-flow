@@ -150,10 +150,17 @@ graph LR
 
 ```mermaid
 erDiagram
-    USERS ||--o{ PR_CACHE : has
-    
-    USERS {
-        string user_id PK
+    USER ||--o{ ACCOUNT : has
+    USER ||--o{ SESSION : has
+    USER ||--o{ PR_CACHE : has
+    USER ||--o{ VERIFICATION_TOKEN : has
+
+    USER {
+        string id PK
+        string name
+        string email
+        string emailVerified
+        string image
         string github_id
         string github_username
         string github_avatar_url
@@ -161,7 +168,31 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-    
+    ACCOUNT {
+        string id PK
+        string userId FK
+        string type
+        string provider
+        string providerAccountId
+        string refresh_token
+        string access_token
+        string expires_at
+        string token_type
+        string scope
+        string id_token
+        string session_state
+    }
+    SESSION {
+        string id PK
+        string sessionToken
+        string userId FK
+        timestamp expires
+    }
+    VERIFICATION_TOKEN {
+        string identifier PK
+        string token
+        timestamp expires
+    }
     PR_CACHE {
         string cache_id PK
         string user_id FK
@@ -174,6 +205,8 @@ erDiagram
         timestamp expires_at
     }
 ```
+
+*Note: Auth.js DB adapter schema is used for authentication and user management. Custom fields are added to the USER table as needed.*
 
 ## 7. Component Interaction for PR Status Update
 
