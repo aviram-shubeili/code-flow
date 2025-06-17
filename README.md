@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CodeFlow
+
+> **CodeFlow is your personal pull request command center.**
+>
+> Track, review, and manage all your open PRs across projects in one beautiful, unified dashboard—built for developers who want clarity, speed, and control over their code review workflow.
+
+## Project Overview
+
+CodeFlow is a learning-focused, portfolio-grade web application that helps developers track and manage pull requests across repositories. Built with modern technologies, it aims to:
+- Provide a single dashboard for PR review status
+- Serve as a hands-on learning project for Next.js, TypeScript, Docker, Auth.js, PostgreSQL, and more
+- Demonstrate best practices in full-stack web development
+
+## Tech Stack
+- **Next.js** (App Router, TypeScript)
+- **Tailwind CSS** & **Shadcn UI** (modern UI)
+- **Auth.js** (authentication)
+- **PostgreSQL** (database, via Docker)
+- **pgAdmin** (DB management, via Docker)
+- **Docker Compose** (local dev environment)
 
 ## Getting Started
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### 1. Clone the repository
+```sh
+git clone <your-fork-url>
+cd code-flow
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Set up environment variables
+- Copy `.env.local.example` to `.env.local`:
+  ```sh
+  cp .env.local.example .env.local
+  ```
+- Fill in your own secure values for each variable.
+- **Never commit `.env.local` to version control.**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Start Docker services (PostgreSQL & pgAdmin)
+```sh
+npm run docker:up
+```
+- This uses `docker-compose.yml` and `.env.local` for configuration.
+- pgAdmin will be available at [http://localhost:5050](http://localhost:5050)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Start the development server
+```sh
+npm run dev
+```
+- Or use `npm run dev:all` to start both Docker and the dev server in one step.
+- App will be available at [http://localhost:3000](http://localhost:3000)
 
-## Learn More
+### 5. Stopping services
+```sh
+npm run docker:down
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Usage Scripts
+- `npm run dev` – Start Next.js dev server
+- `npm run docker:up` – Start DB and pgAdmin
+- `npm run docker:down` – Stop DB and pgAdmin
+- `npm run dev:all` – Start Docker and dev server together
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Security & Credentials
+- Store secrets in `.env.local` (excluded from git)
+- Back up your `.env.local` securely (e.g., password manager, encrypted storage)
+- For teams, consider a secrets manager (e.g., 1Password, Doppler)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Documentation
+- See `docs/` for architecture, diagrams, and product specs
+- See `.github/instructions/code-flow-copilot-instructions.instructions.md` for Copilot usage guidance
 
-## Deploy on Vercel
+## Contributing
+- PRs and issues welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) if available.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+*This project is for learning and portfolio purposes. For questions, see the documentation or open an issue.*
