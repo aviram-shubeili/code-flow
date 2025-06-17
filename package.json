@@ -6,7 +6,10 @@
     "dev": "next dev --turbopack",
     "build": "prettier --check . && next build",
     "start": "next start",
-    "lint": "prettier --check . && next lint"
+    "lint": "prettier --check . && next lint",
+    "docker:up": "docker compose --env-file .env.local up -d",
+    "docker:down": "docker compose --env-file .env.local down",
+    "dev:all": "npm run docker:up && npm run dev"
   },
   "dependencies": {
     "next": "15.3.1",

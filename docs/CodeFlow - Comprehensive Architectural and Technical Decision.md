@@ -40,8 +40,10 @@ This document outlines the technical blueprint for the Minimum Viable Product (M
 **6. Database Design:**
 
 - **PostgreSQL** is the chosen database.
-- Initial schema (`users` table) will store `user_id` (PK), `github_id`, `github_username`, `github_avatar_url`, and the securely stored `github_access_token`, along with timestamps.
-- Basic GitHub user profile info (username, avatar URL) will be cached in the `users` table, updated primarily on user login/token refresh.
+- The database schema will follow the [Auth.js adapter schema](https://authjs.dev/reference/adapters#models), which includes tables for `User`, `Account`, `Session`, and `VerificationToken`.
+- Custom fields (e.g., `github_id`, `github_username`, `github_avatar_url`) will be added to the `User` table as needed.
+- The application will use the Auth.js DB adapter for all authentication and user management.
+- For local development, a PostgreSQL server will be run inside a Docker container using Docker Compose. This ensures a consistent and isolated environment for development.
 
 **7. Caching Strategy:**
 
