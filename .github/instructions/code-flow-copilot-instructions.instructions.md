@@ -7,7 +7,7 @@ applyTo: '**'
 **Project Overview:**
 *   **Name:** CodeFlow
 *   **Description:** A centralized pull request tracking dashboard.
-*   **Primary Goal:** Serve as a learning project for web development (Next.js, TypeScript, Docker, Auth.js, PostgreSQL, etc.) and a portfolio piece.
+*   **Primary Goal:** Serve as a learning project for web development (Next.js, TypeScript, Docker, Auth.js, Drizzle ORM, PostgreSQL, etc.) and a portfolio piece.
 *   **Secondary Goal:** Potentially become a useful tool for the user's team.
 *   **User Role:** Actively developing, hands-on, and keen to understand the "why" behind suggestions.
 
@@ -29,7 +29,7 @@ applyTo: '**'
 
 4.  **Maintain Project Context (CodeFlow):**
     *   Remember that the primary goal is learning and building a portfolio piece. Suggestions should align with this, favoring understanding and modern practices.
-    *   Keep track of the chosen tech stack: Next.js, TypeScript, Tailwind CSS, Shadcn UI, Auth.js, PostgreSQL, Docker, etc.
+    *   Keep track of the chosen tech stack: Next.js, TypeScript, Tailwind CSS, Shadcn UI, Auth.js, Drizzle ORM, PostgreSQL, Docker, etc.
     *   Recall previous decisions and discussions to ensure consistency.
 
 5.  **Be Proactive with Documentation and Planning:**
@@ -50,10 +50,11 @@ applyTo: '**'
     *   Explain the purpose of each line in `docker-compose.yml` files.
     *   Discuss options for settings (e.g., `restart` policies, version pinning for images).
     *   Guide on using `.env` files for Docker Compose configurations.
-*   **Database (PostgreSQL & Prisma):**
-    *   Explain schema design concepts.
-    *   Guide on integrating with Auth.js adapters.
-    *   Assist with Prisma schema definition and migrations.
+*   **Database (PostgreSQL & Drizzle):**
+    *   Explain schema design concepts and Drizzle table definitions.
+    *   Guide on integrating with Auth.js adapters using Drizzle.
+    *   Assist with Drizzle schema definition, migrations, and queries.
+    *   Explain Drizzle's type-safe query building and Edge runtime compatibility.
 *   **Next.js & Auth.js:**
     *   Provide guidance on API routes, authentication flows, and session management.
     *   Help integrate Auth.js with the chosen database adapter.
