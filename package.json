@@ -9,11 +9,22 @@
     "lint": "prettier --check . && next lint",
     "docker:up": "docker compose --env-file .env.local up -d",
     "docker:down": "docker compose --env-file .env.local down",
-    "dev:all": "npm run docker:up && npm run dev"
+    "dev:all": "npm run docker:up && npm run dev",
+    "db:generate": "npx dotenv -e .env.local -- drizzle-kit generate",
+    "db:migrate": "npx dotenv -e .env.local -- drizzle-kit migrate",
+    "db:push": "npx dotenv -e .env.local -- drizzle-kit push",
+    "db:studio": "npx dotenv -e .env.local -- drizzle-kit studio",
+    "db:drop": "npx dotenv -e .env.local -- drizzle-kit drop",
+    "db:reset": "npm run db:drop && npm run db:generate && npm run db:push",
+    "db:test": "npx dotenv -e .env.local -- tsx src/db/test-connection.ts",
+    "db:health": "curl -f http://localhost:3000/api/health/db || echo 'Health check failed'"
   },
   "dependencies": {
+    "@auth/drizzle-adapter": "^1.9.1",
+    "drizzle-orm": "^0.44.2",
     "next": "15.3.1",
     "next-auth": "^5.0.0-beta.28",
+    "postgres": "^3.4.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
@@ -23,12 +34,15 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv-cli": "^8.0.0",
+    "drizzle-kit": "^0.31.1",
     "eslint": "^9",
     "eslint-config-next": "15.3.1",
     "eslint-config-prettier": "^10.1.2",
     "prettier": "3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "tailwindcss": "^4",
+    "tsx": "^4.20.3",
     "typescript": "^5"
   }
 }
