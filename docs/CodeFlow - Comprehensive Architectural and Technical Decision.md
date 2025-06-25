@@ -12,6 +12,7 @@ This document outlines the technical blueprint for the Minimum Viable Product (M
 
 - **Frontend:** React with **Next.js**, utilizing **TypeScript**. Chosen for modern development experience, routing capabilities, and strong industry adoption.
 - **Backend API:** **Node.js** runtime logic using **TypeScript**, implemented within **Next.js API Routes**. This provides a unified language across the stack and simplifies deployment within the Next.js framework.
+- **ORM:** **Drizzle ORM**. Used for type-safe database access, Edge runtime compatibility, schema migrations, and integration with Auth.js.
 - **Database:** **PostgreSQL**. Selected for its robustness with structured data, suitability for current and future relational data needs, and the value of learning SQL and relational design principles.
 - **VCS Integration:** Direct interaction with the **GitHub API**, specifically leveraging **GraphQL** internally on the backend for efficient data fetching.
 
@@ -26,8 +27,8 @@ This document outlines the technical blueprint for the Minimum Viable Product (M
 
 - A standard **multi-tier client-server architecture**.
 - **Client (Frontend):** Runs in the browser, built with React/Next.js/TypeScript, responsible for the UI and making requests to the Backend API.
-- **Backend API (Server-Side):** Built with Node.js/TypeScript in Next.js API Routes, acts as a **Facade**. It handles business logic, authentication, caching, interactions with the Database and External Services (GitHub API).
-- **Database:** PostgreSQL, provides persistent storage for users and potentially cached data.
+- **Backend API (Server-Side):** Built with Node.js/TypeScript in Next.js API Routes, acts as a **Facade**. It handles business logic, authentication, caching, interactions with the Database and External Services (GitHub API). The backend uses Drizzle ORM to manage all database interactions with PostgreSQL.
+- **Database:** PostgreSQL, provides persistent storage for users and potentially cached data. The schema is defined and managed using **Drizzle**, with migrations handled via Drizzle Kit tools.
 - **External Services:** GitHub API (GraphQL) as the data source and GitHub OAuth Service for authentication.
 
 **5. API Design (Backend Facade Approach):**
@@ -40,9 +41,10 @@ This document outlines the technical blueprint for the Minimum Viable Product (M
 **6. Database Design:**
 
 - **PostgreSQL** is the chosen database.
-- The database schema will follow the [Auth.js adapter schema](https://authjs.dev/reference/adapters#models), which includes tables for `User`, `Account`, `Session`, and `VerificationToken`.
+- The database schema is defined and managed using **Drizzle**. All migrations and schema changes are handled via Drizzle Kit's migration system.
+- The schema follows the [Auth.js adapter schema](https://authjs.dev/reference/adapters#models), which includes tables for `User`, `Account`, `Session`, and `VerificationToken`.
 - Custom fields (e.g., `github_id`, `github_username`, `github_avatar_url`) will be added to the `User` table as needed.
-- The application will use the Auth.js DB adapter for all authentication and user management.
+- The application uses the official **Drizzle Adapter** for Auth.js to persist user, session, and account data.
 - For local development, a PostgreSQL server will be run inside a Docker container using Docker Compose. This ensures a consistent and isolated environment for development.
 
 **7. Caching Strategy:**
@@ -61,3 +63,24 @@ This document outlines the technical blueprint for the Minimum Viable Product (M
 **9. CI/CD (Continuous Integration/Continuous Deployment):**
 
 - **GitHub Actions** will be implemented to automate the build, testing, and deployment processes across the different AWS environments based on code commits.
+
+**10. Development Workflow:**
+
+- **Local Development:** Docker Compose setup with PostgreSQL and pgAdmin for database management.
+- **Schema Management:** Drizzle Kit for generating migrations and managing schema changes.
+- **Database Inspection:** Drizzle Studio for visual database browsing and data inspection.
+- **Type Safety:** Full TypeScript integration with Drizzle's generated types for compile-time query validation.
+
+**11. Authentication Flow:**
+
+- **OAuth 2.0 with GitHub:** Users authenticate using their GitHub accounts.
+- **Session Management:** Sessions are stored in PostgreSQL using the Drizzle adapter for Auth.js.
+- **Token Security:** GitHub access tokens are securely stored on the backend only.
+- **Edge Runtime Compatible:** Authentication works seamlessly in Vercel Edge Functions and other Edge environments.
+
+**12. Performance Considerations:**
+
+- **Bundle Size:** Drizzle ORM provides a smaller bundle size compared to traditional ORMs.
+- **Query Performance:** Type-safe queries with minimal overhead.
+- **Edge Runtime:** Native compatibility with serverless and Edge environments.
+- **Connection Pooling:** Efficient database connection management for production environments.

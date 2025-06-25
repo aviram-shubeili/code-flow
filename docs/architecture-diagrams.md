@@ -10,8 +10,9 @@ graph TD
 
     subgraph Server
         B -->|API Calls| C[Next.js API Routes]
+        C -->|ORM| P[Drizzle ORM]
+        P -->|Read/Write| E[(PostgreSQL)]
         C -->|Query| D[GitHub GraphQL API]
-        C -->|Read/Write| E[(PostgreSQL)]
     end
 
     style A fill:#f9f,stroke:#333,stroke-width:2px
@@ -19,6 +20,7 @@ graph TD
     style C fill:#bfb,stroke:#333,stroke-width:2px
     style D fill:#fbb,stroke:#333,stroke-width:2px
     style E fill:#bff,stroke:#333,stroke-width:2px
+    style P fill:#fff,stroke:#333,stroke-width:2px
 ```
 
 ## 2. Component Diagram
@@ -32,7 +34,7 @@ classDiagram
         +PR Detail View
         +Auth Components
     }
-    
+
     class APIRoutes {
         +/api/auth/github
         +/api/pull-requests/needs-review
@@ -40,7 +42,15 @@ classDiagram
         +/api/pull-requests/my-awaiting-review
         +/api/pull-requests/reviewed-awaiting-author
     }
-    
+
+    class DrizzleORM {
+        +select()
+        +insert()
+        +update()
+        +delete()
+        +migrate()
+    }
+
     class GitHubService {
         +fetchPRs(status: string)
         +getUserData()
@@ -48,7 +58,7 @@ classDiagram
         +submitReview(prId: string, review: object)
         +getPRDetails(prId: string)
     }
-    
+
     class Database {
         +getUser(githubId: string)
         +updateUser(userData: object)
@@ -56,21 +66,22 @@ classDiagram
         +getCachedPRs(repo: string, status: string)
         +invalidateCache(repo: string, prId: string)
     }
-    
+
     class AuthService {
         +handleOAuthCallback(code: string)
         +getUserSession(token: string)
         +refreshToken(refreshToken: string)
     }
-    
+
     Frontend --> APIRoutes : "Makes API calls"
     APIRoutes --> AuthService : "Validates sessions"
     APIRoutes --> GitHubService : "Fetches PR data"
-    APIRoutes --> Database : "Manages cache & user data"
+    APIRoutes --> DrizzleORM : "ORM access"
+    DrizzleORM --> Database : "Read/Write"
     GitHubService --> GitHub : "GitHub GraphQL API"
     AuthService --> GitHub : "OAuth flow"
     Database <--> GitHubService : "Caches responses"
-    
+
     class GitHub {
         <<External>>
         +GitHub API
@@ -85,7 +96,7 @@ sequenceDiagram
     participant F as Frontend
     participant B as Backend (Next.js API)
     participant G as GitHub OAuth
-    
+
     U->>F: Clicks "Login with GitHub"
     F->>B: GET /api/auth/github
     B-->>F: Redirect to GitHub OAuth
@@ -107,7 +118,7 @@ sequenceDiagram
     participant B as Backend
     participant G as GitHub API
     participant D as Database
-    
+
     U->>F: Opens dashboard
     F->>B: GET /api/pull-requests/needs-review
     B->>D: Check cache
@@ -134,10 +145,10 @@ graph LR
         F["GitHub Actions"] --> |Deploy| B
         F --> |Deploy| C
     end
-    
+
     User -->|HTTPS| A
     D -->|"GitHub API"| G["GitHub"]
-    
+
     style A fill:#FF9900,stroke:#333
     style B fill:#569A31,stroke:#333
     style C fill:#FF4F8B,stroke:#333
@@ -206,7 +217,7 @@ erDiagram
     }
 ```
 
-*Note: Auth.js DB adapter schema is used for authentication and user management. Custom fields are added to the USER table as needed.*
+_Note: Auth.js DB adapter schema is used for authentication and user management. The schema is managed and migrated using Drizzle. Custom fields are added to the USER table as needed._
 
 ## 7. Component Interaction for PR Status Update
 
@@ -216,7 +227,7 @@ sequenceDiagram
     participant F as Frontend
     participant B as Backend
     participant G as GitHub API
-    
+
     U->>F: Reviews PR (approves/requests changes)
     F->>B: POST /api/pull-requests/review
     B->>G: Submit review via GraphQL
