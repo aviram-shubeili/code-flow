@@ -14,6 +14,10 @@
     "test:coverage": "vitest run --coverage",
     "test:unit": "vitest run src",
     "test:integration": "vitest run tests/integration",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
     "docker:up": "docker compose --env-file .env.local up -d",
     "docker:down": "docker compose --env-file .env.local down",
     "docker:logs": "docker compose --env-file .env.local logs -f",
@@ -41,6 +45,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.54.1",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
