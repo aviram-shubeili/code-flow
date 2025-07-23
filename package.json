@@ -9,6 +9,9 @@
     "lint": "prettier --check . && next lint",
     "docker:up": "docker compose --env-file .env.local up -d",
     "docker:down": "docker compose --env-file .env.local down",
+    "docker:logs": "docker compose --env-file .env.local logs -f",
+    "docker:status": "docker ps --filter name=code-flow",
+    "docker:restart": "npm run docker:down && npm run docker:up",
     "dev:all": "npm run docker:up && npm run dev",
     "db:generate": "npx dotenv -e .env.local -- drizzle-kit generate",
     "db:migrate": "npx dotenv -e .env.local -- drizzle-kit migrate",
@@ -16,8 +19,9 @@
     "db:studio": "npx dotenv -e .env.local -- drizzle-kit studio",
     "db:drop": "npx dotenv -e .env.local -- drizzle-kit drop",
     "db:reset": "npm run db:drop && npm run db:generate && npm run db:push",
-    "db:test": "npx dotenv -e .env.local -- tsx src/db/test-connection.ts",
-    "db:health": "curl -f http://localhost:3000/api/health/db || echo 'Health check failed'"
+    "db:health": "curl -f http://localhost:3000/api/health/db || echo 'Health check failed'",
+    "db:check": "npm run docker:status && echo '\n' && npm run db:health",
+    "auth:clear": "npx dotenv -e .env.local -- tsx src/db/clear-auth-data.ts"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.9.1",

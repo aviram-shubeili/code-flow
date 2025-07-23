@@ -4,8 +4,34 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": true,
+
+    // === STRICT TYPE CHECKING ===
+    "strict": true, // Enable all strict type checking options
+    "noImplicitAny": true, // Error on expressions with implied 'any' type
+    "strictNullChecks": true, // Enable strict null checks (included in strict)
+    "strictFunctionTypes": true, // Enable strict checking of function types (included in strict)
+    "strictBindCallApply": true, // Enable strict 'bind', 'call', and 'apply' methods (included in strict)
+    "strictPropertyInitialization": true, // Enable strict checking of property initialization (included in strict)
+    "noImplicitThis": true, // Error on 'this' expressions with implied 'any' type (included in strict)
+    "alwaysStrict": true, // Parse in strict mode and emit "use strict" (included in strict)
+
+    // === ADDITIONAL STRICT CHECKS ===
+    "noImplicitReturns": true, // Error when not all code paths return a value
+    "noFallthroughCasesInSwitch": true, // Error for fallthrough cases in switch statements
+    "noUncheckedIndexedAccess": true, // Add undefined to index signature results
+    "noImplicitOverride": true, // Ensure overriding members are marked with 'override'
+    "noPropertyAccessFromIndexSignature": true, // Require bracket notation for index signature properties
+    "noUnusedLocals": true, // Error on unused local variables
+    "noUnusedParameters": true, // Error on unused parameters
+    "exactOptionalPropertyTypes": true, // Differentiate between undefined and missing properties
+
+    // === ADVANCED STRICT CHECKS ===
+    "allowUnreachableCode": false, // Error on unreachable code
+    "allowUnusedLabels": false, // Error on unused labels
+
+    // === EXISTING CONFIG ===
     "noEmit": true,
+    "sourceMap": true,
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
@@ -13,13 +39,24 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "declaration": false, // Disable to avoid NextAuth compatibility issues
+    "declarationMap": false, // Disable to avoid NextAuth compatibility issues
+    "removeComments": false, // Keep JSDoc comments in output
+    "verbatimModuleSyntax": false, // Disable to avoid NextAuth compatibility issues
+    "allowSyntheticDefaultImports": true, // Allow default imports from modules without default export
+    "forceConsistentCasingInFileNames": true, // Ensure consistent file name casing
+    "tsBuildInfoFile": "./tsconfig.tsbuildinfo", // Specify build info file location
+
     "plugins": [
       {
         "name": "next"
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/types/*": ["./src/types/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/components/*": ["./src/components/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

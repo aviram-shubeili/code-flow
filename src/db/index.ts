@@ -3,7 +3,7 @@ import postgres from 'postgres';
 import * as schema from './schema';
 import { dbConfig } from './config';
 
-// Configure postgres client based on environment
+// Configure postgres client with enhanced error handling
 const client = postgres(dbConfig.url!, {
   // Connection pool settings
   max: dbConfig.maxConnections,
@@ -16,12 +16,24 @@ const client = postgres(dbConfig.url!, {
 
   // Enable SSL in production
   ssl:
-    process.env.NODE_ENV === 'production'
+    process.env['NODE_ENV'] === 'production'
       ? { rejectUnauthorized: false }
       : false,
 
   // Logging in development
   debug: dbConfig.enableLogging,
+
+  // Handle connection notices
+  ...(dbConfig.enableLogging && {
+    onnotice: (notice: any) => console.log('DB Notice:', notice),
+  }),
+
+  // Enhanced error handling for connection issues
+  onparameter: (key: string, value: any) => {
+    if (dbConfig.enableLogging) {
+      console.log(`DB Parameter ${key}:`, value);
+    }
+  },
 });
 
 // Create Drizzle instance
@@ -57,17 +69,4 @@ export async function testDatabaseConnection(): Promise<boolean> {
   }
 }
 
-// Graceful shutdown function
-export async function closeDatabaseConnection(): Promise<void> {
-  try {
-    await client.end();
-    console.log('Database connection closed gracefully');
-  } catch (error) {
-    console.error('Error closing database connection:', error);
-  }
-}
 
-// Global error handler for database connection issues
-process.on('beforeExit', () => {
-  closeDatabaseConnection();
-});
