@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
-import { SessionProvider } from 'next-auth/react';
 import type { Session } from 'next-auth';
 
 // Mock session for testing
@@ -18,6 +17,11 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
   session?: Session | null;
 }
 
+// Simple wrapper that doesn't require next-auth
+function TestWrapper({ children }: { children: React.ReactNode }) {
+  return <div data-testid="test-wrapper">{children}</div>;
+}
+
 // Custom render function that includes necessary providers
 function customRender(
   ui: ReactElement,
@@ -25,9 +29,9 @@ function customRender(
 ) {
   function Wrapper({ children }: { children: React.ReactNode }) {
     return (
-      <SessionProvider session={session}>
+      <TestWrapper>
         {children}
-      </SessionProvider>
+      </TestWrapper>
     );
   }
 

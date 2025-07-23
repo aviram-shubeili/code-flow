@@ -5,29 +5,10 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   test: {
+    globals: true,
     environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],
-    globals: true,
     css: true,
-    projects: [
-      // Unit tests
-      {
-        name: 'unit',
-        test: {
-          include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-          exclude: ['tests/integration/**', 'tests/e2e/**'],
-        },
-      },
-      // Integration tests
-      {
-        name: 'integration',
-        test: {
-          include: ['tests/integration/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-          testTimeout: 10000,
-          hookTimeout: 10000,
-        },
-      },
-    ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
