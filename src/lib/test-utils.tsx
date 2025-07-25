@@ -19,20 +19,16 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
 
 // Simple wrapper that doesn't require next-auth
 function TestWrapper({ children }: { children: React.ReactNode }) {
-  return <div data-testid="test-wrapper">{children}</div>;
+  return <div data-testid='test-wrapper'>{children}</div>;
 }
 
 // Custom render function that includes necessary providers
 function customRender(
   ui: ReactElement,
-  { session = mockSession, ...renderOptions }: CustomRenderOptions = {}
+  { ...renderOptions }: CustomRenderOptions = {},
 ) {
   function Wrapper({ children }: { children: React.ReactNode }) {
-    return (
-      <TestWrapper>
-        {children}
-      </TestWrapper>
-    );
+    return <TestWrapper>{children}</TestWrapper>;
   }
 
   return render(ui, { wrapper: Wrapper, ...renderOptions });
@@ -45,16 +41,25 @@ export * from '@testing-library/react';
 export { customRender as render };
 
 // Helper functions for common test scenarios
-export const renderWithoutSession = (ui: ReactElement, options?: RenderOptions) => {
+export const renderWithoutSession = (
+  ui: ReactElement,
+  options?: RenderOptions,
+) => {
   return customRender(ui, { session: null, ...options });
 };
 
-export const renderWithSession = (ui: ReactElement, session?: Session, options?: RenderOptions) => {
+export const renderWithSession = (
+  ui: ReactElement,
+  session?: Session,
+  options?: RenderOptions,
+) => {
   return customRender(ui, { session: session || mockSession, ...options });
 };
 
 // Mock session utilities
-export const createMockSession = (overrides: Partial<Session> = {}): Session => ({
+export const createMockSession = (
+  overrides: Partial<Session> = {},
+): Session => ({
   ...mockSession,
   ...overrides,
 });

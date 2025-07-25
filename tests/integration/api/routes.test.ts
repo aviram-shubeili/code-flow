@@ -26,14 +26,14 @@ describe('API Routes Integration Tests', () => {
       server.use(
         http.get('*/api/health/db', () => {
           return HttpResponse.json(
-            { 
+            {
               status: 'error',
               message: 'Database connection failed',
-              timestamp: new Date().toISOString()
+              timestamp: new Date().toISOString(),
             },
-            { status: 500 }
+            { status: 500 },
           );
-        })
+        }),
       );
 
       const response = await fetch('http://localhost:3000/api/health/db');
@@ -49,7 +49,9 @@ describe('API Routes Integration Tests', () => {
       const response = await fetch('http://localhost:3000/api/health/db');
       const data = await response.json();
 
-      expect(response.headers.get('content-type')).toContain('application/json');
+      expect(response.headers.get('content-type')).toContain(
+        'application/json',
+      );
       expect(data).toHaveProperty('status');
       expect(data).toHaveProperty('timestamp');
       expect(data).toHaveProperty('database');
@@ -86,16 +88,13 @@ describe('API Routes Integration Tests', () => {
       // Add a handler for the error case
       server.use(
         http.get('*/api/test-error', () => {
-          return HttpResponse.json(
-            { error: 'Not Found' },
-            { status: 404 }
-          );
-        })
+          return HttpResponse.json({ error: 'Not Found' }, { status: 404 });
+        }),
       );
 
       const response = await fetch('http://localhost:3000/api/test-error');
       const data = await response.json();
-      
+
       expect(response.status).toBe(404);
       expect(data.error).toBe('Not Found');
     });
@@ -105,12 +104,14 @@ describe('API Routes Integration Tests', () => {
       const response = await fetch('http://localhost:3000/api/health/db', {
         method: 'GET',
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
         },
       });
 
       expect(response.ok).toBe(true);
-      expect(response.headers.get('content-type')).toContain('application/json');
+      expect(response.headers.get('content-type')).toContain(
+        'application/json',
+      );
     });
   });
 });

@@ -1,10 +1,10 @@
 import type { User } from 'next-auth';
 
-interface CreateUserOptions {
+export interface CreateUserOptions {
   id?: string;
-  name?: string;
-  email?: string;
-  image?: string;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
 }
 
 export class UserFactory {
@@ -29,7 +29,7 @@ export class UserFactory {
         id: `user-${index + 1}`,
         email: `test${index + 1}@example.com`,
         name: `Test User ${index + 1}`,
-      })
+      }),
     );
   }
 

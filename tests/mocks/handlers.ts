@@ -25,10 +25,10 @@ export const handlers = [
 
   // Health check endpoint
   http.get('*/api/health/db', () => {
-    return HttpResponse.json({ 
+    return HttpResponse.json({
       status: 'healthy',
       timestamp: new Date().toISOString(),
-      database: 'connected'
+      database: 'connected',
     });
   }),
 

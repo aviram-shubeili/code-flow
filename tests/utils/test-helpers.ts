@@ -6,8 +6,6 @@ import { SessionFactory } from '../factories/session-factory';
 export const authTestUtils = {
   // Mock next-auth/react hooks
   mockUseSession: (session: Session | null = null) => {
-    const mockSession = session || SessionFactory.create();
-    
     return vi.mocked(() => ({
       data: session,
       status: session ? 'authenticated' : 'unauthenticated',
@@ -44,11 +42,12 @@ export const authTestUtils = {
 export const apiTestUtils = {
   // Create mock request object
   createMockRequest: (overrides: Partial<Request> = {}): Request => {
+    const headers = new Headers();
+    headers.set('Content-Type', 'application/json');
+
     const defaultRequest = new Request('http://localhost:3000/api/test', {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
     });
 
     return {
@@ -58,13 +57,17 @@ export const apiTestUtils = {
   },
 
   // Create authenticated request with session
-  createAuthenticatedRequest: (session: Session, overrides: Partial<Request> = {}): Request => {
+  createAuthenticatedRequest: (
+    session: Session,
+    overrides: Partial<Request> = {},
+  ): Request => {
+    const headers = new Headers();
+    headers.set('Content-Type', 'application/json');
+    headers.set('Authorization', 'Bearer test-token');
+    headers.set('Cookie', `next-auth.session-token=${JSON.stringify(session)}`);
+
     return apiTestUtils.createMockRequest({
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer test-token`,
-        'Cookie': `next-auth.session-token=${JSON.stringify(session)}`,
-      },
+      headers,
       ...overrides,
     });
   },
@@ -84,7 +87,10 @@ export const dbTestUtils = {
 
   // Create test database URL
   getTestDbUrl: () => {
-    return process.env.DATABASE_URL || 'postgresql://test:test@localhost:5432/test_db';
+    return (
+      process.env['DATABASE_URL'] ||
+      'postgresql://test:test@localhost:5432/test_db'
+    );
   },
 
   // Clean up test data
@@ -99,7 +105,7 @@ export const dbTestUtils = {
 export const componentTestUtils = {
   // Wait for async operations to complete
   waitForAsyncOperations: () => {
-    return new Promise(resolve => setTimeout(resolve, 0));
+    return new Promise((resolve) => setTimeout(resolve, 0));
   },
 
   // Mock router navigation
@@ -114,6 +120,6 @@ export const componentTestUtils = {
 
   // Simulate user interaction delay
   simulateUserDelay: (ms = 100) => {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   },
 };

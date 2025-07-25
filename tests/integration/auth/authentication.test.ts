@@ -43,9 +43,9 @@ describe('Authentication Integration Tests', () => {
 
   describe('GitHub OAuth Authentication', () => {
     it('should initiate GitHub OAuth sign-in', async () => {
-      mockAuthFunctions.signIn.mockResolvedValue({ 
+      mockAuthFunctions.signIn.mockResolvedValue({
         url: 'https://github.com/login/oauth/authorize?...',
-        ok: true 
+        ok: true,
       });
 
       const result = await mockAuthFunctions.signIn('github');
@@ -70,7 +70,9 @@ describe('Authentication Integration Tests', () => {
     it('should handle authentication errors', async () => {
       mockAuthFunctions.signIn.mockRejectedValue(new Error('OAuth error'));
 
-      await expect(mockAuthFunctions.signIn('github')).rejects.toThrow('OAuth error');
+      await expect(mockAuthFunctions.signIn('github')).rejects.toThrow(
+        'OAuth error',
+      );
     });
   });
 
@@ -82,7 +84,9 @@ describe('Authentication Integration Tests', () => {
       const isValid = await mockAuthFunctions.validateSession(mockSession);
 
       expect(isValid).toBe(true);
-      expect(mockAuthFunctions.validateSession).toHaveBeenCalledWith(mockSession);
+      expect(mockAuthFunctions.validateSession).toHaveBeenCalledWith(
+        mockSession,
+      );
     });
 
     it('should invalidate expired sessions', async () => {
@@ -106,9 +110,9 @@ describe('Authentication Integration Tests', () => {
     });
 
     it('should handle sign-out', async () => {
-      mockAuthFunctions.signOut.mockResolvedValue({ 
+      mockAuthFunctions.signOut.mockResolvedValue({
         url: '/',
-        ok: true 
+        ok: true,
       });
 
       const result = await mockAuthFunctions.signOut();

@@ -31,12 +31,14 @@ CodeFlow follows a comprehensive Test-Driven Development (TDD) approach with mul
 **Purpose**: Test individual components, functions, and utilities in isolation.
 
 **Technologies**:
+
 - Vitest (test runner)
 - React Testing Library (component testing)
 - MSW (API mocking)
 - Jest DOM (custom matchers)
 
 **Example**:
+
 ```typescript
 import { render, screen } from '@/lib/test-utils';
 import { SignInButton } from './signin-button';
@@ -44,7 +46,7 @@ import { SignInButton } from './signin-button';
 describe('SignInButton', () => {
   it('should render sign in button', () => {
     render(<SignInButton />);
-    
+
     expect(screen.getByRole('button', { name: /sign in with github/i }))
       .toBeInTheDocument();
   });
@@ -58,11 +60,13 @@ describe('SignInButton', () => {
 **Purpose**: Test how different parts of the system work together.
 
 **Categories**:
+
 - Database integration tests
 - Authentication flow tests
 - API endpoint tests
 
 **Example**:
+
 ```typescript
 describe('Authentication Integration', () => {
   it('should create session after GitHub OAuth', async () => {
@@ -79,6 +83,7 @@ describe('Authentication Integration', () => {
 **Purpose**: Test complete user workflows across browsers.
 
 **Example**:
+
 ```typescript
 test('should complete authentication flow', async ({ page }) => {
   await page.goto('/');
@@ -168,20 +173,20 @@ import { render, screen, userEvent } from '@/lib/test-utils';
 describe('UserProfile', () => {
   it('should display user information', () => {
     const mockUser = UserFactory.create();
-    
+
     render(<UserProfile user={mockUser} />);
-    
+
     expect(screen.getByText(mockUser.name)).toBeInTheDocument();
   });
 
   it('should handle user interactions', async () => {
     const user = userEvent.setup();
     const onEdit = vi.fn();
-    
+
     render(<UserProfile onEdit={onEdit} />);
-    
+
     await user.click(screen.getByRole('button', { name: /edit/i }));
-    
+
     expect(onEdit).toHaveBeenCalled();
   });
 });
@@ -281,6 +286,7 @@ npm test -- --grep "should render sign in button"
 ### Debug Unit Tests
 
 1. **Console logging**:
+
    ```typescript
    console.log(screen.debug()); // Print DOM structure
    ```
@@ -293,11 +299,13 @@ npm test -- --grep "should render sign in button"
 ### Debug E2E Tests
 
 1. **Headed mode**:
+
    ```bash
    npm run test:e2e:headed
    ```
 
 2. **Debug mode**:
+
    ```bash
    npm run test:e2e:debug
    ```
@@ -309,14 +317,20 @@ npm test -- --grep "should render sign in button"
 ### Common Issues
 
 #### Test Timeout
+
 ```typescript
 // Increase timeout for slow operations
-test('slow operation', async () => {
-  // ...
-}, { timeout: 10000 });
+test(
+  'slow operation',
+  async () => {
+    // ...
+  },
+  { timeout: 10000 },
+);
 ```
 
 #### DOM Cleanup
+
 ```typescript
 // Tests should clean up automatically
 // If issues persist, check test setup
@@ -330,35 +344,40 @@ afterEach(() => {
 ### General Principles
 
 1. **Test Behavior, Not Implementation**
+
    - Focus on what the user sees and does
    - Avoid testing internal component state
 
 2. **Keep Tests Simple**
+
    - One assertion per test when possible
    - Clear setup, action, assertion structure
 
 3. **Use Descriptive Names**
+
    ```typescript
    // Good
-   test('should show error message when login fails')
-   
+   test('should show error message when login fails');
+
    // Bad
-   test('login test')
+   test('login test');
    ```
 
 ### Component Testing
 
 1. **Use Semantic Queries**
+
    ```typescript
    // Preferred
-   screen.getByRole('button', { name: /submit/i })
-   screen.getByLabelText(/email/i)
-   
+   screen.getByRole('button', { name: /submit/i });
+   screen.getByLabelText(/email/i);
+
    // Avoid
-   screen.getByTestId('submit-button')
+   screen.getByTestId('submit-button');
    ```
 
 2. **Test User Interactions**
+
    ```typescript
    await user.click(button);
    await user.type(input, 'text');
@@ -371,10 +390,11 @@ afterEach(() => {
 ### E2E Testing
 
 1. **Use Page Object Pattern**
+
    ```typescript
    class LoginPage {
      constructor(private page: Page) {}
-     
+
      async signIn(email: string, password: string) {
        await this.page.fill('[name="email"]', email);
        await this.page.fill('[name="password"]', password);
@@ -384,6 +404,7 @@ afterEach(() => {
    ```
 
 2. **Test Critical User Paths**
+
    - Authentication flows
    - Core functionality
    - Error scenarios
@@ -424,6 +445,7 @@ npm run build
 - **Critical Paths**: 100% coverage required
 
 View coverage report:
+
 ```bash
 npm run test:coverage
 open coverage/index.html
@@ -434,11 +456,13 @@ open coverage/index.html
 ### Common Issues
 
 1. **Tests fail in CI but pass locally**
+
    - Check environment variables
    - Verify database setup
    - Review timing issues
 
 2. **Flaky E2E tests**
+
    - Add proper waits
    - Use `page.waitForLoadState()`
    - Increase timeouts if necessary

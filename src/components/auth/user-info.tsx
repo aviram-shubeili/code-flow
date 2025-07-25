@@ -1,6 +1,7 @@
 import { getCurrentUser } from '@/lib/authUtils';
 import { SignInButton } from './signin-button';
 import { SignOutButton } from './signout-button';
+import Image from 'next/image';
 
 export async function UserInfo() {
   const user = await getCurrentUser();
@@ -18,9 +19,11 @@ export async function UserInfo() {
     <div className='flex items-center gap-4'>
       <div className='flex items-center gap-2'>
         {user.image && (
-          <img
+          <Image
             src={user.image}
             alt={user.name || 'User'}
+            width={32}
+            height={32}
             className='h-8 w-8 rounded-full'
           />
         )}

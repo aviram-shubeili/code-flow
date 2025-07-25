@@ -4,7 +4,9 @@ import { http, HttpResponse } from 'msw';
 export const githubHandlers = [
   // GitHub OAuth endpoints
   http.get('https://github.com/login/oauth/authorize', () => {
-    return HttpResponse.redirect('http://localhost:3000/api/auth/callback/github?code=test-code');
+    return HttpResponse.redirect(
+      'http://localhost:3000/api/auth/callback/github?code=test-code',
+    );
   }),
 
   http.post('https://github.com/login/oauth/access_token', () => {
@@ -41,8 +43,8 @@ export const githubHandlers = [
 
   // GitHub GraphQL API
   http.post('https://api.github.com/graphql', async ({ request }) => {
-    const body = await request.json() as { query: string; variables?: any };
-    
+    const body = (await request.json()) as { query: string; variables?: any };
+
     // Mock pull requests query
     if (body.query.includes('pullRequests')) {
       return HttpResponse.json({
@@ -58,7 +60,8 @@ export const githubHandlers = [
                   url: 'https://github.com/test/repo/pull/123',
                   author: {
                     login: 'testuser',
-                    avatarUrl: 'https://avatars.githubusercontent.com/u/123456?v=4',
+                    avatarUrl:
+                      'https://avatars.githubusercontent.com/u/123456?v=4',
                   },
                   reviewDecision: 'REVIEW_REQUIRED',
                   isDraft: false,

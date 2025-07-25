@@ -11,7 +11,7 @@ beforeAll(() => {
 afterEach(() => {
   // Clean up DOM after each test
   cleanup();
-  
+
   // Reset MSW handlers
   server.resetHandlers();
 });

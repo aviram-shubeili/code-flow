@@ -29,7 +29,7 @@ describe('UserInfo', () => {
     mockGetCurrentUser.mockResolvedValue(null);
 
     render(await UserInfo());
-    
+
     expect(screen.getByText('Not signed in')).toBeInTheDocument();
     expect(screen.getByText('Sign in with GitHub')).toBeInTheDocument();
     expect(screen.queryByText('Sign out')).not.toBeInTheDocument();
@@ -46,7 +46,7 @@ describe('UserInfo', () => {
     mockGetCurrentUser.mockResolvedValue(mockUser);
 
     render(await UserInfo());
-    
+
     expect(screen.getByText('Test User')).toBeInTheDocument();
     expect(screen.getByText('Sign out')).toBeInTheDocument();
     expect(screen.queryByText('Not signed in')).not.toBeInTheDocument();
@@ -63,7 +63,7 @@ describe('UserInfo', () => {
     mockGetCurrentUser.mockResolvedValue(mockUser);
 
     render(await UserInfo());
-    
+
     expect(screen.getByText('test@example.com')).toBeInTheDocument();
     expect(screen.getByText('Sign out')).toBeInTheDocument();
   });
@@ -79,10 +79,14 @@ describe('UserInfo', () => {
     mockGetCurrentUser.mockResolvedValue(mockUser);
 
     render(await UserInfo());
-    
+
     const avatar = screen.getByRole('img', { name: 'Test User' });
     expect(avatar).toBeInTheDocument();
-    expect(avatar).toHaveAttribute('src', 'https://example.com/avatar.jpg');
+    // Next.js Image component transforms the src URL for optimization
+    expect(avatar).toHaveAttribute(
+      'src',
+      expect.stringContaining('https%3A%2F%2Fexample.com%2Favatar.jpg'),
+    );
     expect(avatar).toHaveClass('h-8 w-8 rounded-full');
   });
 
@@ -97,7 +101,7 @@ describe('UserInfo', () => {
     mockGetCurrentUser.mockResolvedValue(mockUser);
 
     render(await UserInfo());
-    
+
     expect(screen.getByText('Test User')).toBeInTheDocument();
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
   });
