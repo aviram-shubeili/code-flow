@@ -17,10 +17,12 @@ Currently, our environment variable handling is basic and requires manual `doten
 ## 🚨 Current State
 
 ### What Works
+
 - Basic `.env.local` support via `dotenv-cli` in npm scripts
 - Manual environment variable loading for development
 
 ### Pain Points
+
 - **Manual dotenv prefix**: Every Drizzle script needs `dotenv -e .env.local --`
 - **No environment detection**: No automatic switching between `.env.local`, `.env.production`, etc.
 - **Inconsistent loading**: Some tools (Next.js) auto-load `.env.local`, others (Drizzle Kit) don't
@@ -30,26 +32,30 @@ Currently, our environment variable handling is basic and requires manual `doten
 ## 💡 Proposed Solutions
 
 ### Option 1: Environment Detection Script
+
 Create a wrapper script that detects environment and loads appropriate `.env` file:
 
 ```typescript
 // scripts/env-wrapper.ts
 const env = process.env.NODE_ENV || 'development';
-const envFile = {
-  development: '.env.local',
-  test: '.env.test',
-  production: '.env.production'
-}[env] || '.env.local';
+const envFile =
+  {
+    development: '.env.local',
+    test: '.env.test',
+    production: '.env.production',
+  }[env] || '.env.local';
 
 // Load and execute command with proper env file
 ```
 
 ### Option 2: Enhanced dotenv Configuration
+
 - Create environment-specific configuration files
 - Use `dotenv-expand` for variable interpolation
 - Add environment validation
 
 ### Option 3: Unified Configuration System
+
 - Single configuration file that handles all environments
 - Runtime environment detection
 - Validation and fallbacks
@@ -67,6 +73,7 @@ const envFile = {
 ## 📋 Requirements
 
 ### Must Have
+
 - ✅ Automatic environment detection
 - ✅ Support for `.env.local`, `.env.test`, `.env.production`
 - ✅ Works with Drizzle Kit CLI commands
@@ -74,6 +81,7 @@ const envFile = {
 - ✅ Clear error messages for missing variables
 
 ### Nice to Have
+
 - ✅ Variable validation and type checking
 - ✅ Environment variable documentation generation
 - ✅ Secrets management integration (Azure Key Vault, etc.)
@@ -83,7 +91,7 @@ const envFile = {
 
 - `package.json` - npm scripts that need environment variables
 - `drizzle.config.ts` - Database configuration
-- `src/auth.ts` - Auth.js configuration  
+- `src/auth.ts` - Auth.js configuration
 - `src/db/index.ts` - Database connection
 - `.env.local` - Current development environment
 - `docker-compose.yml` - Docker environment handling
