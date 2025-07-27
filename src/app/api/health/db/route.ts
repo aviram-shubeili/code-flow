@@ -21,7 +21,7 @@ export async function GET() {
             url: dbConfig.url ? 'configured' : 'missing',
             maxConnections: dbConfig.maxConnections,
             connectTimeout: dbConfig.connectTimeout,
-          }
+          },
         },
         { status: 200 },
       );
@@ -36,7 +36,7 @@ export async function GET() {
             maxConnections: dbConfig.maxConnections,
             connectTimeout: dbConfig.connectTimeout,
           },
-          message: 'Database connection test failed'
+          message: 'Database connection test failed',
         },
         { status: 503 },
       );

@@ -1,9 +1,11 @@
-import { drizzle } from 'drizzle-orm/postgres-js'
-import postgres from 'postgres'
-import * as schema from '@/db/schema'
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+import * as schema from '@/db/schema';
 
 // Test database configuration
-const TEST_DATABASE_URL = process.env['TEST_DATABASE_URL'] || 'postgresql://codeflow_user:codeflow_password@localhost:5433/codeflow_test_db'
+const TEST_DATABASE_URL =
+  process.env['TEST_DATABASE_URL'] ||
+  'postgresql://codeflow_user:codeflow_password@localhost:5433/codeflow_test_db';
 
 // Create test database client
 const testClient = postgres(TEST_DATABASE_URL, {
@@ -12,10 +14,10 @@ const testClient = postgres(TEST_DATABASE_URL, {
   prepare: false,
   ssl: false,
   debug: false, // Disable logging in tests
-})
+});
 
 // Create test database instance
-export const testDb = drizzle(testClient, { schema })
+export const testDb = drizzle(testClient, { schema });
 
 /**
  * Clean up test database - removes all data from tables
@@ -24,14 +26,14 @@ export const testDb = drizzle(testClient, { schema })
 export async function cleanupTestDatabase() {
   try {
     // Delete in order to respect foreign key constraints
-    await testDb.delete(schema.sessions)
-    await testDb.delete(schema.accounts)
-    await testDb.delete(schema.verificationTokens)
-    await testDb.delete(schema.users)
-    console.log('Test database cleaned up successfully')
+    await testDb.delete(schema.sessions);
+    await testDb.delete(schema.accounts);
+    await testDb.delete(schema.verificationTokens);
+    await testDb.delete(schema.users);
+    console.log('Test database cleaned up successfully');
   } catch (error) {
-    console.error('Failed to cleanup test database:', error)
-    throw error
+    console.error('Failed to cleanup test database:', error);
+    throw error;
   }
 }
 
@@ -40,11 +42,11 @@ export async function cleanupTestDatabase() {
  */
 export async function testTestDatabaseConnection(): Promise<boolean> {
   try {
-    await testDb.select().from(schema.users).limit(1)
-    return true
+    await testDb.select().from(schema.users).limit(1);
+    return true;
   } catch (error) {
-    console.error('Test database connection failed:', error)
-    return false
+    console.error('Test database connection failed:', error);
+    return false;
   }
 }
 
@@ -57,15 +59,18 @@ export async function createTestUser(userData = {}) {
     email: 'test@example.com',
     image: 'https://avatars.githubusercontent.com/u/12345?v=4',
     ...userData,
-  }
+  };
 
-  const [user] = await testDb.insert(schema.users).values(defaultUser).returning()
-  return user
+  const [user] = await testDb
+    .insert(schema.users)
+    .values(defaultUser)
+    .returning();
+  return user;
 }
 
 /**
  * Close test database connection
  */
 export async function closeTestDatabase() {
-  await testClient.end()
+  await testClient.end();
 }

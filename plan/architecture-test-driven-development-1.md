@@ -46,18 +46,21 @@ This implementation plan establishes a comprehensive test-driven development (TD
 ## 1.1. Beginner-Friendly Testing Philosophy
 
 **Start Simple, Build Confidence:**
+
 - Write your first test for something you're confident about (like a utility function)
 - Test real behavior, not implementation details
 - Focus on testing what could break and cause real problems
 - Add tests as you build new features (TDD-lite approach)
 
 **Priority Order for Testing:**
+
 1. **Critical paths first**: Authentication, database connections, core business logic
 2. **User-facing features**: Components that users interact with
 3. **Edge cases**: Error handling, validation, boundary conditions
 4. **Integration**: How different parts work together
 
 **Developer Experience Goals:**
+
 - Tests should run fast (< 1 second for most tests)
 - Clear error messages when tests fail
 - Easy to write new tests (good examples and patterns)
@@ -69,37 +72,37 @@ This implementation plan establishes a comprehensive test-driven development (TD
 
 - GOAL-001: Establish foundational testing framework and configuration for personal development
 
-| Task | Description | Completed | Date |
-|------|-------------|-----------|------|
-| TASK-001 | Install and configure Vitest testing framework with TypeScript support | | |
-| TASK-002 | Configure Vitest with Next.js integration and path aliases | | |
-| TASK-003 | Install React Testing Library and related testing utilities | | |
-| TASK-004 | Set up test environment configuration and globals | | |
-| TASK-005 | Create mock data factories for unit tests (no database needed) | | |
-| TASK-006 | Create basic test file structure and organization (feature-based) | | |
-| TASK-007 | Update package.json scripts for test execution | | |
-| TASK-008 | Create first working test to validate setup | | |
+| Task     | Description                                                            | Completed | Date |
+| -------- | ---------------------------------------------------------------------- | --------- | ---- |
+| TASK-001 | Install and configure Vitest testing framework with TypeScript support |           |      |
+| TASK-002 | Configure Vitest with Next.js integration and path aliases             |           |      |
+| TASK-003 | Install React Testing Library and related testing utilities            |           |      |
+| TASK-004 | Set up test environment configuration and globals                      |           |      |
+| TASK-005 | Create mock data factories for unit tests (no database needed)         |           |      |
+| TASK-006 | Create basic test file structure and organization (feature-based)      |           |      |
+| TASK-007 | Update package.json scripts for test execution                         |           |      |
+| TASK-008 | Create first working test to validate setup                            |           |      |
 
 ### Implementation Phase 2: Database and Auth Testing Layer
 
 - GOAL-002: Implement comprehensive database and authentication testing
 
-| Task | Description | Completed | Date |
-|------|-------------|-----------|------|
-| TASK-009 | Replace existing test scripts with proper Vitest unit tests | | |
-| TASK-010 | Create database test utilities and factories | | |
-| TASK-011 | Implement Drizzle ORM integration tests | | |
-| TASK-012 | Create Auth.js authentication flow tests | | |
-| TASK-013 | Implement session management and security tests | | |
-| TASK-014 | Create database migration and schema validation tests | | |
-| TASK-015 | Implement test data seeding and cleanup utilities | | |
+| Task     | Description                                                 | Completed | Date |
+| -------- | ----------------------------------------------------------- | --------- | ---- |
+| TASK-009 | Replace existing test scripts with proper Vitest unit tests |           |      |
+| TASK-010 | Create database test utilities and factories                |           |      |
+| TASK-011 | Implement Drizzle ORM integration tests                     |           |      |
+| TASK-012 | Create Auth.js authentication flow tests                    |           |      |
+| TASK-013 | Implement session management and security tests             |           |      |
+| TASK-014 | Create database migration and schema validation tests       |           |      |
+| TASK-015 | Implement test data seeding and cleanup utilities           |           |      |
 
 ### Implementation Phase 3: API and Component Testing
 
 - GOAL-003: Establish API route and React component testing infrastructure
 
 | Task | Description | Completed | Date |
-|------|-------------|-----------|------|****
+|------|-------------|-----------|------|\*\*\*\*
 | TASK-016 | Create Next.js API route testing utilities | | |
 | TASK-017 | Implement authentication API endpoint tests | | |
 | TASK-018 | Create health check and database API tests | | |
@@ -111,26 +114,26 @@ This implementation plan establishes a comprehensive test-driven development (TD
 
 - GOAL-004: Implement comprehensive end-to-end testing with Playwright
 
-| Task | Description | Completed | Date |
-|------|-------------|-----------|------|
-| TASK-022 | Install and configure Playwright for e2e testing | | |
-| TASK-023 | Create authentication flow e2e tests | | |
-| TASK-024 | Implement dashboard functionality e2e tests | | |
-| TASK-025 | Create cross-browser compatibility tests | | |
-| TASK-026 | Implement visual regression testing setup | | |
+| Task     | Description                                      | Completed | Date |
+| -------- | ------------------------------------------------ | --------- | ---- |
+| TASK-022 | Install and configure Playwright for e2e testing |           |      |
+| TASK-023 | Create authentication flow e2e tests             |           |      |
+| TASK-024 | Implement dashboard functionality e2e tests      |           |      |
+| TASK-025 | Create cross-browser compatibility tests         |           |      |
+| TASK-026 | Implement visual regression testing setup        |           |      |
 
 ### Implementation Phase 5: CI/CD and Agent Integration
 
 - GOAL-005: Establish automated testing pipeline and agent-friendly specifications
 
-| Task | Description | Completed | Date |
-|------|-------------|-----------|------|
-| TASK-027 | Configure GitHub Actions for automated test execution | | |
-| TASK-028 | Create test coverage reporting and quality gates | | |
-| TASK-029 | Implement test result artifacts and reporting | | |
-| TASK-030 | Create agent-executable test specification templates | | |
-| TASK-031 | Establish TDD workflow documentation and guidelines | | |
-| TASK-032 | Create automated test generation tools for agents | | |
+| Task     | Description                                           | Completed | Date |
+| -------- | ----------------------------------------------------- | --------- | ---- |
+| TASK-027 | Configure GitHub Actions for automated test execution |           |      |
+| TASK-028 | Create test coverage reporting and quality gates      |           |      |
+| TASK-029 | Implement test result artifacts and reporting         |           |      |
+| TASK-030 | Create agent-executable test specification templates  |           |      |
+| TASK-031 | Establish TDD workflow documentation and guidelines   |           |      |
+| TASK-032 | Create automated test generation tools for agents     |           |      |
 
 ## 3. Alternatives
 
@@ -142,6 +145,7 @@ This implementation plan establishes a comprehensive test-driven development (TD
 ## 4. Dependencies (Simplified for Personal Project)
 
 **Essential Dependencies (Phase 1):**
+
 - **DEP-001**: vitest ^2.0.0 - Modern testing framework with native TypeScript support
 - **DEP-002**: @testing-library/react ^16.0.0 - React component testing utilities (React 19 compatible)
 - **DEP-003**: @testing-library/jest-dom ^6.4.2 - Custom Jest DOM matchers
@@ -150,6 +154,7 @@ This implementation plan establishes a comprehensive test-driven development (TD
 - **DEP-006**: jsdom ^25.0.0 - DOM environment for testing
 
 **Later Phases (Add when needed):**
+
 - **DEP-007**: msw ^2.2.1 - Mock Service Worker for external API mocking (Phase 2+)
 - **DEP-008**: @playwright/test ^1.42.0 - End-to-end testing framework (Phase 4)
 - **DEP-009**: supertest ^6.3.4 - HTTP assertion library (Phase 3)
@@ -157,6 +162,7 @@ This implementation plan establishes a comprehensive test-driven development (TD
 ## 5. Files (Simplified Structure)
 
 **Phase 1 Files (No Database Required):**
+
 - **FILE-001**: `vitest.config.ts` - Main Vitest configuration file
 - **FILE-002**: `tests/setup.ts` - Global test setup and configuration (no database)
 - **FILE-003**: `tests/utils/mock-data.ts` - Mock data factories for unit tests
@@ -165,12 +171,14 @@ This implementation plan establishes a comprehensive test-driven development (TD
 - **FILE-006**: `src/lib/test-utils.tsx` - React testing utilities wrapper
 
 **Phase 2 Files (Database Required):**
+
 - **FILE-007**: `tests/integration/` - Integration tests requiring database
 - **FILE-008**: `tests/utils/db-test-utils.ts` - Database test helpers
 - **FILE-009**: `.env.test` - Test environment variables for database
 - **FILE-010**: Docker test database configuration
 
 **Later Phase Files (Add when needed):**
+
 - **FILE-009**: `vitest.workspace.ts` - Workspace configuration for multiple test types (Phase 2+)
 - **FILE-010**: `playwright.config.ts` - Playwright configuration for e2e tests (Phase 4)
 - **FILE-011**: `tests/mocks/` - Mock implementations and MSW handlers (Phase 2+)
@@ -193,18 +201,21 @@ This implementation plan establishes a comprehensive test-driven development (TD
 ## 7. Risks & Assumptions (Personal Project Context)
 
 **Risks for Solo Developer:**
+
 - **RISK-001**: Over-engineering the testing setup may slow down initial development
 - **RISK-002**: Learning curve for testing concepts may be steep initially
 - **RISK-003**: Maintaining tests as sole developer requires discipline
 - **RISK-004**: Complex test setup may discourage writing tests
 
 **Mitigation Strategies:**
+
 - Start with minimal viable testing setup
 - Focus on high-value tests first (critical paths)
 - Use simple patterns that are easy to remember and repeat
 - Add complexity only when benefits are clear
 
 **Assumptions for Personal Project:**
+
 - **ASSUMPTION-001**: Solo developer has time to learn testing incrementally
 - **ASSUMPTION-002**: Simple test setup is sufficient for personal project scale
 - **ASSUMPTION-003**: Real API testing is acceptable for development phase
@@ -213,17 +224,19 @@ This implementation plan establishes a comprehensive test-driven development (TD
 
 ## 7.1. Test Database Strategy (Based on Real-World Research)
 
-**Research Sources:** *Analysis conducted January 2025 of vercel/next.js, t3-oss/create-t3-app, microsoft/playwright, and vitest-dev/vitest repositories for production testing patterns.*
+**Research Sources:** _Analysis conducted January 2025 of vercel/next.js, t3-oss/create-t3-app, microsoft/playwright, and vitest-dev/vitest repositories for production testing patterns._
 
 **Professional Database Testing Patterns:**
 
 1. **T3 Stack Approach** (create-t3-app):
+
    - Docker containers for isolated test databases
    - Separate PostgreSQL instances on different ports (5432 for dev, 5433 for test)
    - Auto-generated passwords and container lifecycle management
    - Environment-specific DATABASE_URL configurations
 
 2. **Next.js Repository Approach**:
+
    - Environment-based configuration switching
    - SKIP_ENV_VALIDATION=1 flag for test builds
    - Temporary database instances for integration tests
@@ -239,7 +252,7 @@ This implementation plan establishes a comprehensive test-driven development (TD
 
 ```yaml
 # docker-compose.test.yml
-version: "3.9"
+version: '3.9'
 services:
   postgres-test:
     image: postgres:15
@@ -248,9 +261,9 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     ports:
-      - "5433:5432"
+      - '5433:5432'
     tmpfs:
-      - /var/lib/postgresql/data  # In-memory for speed
+      - /var/lib/postgresql/data # In-memory for speed
 ```
 
 ```bash
@@ -261,6 +274,7 @@ SKIP_ENV_VALIDATION="1"
 ```
 
 **Test Database Helper Pattern:**
+
 ```typescript
 // tests/helpers/db.ts - Based on T3 and Next.js patterns
 export async function setupTestDatabase() {
@@ -278,11 +292,12 @@ export async function cleanTestDatabase(db: any) {
 
 ## 8. Real-World Examples for CodeFlow
 
-**Research Foundation:** *Best practices derived from analysis of vercel/next.js, t3-oss/create-t3-app, microsoft/playwright, and vitest-dev/vitest repositories (January 2025).*
+**Research Foundation:** _Best practices derived from analysis of vercel/next.js, t3-oss/create-t3-app, microsoft/playwright, and vitest-dev/vitest repositories (January 2025)._
 
 **Example Test Scenarios (Priority Order - Based on Production Patterns):**
 
 1. **Database Connection Test** (High Priority - Critical Path)
+
    ```typescript
    // tests/api/health.test.ts - Pattern from Next.js repository
    describe('Database Health Check', () => {
@@ -291,11 +306,12 @@ export async function cleanTestDatabase(db: any) {
        const response = await fetch('/api/health/db');
        expect(response.status).toBe(200);
        expect(await response.json()).toEqual({ status: 'healthy' });
-     })
-   })
+     });
+   });
    ```
 
 2. **Authentication Flow Test** (High Priority - Security Critical)
+
    ```typescript
    // tests/auth/signin.test.ts - Pattern from T3 stack
    describe('User Sign In', () => {
@@ -303,16 +319,17 @@ export async function cleanTestDatabase(db: any) {
        // Mock session pattern from real repos
        const mockSession = {
          user: { id: 'test-id', email: 'test@example.com' },
-         expires: '2025-12-31'
+         expires: '2025-12-31',
        };
        vi.mock('next-auth/react', () => ({
-         useSession: () => ({ data: mockSession, status: 'authenticated' })
+         useSession: () => ({ data: mockSession, status: 'authenticated' }),
        }));
-     })
-   })
+     });
+   });
    ```
 
 3. **Component Rendering Test** (Medium Priority - User-Facing)
+
    ```typescript
    // tests/components/auth/signin-button.test.tsx - Vitest + Testing Library pattern
    describe('SignIn Button', () => {
@@ -328,19 +345,23 @@ export async function cleanTestDatabase(db: any) {
    // tests/api/auth.test.ts - Next.js API route testing pattern
    describe('Auth API Routes', () => {
      it('should handle authentication callback correctly', async () => {
-       const request = new NextRequest('http://localhost:3000/api/auth/callback');
+       const request = new NextRequest(
+         'http://localhost:3000/api/auth/callback',
+       );
        const response = await GET(request);
        expect(response.status).toBe(200);
-     })
-   })
+     });
+   });
    ```
 
 **Test Naming Convention (Industry Standard):**
+
 - Describe the scenario: `should [expected behavior] when [condition]`
 - Group related tests: `describe('[Component/Feature] [specific aspect]')`
 - Clear, readable test names that explain business value
 
 **Professional Test Organization (From Real Repos):**
+
 ```
 tests/
 ├── unit/           # Fast, isolated tests

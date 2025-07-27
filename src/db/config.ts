@@ -12,7 +12,7 @@ export function validateDatabaseConfig(): void {
   if (!dbConfig.url) {
     throw new Error(
       'DATABASE_URL is required. Please set it in your .env.local file.\n' +
-      'Example: DATABASE_URL="postgresql://postgres:password@localhost:5432/codeflow"',
+        'Example: DATABASE_URL="postgresql://postgres:password@localhost:5432/codeflow"',
     );
   }
 
@@ -22,7 +22,7 @@ export function validateDatabaseConfig(): void {
   } catch {
     throw new Error(
       `Invalid DATABASE_URL format: ${dbConfig.url}\n` +
-      'Expected format: postgresql://username:password@host:port/database',
+        'Expected format: postgresql://username:password@host:port/database',
     );
   }
 
