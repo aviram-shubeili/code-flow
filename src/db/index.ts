@@ -25,11 +25,11 @@ const client = postgres(dbConfig.url!, {
 
   // Handle connection notices
   ...(dbConfig.enableLogging && {
-    onnotice: (notice: any) => console.log('DB Notice:', notice),
+    onnotice: (notice: unknown) => console.log('DB Notice:', notice),
   }),
 
   // Enhanced error handling for connection issues
-  onparameter: (key: string, value: any) => {
+  onparameter: (key: string, value: unknown) => {
     if (dbConfig.enableLogging) {
       console.log(`DB Parameter ${key}:`, value);
     }
