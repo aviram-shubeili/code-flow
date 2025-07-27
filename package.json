@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "prettier --check . && next build",
+    "build": "DATABASE_URL='postgresql://mock:mock@localhost:5432/mock' prettier --check . && DATABASE_URL='postgresql://mock:mock@localhost:5432/mock' next build",
     "start": "next start",
     "lint": "prettier --check . && next lint",
     "test": "vitest",
