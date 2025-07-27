@@ -46,7 +46,7 @@ cd code-flow
 npm run docker:up
 ```
 
-- This uses `docker-compose.yml` and `.env.local` for configuration.
+- This uses `docker-compose.dev.yml` and `.env.local` for configuration.
 - pgAdmin will be available at [http://localhost:5050](http://localhost:5050)
 
 ### 4. Start the development server
