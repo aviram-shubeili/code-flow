@@ -8,8 +8,10 @@ export const signOut = vi.fn()
 export const authOptions = {}
 
 // Mock NextAuth default export
-export default {
+const NextAuth = {
     getServerSession,
     signIn,
     signOut,
 }
+
+export default NextAuth
