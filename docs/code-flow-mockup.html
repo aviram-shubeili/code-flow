@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CodeFlow MVP Mockup</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* --- Global Styles & Tokens --- */
+      :root {
+        --font-family:
+          'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          Helvetica, Arial, sans-serif;
+        --base-font-size: 16px;
+        --primary-bg: #f8fafc;
+        --content-bg: #ffffff;
+        --primary-text: #1e293b;
+        --secondary-text: #64748b;
+        --border-color: #e2e8f0;
+        --link-color: #3b82f6; /* Example Blue */
+        --sp-1: 4px;
+        --sp-2: 8px;
+        --sp-3: 12px;
+        --sp-4: 16px;
+        --sp-6: 24px;
+        --sp-8: 32px;
+        --br-sm: 4px;
+        --br-md: 6px;
+        --br-lg: 8px;
+        --br-full: 9999px;
+
+        /* Badge Colors */
+        --badge-needs-review-bg: #f59e0b; /* Amber */
+        --badge-needs-re-review-bg: #ec4899; /* Pink */
+        --badge-changes-requested-bg: #ef4444; /* Red */
+        --badge-awaiting-review-bg: #64748b; /* Slate */
+        --badge-awaiting-author-bg: #ef4444; /* Red */
+        --badge-text: #ffffff;
+
+        /* Changes Colors */
+        --additions-color: #16a34a; /* Green */
+        --deletions-color: #dc2626; /* Red */
+      }
+
+      body {
+        font-family: var(--font-family);
+        font-size: var(--base-font-size);
+        background-color: var(--primary-bg);
+        color: var(--primary-text);
+        margin: 0;
+        padding: 0;
+        line-height: 1.5;
+      }
+
+      a {
+        color: inherit; /* Links inherit color unless specified */
+        text-decoration: none;
+      }
+
+      /* --- Page Layout --- */
+      .page-container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 var(--sp-6); /* 24px side padding */
+      }
+
+      /* --- Header --- */
+      .app-header {
+        height: 64px;
+        background-color: var(--content-bg);
+        border-bottom: 1px solid var(--border-color);
+        padding: 0 var(--sp-6);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky; /* Keep header visible */
+        top: 0;
+        z-index: 10;
+      }
+
+      .header-title {
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-4); /* 16px */
+      }
+
+      .refresh-button {
+        padding: var(--sp-2); /* 8px */
+        border: 1px solid var(--border-color);
+        border-radius: var(--br-md);
+        background-color: var(--content-bg);
+        color: var(--secondary-text);
+        cursor: pointer;
+        transition:
+          background-color 0.2s ease,
+          color 0.2s ease;
+        font-size: 14px; /* Match User Info */
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-1);
+      }
+      .refresh-button:hover {
+        background-color: #f1f5f9;
+        color: var(--primary-text);
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2); /* 8px */
+      }
+
+      .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: var(--br-full);
+        background-color: var(--secondary-text); /* Placeholder color */
+        display: inline-block;
+        /* In real app, use background-image: url(...) */
+        flex-shrink: 0;
+      }
+
+      .user-name {
+        font-size: 14px;
+      }
+
+      /* --- Main Content Area --- */
+      .main-content {
+        padding-top: var(--sp-8); /* 32px */
+        padding-bottom: var(--sp-8); /* Add padding at bottom too */
+      }
+
+      /* --- Section --- */
+      .pr-section {
+        margin-bottom: var(--sp-8); /* 32px */
+      }
+
+      .section-header {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--primary-text);
+        margin-bottom: var(--sp-4); /* 16px */
+      }
+
+      .pr-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-3); /* 12px */
+      }
+
+      /* --- PR Card --- */
+      .pr-card {
+        background-color: var(--content-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--br-lg); /* 8px */
+        padding: var(--sp-4); /* 16px */
+        display: flex;
+        align-items: flex-start;
+        gap: var(--sp-4); /* 16px */
+        transition:
+          box-shadow 0.2s ease,
+          background-color 0.2s ease;
+        cursor: pointer;
+      }
+      .pr-card:hover {
+        box-shadow:
+          0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        /* background-color: #FAFCFF; */ /* Optional subtle hover */
+      }
+
+      .pr-card-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--br-full);
+        background-color: var(--secondary-text); /* Placeholder */
+        flex-shrink: 0;
+      }
+
+      .pr-card-main {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .pr-card-top {
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-1); /* 4px */
+      }
+
+      .pr-title-link {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--primary-text);
+        /* Line clamping (optional) */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .pr-title-link:hover {
+        color: var(--link-color);
+      }
+
+      .pr-author {
+        font-size: 12px;
+        color: var(--secondary-text);
+      }
+
+      .pr-card-bottom {
+        margin-top: var(--sp-3); /* 12px */
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: var(--sp-3) var(--sp-3); /* 12px row, 12px col */
+      }
+
+      .pr-detail-item {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-1); /* 4px */
+        font-size: 12px;
+        color: var(--secondary-text);
+      }
+      .pr-detail-item .icon {
+        /* Simple emoji icons */
+        font-size: 14px;
+        line-height: 1;
+      }
+
+      /* --- Status Badge --- */
+      .status-badge {
+        display: inline-flex;
+        padding: 2px var(--sp-2); /* 2px 8px */
+        border-radius: var(--br-full);
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 1.5;
+        color: var(--badge-text);
+        white-space: nowrap;
+      }
+
+      .status-needs-review {
+        background-color: var(--badge-needs-review-bg);
+      }
+      .status-needs-re-review {
+        background-color: var(--badge-needs-re-review-bg);
+      }
+      .status-changes-requested {
+        background-color: var(--badge-changes-requested-bg);
+      }
+      .status-awaiting-review {
+        background-color: var(--badge-awaiting-review-bg);
+      }
+      .status-awaiting-author {
+        background-color: var(--badge-awaiting-author-bg);
+      }
+
+      /* --- Changes --- */
+      .pr-changes {
+        font-size: 12px;
+      }
+      .pr-changes .additions {
+        color: var(--additions-color);
+        font-weight: 500;
+      }
+      .pr-changes .deletions {
+        color: var(--deletions-color);
+        font-weight: 500;
+      }
+      .pr-changes .separator {
+        color: var(--secondary-text);
+        margin: 0 2px;
+      }
+
+      /* --- Empty State --- */
+      .empty-state {
+        padding: var(--sp-6); /* 24px */
+        background-color: var(--content-bg);
+        border: 1px dashed var(--border-color);
+        border-radius: var(--br-lg);
+        text-align: center;
+        font-size: 14px;
+        color: var(--secondary-text);
+      }
+      .empty-state .icon {
+        font-size: 18px;
+        margin-right: var(--sp-1);
+      }
+
+      /* --- Loading State Placeholder --- */
+      .loading-placeholder {
+        padding: var(--sp-6);
+        background-color: var(--content-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--br-lg);
+        text-align: center;
+        font-size: 14px;
+        color: var(--secondary-text);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="header-title">CodeFlow Dashboard</div>
+      <div class="header-right">
+        <button class="refresh-button" title="Refresh Data">
+          <span class="icon">🔄</span> Refresh
+        </button>
+        <div class="user-info">
+          <span class="user-avatar" title="Logged in User Avatar"></span>
+          <span class="user-name">developer_xyz</span>
+          <!-- Dropdown icon would go here -->
+        </div>
+      </div>
+    </header>
+
+    <main class="page-container">
+      <div class="main-content">
+        <!-- Section 1: Needs Your Review -->
+        <section class="pr-section">
+          <h2 class="section-header">1. Needs Your Review</h2>
+          <div class="pr-list">
+            <!-- PR Card: Needs Review -->
+            <div class="pr-card">
+              <span class="pr-card-avatar" title="User B Avatar"></span>
+              <div class="pr-card-main">
+                <div class="pr-card-top">
+                  <a
+                    href="#"
+                    class="pr-title-link"
+                    title="View PR #1123 on GitHub"
+                    >#1123 Fix Button Alignment - A very long title example to
+                    test line clamping and see how it wraps or truncates after
+                    two lines.</a
+                  >
+                  <span class="pr-author">Opened by User B</span>
+                </div>
+                <div class="pr-card-bottom">
+                  <span class="status-badge status-needs-review"
+                    >Needs Review</span
+                  >
+                  <span class="pr-detail-item" title="Comments"
+                    ><span class="icon">💬</span> 5</span
+                  >
+                  <span class="pr-detail-item" title="Last updated"
+                    ><span class="icon">🕒</span> 2 hours ago</span
+                  >
+                  <span class="pr-changes">
+                    <span class="additions">+32</span>
+                    <span class="separator">/</span>
+                    <span class="deletions">-230</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- PR Card: Needs Re-Review -->
+            <div class="pr-card">
+              <span class="pr-card-avatar" title="User C Avatar"></span>
+              <div class="pr-card-main">
+                <div class="pr-card-top">
+                  <a
+                    href="#"
+                    class="pr-title-link"
+                    title="View PR #1134 on GitHub"
+                    >#1134 Update Login UI</a
+                  >
+                  <span class="pr-author">Opened by User C</span>
+                </div>
+                <div class="pr-card-bottom">
+                  <span class="status-badge status-needs-re-review"
+                    >Needs Re-Review</span
+                  >
+                  <span class="pr-detail-item" title="Comments"
+                    ><span class="icon">💬</span> 1</span
+                  >
+                  <span class="pr-detail-item" title="Last updated"
+                    ><span class="icon">🕒</span> 5 mins ago</span
+                  >
+                  <span class="pr-changes">
+                    <span class="additions">+10</span>
+                    <span class="separator">/</span>
+                    <span class="deletions">-5</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <!-- Loading Placeholder Example (Remove in real app) -->
+            <!-- <div class="loading-placeholder">Loading PRs...</div> -->
+          </div>
+        </section>
+
+        <!-- Section 2: Returned to You -->
+        <section class="pr-section">
+          <h2 class="section-header">2. Returned to You</h2>
+          <div class="pr-list">
+            <!-- PR Card: Changes Requested -->
+            <div class="pr-card">
+              <span class="pr-card-avatar" title="developer_xyz Avatar"></span>
+              <div class="pr-card-main">
+                <div class="pr-card-top">
+                  <a
+                    href="#"
+                    class="pr-title-link"
+                    title="View PR #1201 on GitHub"
+                    >#1201 Fix Mobile Responsiveness</a
+                  >
+                  <span class="pr-author">Opened by You</span>
+                </div>
+                <div class="pr-card-bottom">
+                  <span class="status-badge status-changes-requested"
+                    >Changes Requested</span
+                  >
+                  <span class="pr-detail-item" title="Comments"
+                    ><span class="icon">💬</span> 3</span
+                  >
+                  <span class="pr-detail-item" title="Last updated"
+                    ><span class="icon">🕒</span> 1 hour ago</span
+                  >
+                  <span class="pr-changes">
+                    <span class="additions">+100</span>
+                    <span class="separator">/</span>
+                    <span class="deletions">-75</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 3: My PRs - Awaiting Review -->
+        <section class="pr-section">
+          <h2 class="section-header">3. My PRs - Awaiting Review</h2>
+          <div class="pr-list">
+            <!-- PR Card: Awaiting Review -->
+            <div class="pr-card">
+              <span class="pr-card-avatar" title="developer_xyz Avatar"></span>
+              <div class="pr-card-main">
+                <div class="pr-card-top">
+                  <a
+                    href="#"
+                    class="pr-title-link"
+                    title="View PR #1189 on GitHub"
+                    >#1189 Refactor Navbar</a
+                  >
+                  <span class="pr-author">Opened by You</span>
+                </div>
+                <div class="pr-card-bottom">
+                  <span class="status-badge status-awaiting-review"
+                    >Awaiting Review</span
+                  >
+                  <span class="pr-detail-item" title="Comments"
+                    ><span class="icon">💬</span> 0</span
+                  >
+                  <span class="pr-detail-item" title="Last updated"
+                    ><span class="icon">🕒</span> 1 day ago</span
+                  >
+                  <span class="pr-changes">
+                    <span class="additions">+50</span>
+                    <span class="separator">/</span>
+                    <span class="deletions">-30</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <!-- Empty State Example -->
+            <!-- <div class="empty-state">
+                        <span class="icon">🎉</span> Nothing awaiting review from others!
+                    </div> -->
+          </div>
+        </section>
+
+        <!-- Section 4: Reviewed - Awaiting Author (Conditional MVP) -->
+        <section class="pr-section">
+          <h2 class="section-header">4. Reviewed - Awaiting Author</h2>
+          <div class="pr-list">
+            <!-- PR Card: Awaiting Author Action -->
+            <div class="pr-card">
+              <span class="pr-card-avatar" title="User C Avatar"></span>
+              <div class="pr-card-main">
+                <div class="pr-card-top">
+                  <a
+                    href="#"
+                    class="pr-title-link"
+                    title="View PR #1072 on GitHub"
+                    >#1072 Optimize Performance</a
+                  >
+                  <span class="pr-author">Opened by User C</span>
+                </div>
+                <div class="pr-card-bottom">
+                  <span class="status-badge status-awaiting-author"
+                    >Awaiting Author Action</span
+                  >
+                  <span class="pr-detail-item" title="Comments"
+                    ><span class="icon">💬</span> 1</span
+                  >
+                  <span class="pr-detail-item" title="Last updated"
+                    ><span class="icon">🕒</span> 3 hours ago</span
+                  >
+                  <span class="pr-changes">
+                    <span class="additions">+20</span>
+                    <span class="separator">/</span>
+                    <span class="deletions">-10</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <!-- Example showing Empty State active -->
+            <div class="empty-state">
+              <span class="icon">👍</span> No PRs currently blocked awaiting
+              author action after your review.
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>
