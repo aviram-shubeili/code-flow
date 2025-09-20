@@ -4,13 +4,19 @@
 
 CodeFlow employs a **serverless-first Next.js architecture** deployed on AWS Lambda with PostgreSQL data persistence, optimizing for rapid MVP development while maintaining enterprise scalability. The system implements **intelligent GitHub GraphQL API rate limiting** with mathematical cost calculations and exponential backoff strategies to support 5-50 concurrent users during peak collaboration hours. **Slack integration** via Bot API enables direct messaging and channel notifications for PR status updates, while the **four-section dashboard** provides scan-to-action workflows optimized for developer productivity. The MVP architecture emphasizes **cost efficiency** through AWS free-tier optimization, simple database-level caching, and **graceful degradation** during API rate limiting scenarios.
 
-### Platform and Infrastructure Choice
+### Platform and Infrastructure Strategy
 
-**Platform:** AWS Serverless Stack  
-**Key Services:** Lambda (Next.js API routes), RDS PostgreSQL, S3/CloudFront (static assets), Cognito (future enterprise SSO)  
-**Deployment Host and Regions:** US-East-1 primary, US-West-2 secondary for disaster recovery
+**Development Approach:** Features-First Architecture  
+**Platform Evaluation:** Three deployment options under consideration based on real requirements:  
+1. **AWS Amplify Gen 2**: TypeScript-first platform with CDK integration ($30-55/month)
+2. **Pure CDK**: S3 + CloudFront + Lambda with full control ($18-35/month)
+3. **OpenNext + SST**: Self-hosted Next.js optimization (variable cost)
 
-**Rationale:** AWS serverless aligns with PRD requirements for cost optimization, automatic scaling, and enterprise readiness. Lambda functions handle variable load patterns efficiently while RDS provides ACID compliance for PR state management. This stack enables rapid MVP deployment while supporting future enterprise features like SAML/SSO integration.
+**Current Focus:** Next.js application development with deployment platform agnostic design  
+**Infrastructure Decision Timeline:** Sprint 3 (weeks 5-6) after core features establish real requirements  
+**Key Services (Planned):** Lambda or container hosting, PostgreSQL database, CDN, authentication service
+
+**Rationale:** Features-first development enables infrastructure decisions based on actual application requirements rather than theoretical needs. Next.js provides deployment flexibility across all platform options, ensuring architectural choices optimize for real performance and cost characteristics.
 
 ### Repository Structure
 
@@ -77,4 +83,4 @@ graph TB
 - **Repository Pattern:** Abstract data access for PR and user management - _Rationale:_ Enables testing and supports future database scaling strategies
 - **Circuit Breaker Pattern:** Graceful degradation during GitHub API rate limiting - _Rationale:_ Maintains service availability with cached data during API constraints
 - **Event-Driven Notifications:** Slack integration via Bot API with webhook support - _Rationale:_ Real-time PR status updates without constant polling overhead, faster approval process than Microsoft Graph API
-
+

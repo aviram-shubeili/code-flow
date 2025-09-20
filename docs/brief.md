@@ -133,7 +133,7 @@ CodeFlow evolves into the central nervous system for development team workflows,
 - **Full-Stack Framework:** Next.js with TypeScript (unified frontend/backend, aligns with portfolio development goals)
 - **API Routes:** Next.js API routes deployed as AWS Lambda functions
 - **Database:** PostgreSQL on AWS RDS, Redis on AWS ElastiCache for caching
-- **Hosting/Infrastructure:** Serverless AWS deployment - Lambda for API routes, S3/CloudFront for static assets, RDS for database (leveraging free tiers)
+- **Hosting/Infrastructure:** AWS Amplify Gen 2 serverless deployment with TypeScript infrastructure-as-code - managed Lambda functions, automatic CDN optimization, custom RDS PostgreSQL, Git-based deployment with per-developer sandboxes
 
 ### Architecture Considerations
 - **Repository Structure:** Monorepo for rapid MVP development

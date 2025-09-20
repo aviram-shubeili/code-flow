@@ -2,6 +2,17 @@
 
 This section defines the local development setup, commands, and processes for contributing to CodeFlow.
 
+### Development Sprint Organization
+
+**Strategic Approach: Features-First Development**
+
+CodeFlow follows a features-first development strategy, building core functionality before finalizing infrastructure decisions. This approach enables architecture decisions based on real requirements rather than theoretical needs.
+
+**Sprint Structure:**
+- **Sprint 1 (Weeks 1-2)**: Next.js foundation + GitHub integration  
+- **Sprint 2 (Weeks 3-4)**: Dashboard UI + core features
+- **Sprint 3 (Weeks 5-6)**: Infrastructure decision + deployment
+
 ### Local Development Setup
 
 #### Prerequisites
@@ -12,7 +23,7 @@ This section defines the local development setup, commands, and processes for co
 nvm install 18
 nvm use 18
 
-# PostgreSQL 15+
+# PostgreSQL 15+ (for Sprint 1)
 # macOS:
 brew install postgresql@15
 brew services start postgresql@15
@@ -20,7 +31,7 @@ brew services start postgresql@15
 # Windows:
 # Download from https://www.postgresql.org/download/windows/
 
-# AWS CLI (for deployment)
+# AWS CLI (for Sprint 3 infrastructure deployment)
 # macOS:
 brew install awscli
 
@@ -69,6 +80,11 @@ npm run type-check --watch
 npm run db:studio          # Open Prisma Studio
 npm run db:migrate          # Create and apply migration
 npm run db:reset           # Reset database and reseed
+
+# Sprint 1 Development Focus
+npm run dev:github         # GitHub API integration testing
+npm run test:auth          # Authentication flow testing
+npm run analyze:infra      # Infrastructure requirements analysis
 
 # Testing
 npm run test               # Unit tests
@@ -443,4 +459,4 @@ export default defineConfig({
 ```
 
 This development workflow provides a comprehensive foundation for consistent, high-quality development with robust testing and quality assurance processes.
-
+

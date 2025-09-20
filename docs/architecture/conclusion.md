@@ -16,7 +16,7 @@ This architecture document provides a complete technical blueprint for **CodeFlo
 - **Frontend**: Next.js 14 + TypeScript + Tailwind CSS + TanStack Query
 - **Backend**: Next.js API Routes + Prisma + PostgreSQL
 - **Authentication**: Auth.js v5 with GitHub OAuth and database sessions
-- **Deployment**: AWS Lambda + RDS + CloudFront via CDK
+- **Deployment**: Amplify Gen 2 with TypeScript infrastructure + custom RDS via CDK
 - **Monitoring**: CloudWatch + structured logging for observability
 
 **📊 Component Architecture:**
@@ -40,7 +40,7 @@ This architecture document provides a complete technical blueprint for **CodeFlo
 
 **Phase 3 (Weeks 5-6): Polish & Deploy**
 - [ ] Implement responsive design and error handling
-- [ ] Set up AWS CDK infrastructure and CI/CD pipeline
+- [ ] Set up Amplify Gen 2 backend with custom CDK infrastructure and Git-based deployment
 - [ ] Add comprehensive testing (unit, integration, E2E)
 - [ ] Deploy to production with monitoring
 
@@ -96,4 +96,4 @@ This architecture document serves as the definitive technical blueprint for Code
 **Document Version:** 1.0  
 **Last Updated:** August 24, 2025  
 **Next Review:** October 2025 (post-MVP launch)
-
+
