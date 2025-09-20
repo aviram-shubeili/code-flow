@@ -1,9 +1,14 @@
 # Epic 1: Core Authentication and GitHub Integration
 **Goal**: Establish secure foundation for GitHub data access and user management
+**Strategic Priority**: ACCELERATED to Sprint 1-2 (Features-First Approach)
+
+**Sprint Organization**:
+- **Sprint 1 Priority**: US1.1, US1.2, US1.3 (core integration)
+- **Sprint 2 Priority**: US1.4, US1.5 (security and UX refinement)
 
 **User Stories:**
 
-**US1.1 - GitHub OAuth Authentication**
+**US1.1 - GitHub OAuth Authentication** [SPRINT 1 PRIORITY]
 - As a developer, I want to authenticate with GitHub OAuth so that I can securely access my repository data
 - **Acceptance Criteria:**
   - NextAuth.js configured with GitHub provider
@@ -54,4 +59,4 @@
   - Save repository selection preferences
   - Real-time validation of repository access
 - **Definition of Done:** Users can browse and select repositories, selections are persisted
-
+
