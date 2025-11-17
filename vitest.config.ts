@@ -2,10 +2,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
-import dotenv from 'dotenv'
-
-// Load development environment variables for tests (.env.local provides development database credentials for testing scenarios)
-dotenv.config({ path: '.env.local' })
 
 export default defineConfig({
     plugins: [react()],
@@ -20,8 +16,6 @@ export default defineConfig({
                 'components/ui/Button.tsx',
                 'hooks/utils/useDebounce.ts',
                 'lib/utils.ts',
-                'lib/database.ts',
-                'lib/prisma.ts',
                 'app/api/health/route.ts'
             ],
             exclude: [
