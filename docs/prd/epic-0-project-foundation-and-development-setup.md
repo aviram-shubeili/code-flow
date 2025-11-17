@@ -20,15 +20,16 @@
   - All code compiles without TypeScript errors
 - **Definition of Done:** Project builds successfully, serves on localhost, TypeScript compilation passes
 
-**US0.2 - Testing Framework Configuration**
-- As a developer, I want Vitest testing framework set up so that I can write and run tests effectively
+**US0.2 - Testing Framework Configuration (Unit Tests)**
+- As a developer, I want Vitest testing framework set up so that I can write and run unit tests effectively
 - **Acceptance Criteria:**
-  - Vitest configured with TypeScript support
+  - Vitest configured with TypeScript support for unit testing
   - Test utilities for React components (React Testing Library)
-  - Mock configurations for external APIs
+  - Mock configurations for external APIs (GitHub, NextAuth)
   - Coverage reporting configured (minimum 80% target)
-  - Sample test files demonstrate testing patterns
+  - Sample test files demonstrate unit testing patterns
 - **Definition of Done:** `npm test` runs successfully, coverage reports generate, sample tests pass
+- **Note:** This story focuses on unit testing infrastructure only. Integration testing with real test database and Supertest will be configured in a future story after US0.4 (Database Configuration) is complete
 
 **US0.3 - Quality Gates & Database Migration Setup** [SPRINT 3 PRIORITY]
 - As a developer, I want quality gates and database migration automation established so that code quality is enforced and database changes are safely deployed while the chosen platform handles deployment automatically

@@ -295,6 +295,161 @@ describe('useDashboard', () => {
 })
 ```
 
+#### Integration Testing (Vitest + Supertest + Real Database)
+
+**Integration tests validate interactions between layers using real database and mocked external services.**
+
+**Database Layer Integration:**
+```typescript
+// tests/integration/database/user-repository.test.ts
+import { prisma } from '@/lib/prisma'
+import { DatabaseService } from '@/lib/database'
+
+describe('User Repository Integration', () => {
+  beforeEach(async () => {
+    // Clean database before each test - NO MOCKING
+    await prisma.$executeRaw`TRUNCATE TABLE users, user_profiles, repositories CASCADE`
+  })
+
+  afterAll(async () => {
+    await prisma.$disconnect()
+  })
+
+  it('creates user profile with GitHub data', async () => {
+    const db = new DatabaseService()
+    const userData = {
+      userId: 'test-user-id',
+      githubId: 12345,
+      username: 'testuser'
+    }
+    
+    const profile = await db.createUserProfile(userData)
+    
+    // Verify data persisted to real database
+    expect(profile.id).toBeDefined()
+    expect(profile.githubId).toBe(12345)
+    
+    const dbProfile = await prisma.userProfile.findUnique({
+      where: { githubId: 12345 }
+    })
+    expect(dbProfile).toBeTruthy()
+  })
+})
+```
+
+**API Route Integration with Mocked External Services:**
+```typescript
+// tests/integration/api/pull-requests.test.ts
+import request from 'supertest'
+import { createTestApp } from '../../helpers/test-app'
+import { mockGitHubPRs } from '../../fixtures/github-responses'
+
+// Mock GitHub API (external service) but use REAL database
+vi.mock('@octokit/rest', () => ({
+  Octokit: vi.fn().mockImplementation(() => ({
+    rest: {
+      pulls: {
+        list: vi.fn().mockResolvedValue({ data: mockGitHubPRs })
+      }
+    }
+  }))
+}))
+
+describe('GET /api/pull-requests', () => {
+  let app: any
+  
+  beforeAll(async () => {
+    app = await createTestApp()
+  })
+  
+  beforeEach(async () => {
+    await prisma.$executeRaw`TRUNCATE TABLE users, sessions CASCADE`
+  })
+
+  it('returns 401 when not authenticated', async () => {
+    const response = await request(app).get('/api/pull-requests')
+    expect(response.status).toBe(401)
+  })
+  
+  it('returns dashboard data for authenticated user', async () => {
+    // Create real user in test database
+    const user = await prisma.user.create({
+      data: { email: 'test@example.com', name: 'Test User' }
+    })
+    const session = await createTestSession(user.id)
+    
+    const response = await request(app)
+      .get('/api/pull-requests')
+      .set('Cookie', `session-token=${session.sessionToken}`)
+    
+    expect(response.status).toBe(200)
+    expect(response.body.needsReview).toBeArray()
+  })
+})
+```
+
+**Test Database Configuration:**
+```typescript
+// vitest.config.integration.ts
+import { defineConfig } from 'vitest/config'
+import path from 'path'
+
+export default defineConfig({
+  test: {
+    environment: 'node',
+    setupFiles: ['./tests/integration/setup.ts'],
+    threads: false, // Run serially to avoid DB conflicts
+    testTimeout: 10000, // Longer timeout for DB operations
+    include: ['tests/integration/**/*.test.ts']
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './')
+    }
+  }
+})
+```
+
+```typescript
+// tests/integration/setup.ts
+import { exec } from 'child_process'
+import { promisify } from 'util'
+import dotenv from 'dotenv'
+
+const execAsync = promisify(exec)
+
+// Load test environment variables
+dotenv.config({ path: '.env.test' })
+
+beforeAll(async () => {
+  // Ensure test database is running
+  console.log('Starting test database...')
+  await execAsync('docker-compose up -d postgres-test')
+  
+  // Run migrations on test database
+  await execAsync('DATABASE_URL=$TEST_DATABASE_URL npx prisma migrate deploy')
+}, 30000)
+
+afterAll(async () => {
+  console.log('Integration tests complete')
+})
+```
+
+**Docker Test Database Setup:**
+```yaml
+# docker-compose.yml addition
+postgres-test:
+  image: postgres:15
+  environment:
+    POSTGRES_DB: codeflow_test
+    POSTGRES_USER: test_user
+    POSTGRES_PASSWORD: test_pass
+  ports:
+    - "5433:5432"
+  tmpfs:
+    - /var/lib/postgresql/data  # In-memory for speed
+```
+
 #### E2E Testing (Playwright)
 
 **Authentication Flow:**
