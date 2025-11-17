@@ -457,19 +457,20 @@ describe('PullRequestCard', () => {
 **API Route Testing:**
 ```typescript
 // tests/api/repositories.test.ts
+// UNIT TEST PATTERN - Mock everything including database
 import { NextRequest } from 'next/server'
 import { GET, POST } from '@/app/api/repositories/route'
 import { getServerSession } from 'next-auth'
 import { mockSession, mockRepository } from '../fixtures/database-fixtures'
 
-jest.mock('next-auth')
-jest.mock('@/lib/database')
+vi.mock('next-auth')
+vi.mock('@/lib/database')
 
-const mockGetServerSession = getServerSession as jest.MockedFunction<typeof getServerSession>
+const mockGetServerSession = getServerSession as vi.MockedFunction<typeof getServerSession>
 
-describe('/api/repositories', () => {
+describe('Unit: /api/repositories', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('GET /api/repositories', () => {
@@ -492,6 +493,51 @@ describe('/api/repositories', () => {
 
       expect(response.status).toBe(401)
     })
+  })
+})
+
+// INTEGRATION TEST PATTERN - Real database, mock external services only
+import request from 'supertest'
+import { prisma } from '@/lib/prisma'
+import { createTestApp } from '../../helpers/test-app'
+
+// Mock GitHub API (external service) but use real database
+vi.mock('@octokit/rest')
+
+describe('Integration: /api/repositories', () => {
+  let app: any
+  
+  beforeAll(async () => {
+    app = await createTestApp()
+  })
+  
+  beforeEach(async () => {
+    // Clean real test database
+    await prisma.$executeRaw`TRUNCATE TABLE users, repositories CASCADE`
+  })
+  
+  afterAll(async () => {
+    await prisma.$disconnect()
+  })
+
+  it('persists repository to database when added', async () => {
+    // Create real user in test database
+    const user = await prisma.user.create({
+      data: { email: 'test@example.com', name: 'Test' }
+    })
+    const session = await createTestSession(user.id)
+    
+    const response = await request(app)
+      .post('/api/repositories')
+      .set('Cookie', `session-token=${session.sessionToken}`)
+      .send({ githubId: 12345, name: 'test-repo', fullName: 'user/test-repo', owner: 'user' })
+    
+    expect(response.status).toBe(201)
+    
+    // Verify persisted to real database
+    const repo = await prisma.repository.findFirst({ where: { githubId: 12345 } })
+    expect(repo).toBeTruthy()
+    expect(repo?.name).toBe('test-repo')
   })
 })
 ```
