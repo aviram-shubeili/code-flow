@@ -142,7 +142,7 @@ describe('DatabaseService', () => {
     })
 
     it('should handle update last active errors gracefully', async () => {
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { })
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(vi.fn())
       mockPrisma.userProfile.update.mockRejectedValue(new Error('Update failed'))
 
       // Should not throw
@@ -356,7 +356,7 @@ describe('DatabaseService', () => {
     })
 
     it('should return false when database connection fails', async () => {
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => { })
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(vi.fn())
       mockPrisma.$queryRaw.mockRejectedValue(new Error('Connection failed'))
 
       const result = await db.checkConnection()

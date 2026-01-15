@@ -23,7 +23,7 @@ export interface RepositoryData {
 }
 
 export class DatabaseService {
-  constructor(private prisma: PrismaClient = defaultPrisma) { }
+  constructor(private prisma: PrismaClient = defaultPrisma) {}
 
   // ============================================================================
   // User Profile Management
