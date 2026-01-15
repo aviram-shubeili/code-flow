@@ -60,6 +60,8 @@ This guide covers local development database setup, management, and troubleshoot
 | `npm run db:test:up` | Start test PostgreSQL container (port 5433) |
 | `npm run db:test:down` | Stop test PostgreSQL container |
 
+> **Note:** The test database uses `tmpfs` (in-memory storage) for faster test execution. Test data is intentionally ephemeral and will be lost when the container stops. This is by design to ensure clean test isolation.
+
 ## Database Schema
 
 ### Auth.js Tables
@@ -109,10 +111,10 @@ TEST_DATABASE_URL="postgresql://test_user:test_pass@localhost:5433/codeflow_test
 
 ### Production
 
-Production database URL should be configured through AWS Secrets Manager or environment variable injection:
+Production database URL should be configured through Vercel Environment Variables:
 
 ```bash
-DATABASE_URL="postgresql://username:password@rds-endpoint.region.rds.amazonaws.com:5432/codeflow_prod"
+DATABASE_URL="postgresql://user:pass@ep-xxx-pooler.us-east-1.aws.neon.tech/codeflow?sslmode=require"
 ```
 
 **Important:** Never commit production credentials to version control.
@@ -214,36 +216,53 @@ chmod +x scripts/db-*.sh
 
 ## Production Database Configuration
 
-### AWS RDS PostgreSQL Setup
+### Neon PostgreSQL Setup
 
-1. **Create RDS Instance:**
-   - PostgreSQL 15.x
-   - Instance class: t3.micro (free tier) or larger
-   - Storage: 20GB minimum
-   - Enable Multi-AZ for production
-   - Enable automated backups
+1. **Create Neon Project:**
+   - Sign up at [neon.tech](https://neon.tech)
+   - Create new project: `codeflow`
+   - Select region: `US East (N. Virginia)` (closest to Vercel's default)
+   - Copy connection string
 
-2. **Security Configuration:**
-   - VPC security group allowing inbound traffic on port 5432 from Lambda security group
-   - SSL/TLS encryption required
-   - Parameter group with `rds.force_ssl = 1`
-
-3. **Connection Pooling:**
-   - Prisma handles connection pooling automatically
-   - Optimized for serverless with connection limits
-   - Configured for Lambda execution environment
-
-4. **Environment Variables:**
+2. **Connection String Format:**
    ```bash
-   DATABASE_URL="postgresql://username:password@<rds-endpoint>:5432/codeflow_prod?sslmode=require"
+   # For Prisma (use pooled connection)
+   DATABASE_URL="postgresql://user:pass@ep-xxx-pooler.us-east-1.aws.neon.tech/codeflow?sslmode=require"
+   
+   # For migrations (use direct connection)
+   DIRECT_URL="postgresql://user:pass@ep-xxx.us-east-1.aws.neon.tech/codeflow?sslmode=require"
    ```
+
+3. **Prisma Configuration:**
+   
+   When deploying to production with Neon, update `prisma/schema.prisma` to include `directUrl`:
+   ```prisma
+   // prisma/schema.prisma
+   datasource db {
+     provider  = "postgresql"
+     url       = env("DATABASE_URL")
+     directUrl = env("DIRECT_URL")  // Required for Neon pooler migrations
+   }
+   ```
+   
+   > **Note:** The current schema omits `directUrl` for local development simplicity. This will be configured in Story 0.7 (Infrastructure Setup) when production deployment is implemented.
+
+4. **Connection Pooling:**
+   - Neon includes PgBouncer-based connection pooling
+   - Optimized for serverless with auto-suspend and instant wake
+   - Configured for Vercel Functions environment
+
+5. **Environment Variables (Vercel Dashboard):**
+   - Go to Project Settings → Environment Variables
+   - Add `DATABASE_URL` with pooled connection string
+   - Add `DIRECT_URL` with direct connection string (for migrations)
 
 ### Deployment Migrations
 
 Run migrations during deployment:
 
 ```bash
-# In CI/CD pipeline or deployment script
+# In CI/CD pipeline (GitHub Actions)
 npx prisma migrate deploy
 ```
 
@@ -265,14 +284,20 @@ To restore:
 docker exec -i codeflow-postgres psql -U codeflow codeflow_dev < backup.sql
 ```
 
-### Production
+### Production (Neon)
 
-AWS RDS automated backups are configured during instance creation. Additionally:
+Neon provides automatic point-in-time recovery:
 
-1. Enable point-in-time recovery
-2. Configure backup retention period (7-35 days)
-3. Test restore procedures regularly
-4. Consider cross-region backup replication for disaster recovery
+1. **Branching**: Create database branches for testing migrations
+2. **Point-in-time Recovery**: Restore to any point within retention window
+3. **Free Tier**: 7-day history retention
+4. **Launch Tier**: 30-day history retention
+
+To create a backup branch:
+```bash
+# Via Neon Console or API
+# Create a branch from a specific point in time for testing
+```
 
 ## Additional Resources
 
@@ -280,4 +305,4 @@ AWS RDS automated backups are configured during instance creation. Additionally:
 - [Auth.js Prisma Adapter](https://authjs.dev/reference/adapter/prisma)
 - [Docker Compose Documentation](https://docs.docker.com/compose/)
 - [PostgreSQL Documentation](https://www.postgresql.org/docs/)
-- [AWS RDS PostgreSQL](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html)
+- [Neon Documentation](https://neon.tech/docs)

@@ -1,10 +1,10 @@
 # Backend Architecture
 
-This section defines the serverless backend architecture using Next.js API routes, deployed on AWS Lambda with PostgreSQL database integration.
+This section defines the serverless backend architecture using Next.js API routes, deployed on **Vercel** with **Neon PostgreSQL** database integration.
 
 ### Service Architecture
 
-#### Lambda Function Organization
+#### Vercel Functions Organization
 
 **Next.js API Routes Structure:**
 ```
@@ -434,5 +434,5 @@ export const config = {
 }
 ```
 
-This backend architecture provides a robust, scalable serverless foundation with clear separation of concerns and comprehensive GitHub API integration.
-
+This backend architecture provides a robust, scalable serverless foundation on Vercel with clear separation of concerns and comprehensive GitHub API integration.
+

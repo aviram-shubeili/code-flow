@@ -1,10 +1,12 @@
 # Monitoring and Observability
 
-This section defines the monitoring stack and observability strategy for CodeFlow's production deployment on AWS.
+This section defines the monitoring stack and observability strategy for CodeFlow's production deployment on **Vercel**.
+
+> **Note:** Vercel's legacy "Monitoring" feature was sunset in November 2025. For advanced query-based monitoring, Vercel now offers **Observability Plus** with **Observability Query** (paid). For MVP, we use the free built-in tools: **Vercel Logs**, **Speed Insights**, and **Web Analytics**.
 
 ### Monitoring Architecture
 
-#### CloudWatch Integration
+#### Vercel Logs & Speed Insights (Free Tier)
 
 **Log Aggregation Strategy:**
 ```typescript
@@ -35,7 +37,7 @@ const logger = winston.createLogger({
       : []
     ),
     
-    // CloudWatch logging for production
+    // Vercel captures console.log in production automatically
     ...(process.env.NODE_ENV === 'production'
       ? [new winston.transports.Console({
           format: winston.format.json()
@@ -96,11 +98,12 @@ export class MetricsCollector {
   async flush() {
     if (this.metrics.length === 0) return
 
-    // In production, send to CloudWatch
+    // In production, Vercel captures console output automatically
     if (process.env.NODE_ENV === 'production') {
       try {
-        // CloudWatch metrics would be sent here
-        console.log('CloudWatch Metrics:', JSON.stringify(this.metrics, null, 2))
+        // Vercel logs capture console output automatically
+        // For advanced metrics, integrate with Vercel Analytics or third-party service
+        console.log('Metrics:', JSON.stringify(this.metrics, null, 2))
       } catch (error) {
         console.error('Failed to send metrics:', error)
       }
@@ -153,108 +156,64 @@ export function withMetrics<T>(
 
 #### Dashboard and Alerting
 
-**CloudWatch Dashboard Configuration:**
+**Vercel Built-in Observability (Free Tier):**
+
+Vercel provides built-in monitoring through free features:
+
+1. **Vercel Logs** - Real-time function logs viewable in the Vercel Dashboard
+2. **Speed Insights** - Performance metrics and Core Web Vitals for every deployment (free)
+3. **Web Analytics** - Visitor insights and page views (free, privacy-friendly)
+4. **Deployment History** - Rollback capabilities and deployment status
+
+> **Paid Option:** For advanced query-based monitoring (custom queries, saved notebooks), Vercel offers **Observability Plus** with **Observability Query**. Not required for MVP.
+
+**Neon Database Monitoring:**
+
+Neon provides built-in monitoring through the Neon Dashboard:
+
+1. **Connection Monitoring** - Active connections and pooler status
+2. **Query Performance** - Slow query identification
+3. **Storage Usage** - Database size and growth trends
+4. **Compute Usage** - Auto-suspend and compute time tracking
+
+**Custom Application Metrics:**
 ```typescript
-// infrastructure/lib/monitoring-stack.ts
-import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch'
-import * as lambda from 'aws-cdk-lib/aws-lambda'
-
-export class MonitoringStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props: MonitoringStackProps) {
-    super(scope, id, props)
-
-    // Create CloudWatch Dashboard
-    const dashboard = new cloudwatch.Dashboard(this, 'CodeFlowDashboard', {
-      dashboardName: 'CodeFlow-Production-Monitoring',
-    })
-
-    // Lambda metrics
-    dashboard.addWidgets(
-      new cloudwatch.GraphWidget({
-        title: 'Lambda Invocations',
-        width: 12,
-        left: [props.lambdaFunction.metricInvocations()],
-        right: [props.lambdaFunction.metricErrors()],
-      }),
-      new cloudwatch.GraphWidget({
-        title: 'Lambda Duration & Cold Starts',
-        width: 12,
-        left: [props.lambdaFunction.metricDuration()],
-        right: [
-          new cloudwatch.Metric({
-            namespace: 'AWS/Lambda',
-            metricName: 'InitDuration',
-            dimensionsMap: {
-              FunctionName: props.lambdaFunction.functionName,
-            },
-          }),
-        ],
-      })
-    )
-
-    // Database metrics
-    dashboard.addWidgets(
-      new cloudwatch.GraphWidget({
-        title: 'Database Connections & Performance',
-        width: 12,
-        left: [props.database.metricDatabaseConnections()],
-        right: [
-          props.database.metricCPUUtilization(),
-          props.database.metricFreeableMemory(),
-        ],
-      })
-    )
-
-    // Custom application metrics
-    dashboard.addWidgets(
-      new cloudwatch.GraphWidget({
-        title: 'GitHub API Usage',
-        width: 12,
-        left: [
-          new cloudwatch.Metric({
-            namespace: 'CodeFlow/Application',
-            metricName: 'GitHubAPI.Requests',
-            statistic: 'Sum',
-          }),
-        ],
-        right: [
-          new cloudwatch.Metric({
-            namespace: 'CodeFlow/Application',
-            metricName: 'GitHubAPI.RateLimit',
-            statistic: 'Average',
-          }),
-        ],
-      })
-    )
-
-    // Create alarms
-    const errorAlarm = new cloudwatch.Alarm(this, 'LambdaErrorAlarm', {
-      alarmName: 'CodeFlow-Lambda-Errors',
-      metric: props.lambdaFunction.metricErrors(),
-      threshold: 5,
-      evaluationPeriods: 2,
-      treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
-    })
-
-    const durationAlarm = new cloudwatch.Alarm(this, 'LambdaDurationAlarm', {
-      alarmName: 'CodeFlow-Lambda-Duration',
-      metric: props.lambdaFunction.metricDuration(),
-      threshold: 25000, // 25 seconds
-      evaluationPeriods: 3,
-      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
-    })
-
-    // Database connection alarm
-    const dbConnectionAlarm = new cloudwatch.Alarm(this, 'DatabaseConnectionAlarm', {
-      alarmName: 'CodeFlow-Database-Connections',
-      metric: props.database.metricDatabaseConnections(),
-      threshold: 80, // 80% of max connections
-      evaluationPeriods: 2,
-      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+// lib/metrics.ts - Simplified for Vercel
+export function trackGitHubAPIUsage(remaining: number, used: number, limit: number) {
+  console.log('GitHubAPI.RateLimit', {
+    remaining,
+    used,
+    limit,
+    percentUsed: Math.round((used / limit) * 100),
+    isThrottled: remaining < 100,
+    timestamp: new Date().toISOString(),
+  })
+  
+  // Alert when approaching rate limit
+  if (remaining < 500) {
+    console.warn('GitHubAPI.RateLimitWarning', {
+      remaining,
+      message: 'Approaching GitHub API rate limit',
     })
   }
 }
+
+export function trackDatabaseHealth(connectionCount: number, maxConnections: number) {
+  console.log('Database.Connections', {
+    active: connectionCount,
+    max: maxConnections,
+    percentUsed: Math.round((connectionCount / maxConnections) * 100),
+    timestamp: new Date().toISOString(),
+  })
+}
 ```
+
+**Alerting Strategy (Optional - Third-Party Integration):**
+
+For production alerting beyond Vercel's built-in notifications:
+- **Sentry** - Error tracking and alerting
+- **Axiom** - Log aggregation with Vercel integration
+- **Better Uptime** - Uptime monitoring and incident management
 
 ### Performance Monitoring
 
@@ -423,7 +382,7 @@ export class PerformanceTracker {
     unit: string
     dimensions?: Record<string, string>
   }) {
-    // Send to analytics service or log for CloudWatch
+    // Send to analytics service (Vercel Analytics captures Core Web Vitals automatically)
     if (process.env.NODE_ENV === 'production') {
       fetch('/api/metrics', {
         method: 'POST',
@@ -446,4 +405,4 @@ if (typeof window !== 'undefined') {
   PerformanceTracker.getInstance().init()
 }
 ```
-
+

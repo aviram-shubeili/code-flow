@@ -16,8 +16,8 @@ This architecture document provides a complete technical blueprint for **CodeFlo
 - **Frontend**: Next.js 14 + TypeScript + Tailwind CSS + TanStack Query
 - **Backend**: Next.js API Routes + Prisma + PostgreSQL
 - **Authentication**: Auth.js v5 with GitHub OAuth and database sessions
-- **Deployment**: Amplify Gen 2 with TypeScript infrastructure + custom RDS via CDK
-- **Monitoring**: CloudWatch + structured logging for observability
+- **Deployment**: Vercel (frontend + API) + Neon (serverless PostgreSQL)
+- **Monitoring**: Vercel Logs + Neon Dashboard for observability
 
 **📊 Component Architecture:**
 - **Feature-based organization** following four-section dashboard structure
@@ -40,7 +40,7 @@ This architecture document provides a complete technical blueprint for **CodeFlo
 
 **Phase 3 (Weeks 5-6): Polish & Deploy**
 - [ ] Implement responsive design and error handling
-- [ ] Set up Amplify Gen 2 backend with custom CDK infrastructure and Git-based deployment
+- [ ] Deploy to Vercel with Neon database
 - [ ] Add comprehensive testing (unit, integration, E2E)
 - [ ] Deploy to production with monitoring
 
@@ -53,10 +53,10 @@ This architecture document provides a complete technical blueprint for **CodeFlo
 - **Per-user rate limit isolation** (250K total requests/hour across 50 users)
 
 **Growth Path (50+ Users):**
-- **Database Scaling**: Upgrade RDS instance, add read replicas
-- **Caching Layer**: Add Redis for cross-user data caching
+- **Database Scaling**: Upgrade Neon tier, enable autoscaling
+- **Caching Layer**: Add Redis via Upstash for cross-user data caching
 - **PR Data Storage**: Implement selective database caching for popular repositories
-- **Microservices**: Split services if complexity demands require it
+- **Platform Migration**: Move to AWS if enterprise features needed
 
 ### Key Benefits
 

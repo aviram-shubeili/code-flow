@@ -108,6 +108,7 @@ async function main() {
       email: 'dev2@codeflow.dev',
       name: 'Development User 2',
       image: 'https://avatars.githubusercontent.com/u/2?v=4',
+      emailVerified: new Date(),
     },
   })
 
@@ -152,4 +153,5 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect()
+    await pool.end()
   })

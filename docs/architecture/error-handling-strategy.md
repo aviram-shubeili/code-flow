@@ -401,7 +401,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
     // Log to monitoring service
     if (process.env.NODE_ENV === 'production') {
-      // Send error to CloudWatch or monitoring service
+      // Send error to Vercel Logs or external monitoring service
       console.error('Production error:', {
         error: error.message,
         stack: error.stack,
@@ -517,4 +517,4 @@ export default function Error({
   )
 }
 ```
-
+

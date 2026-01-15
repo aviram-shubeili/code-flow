@@ -32,22 +32,22 @@
 - **Note:** This story focuses on unit testing infrastructure only. Integration testing with real test database and Supertest will be configured in a future story after US0.4 (Database Configuration) is complete
 
 **US0.3 - Quality Gates & Database Migration Setup** [SPRINT 3 PRIORITY]
-- As a developer, I want quality gates and database migration automation established so that code quality is enforced and database changes are safely deployed while the chosen platform handles deployment automatically
+- As a developer, I want quality gates and database migration automation established so that code quality is enforced and database changes are safely deployed while Vercel handles deployment automatically
 - **Acceptance Criteria:**
   - GitHub Actions workflow for quality gates (test, lint, build validation)
   - Database migration automation for production deployments
-  - Branch protection rules that work with Amplify's automatic deployment
-  - Build quality gates that prevent bad code from reaching Amplify deployment
+  - Branch protection rules that work with Vercel's automatic deployment
+  - Build quality gates that prevent bad code from reaching Vercel deployment
   - Database migration status reporting and rollback procedures
-  - Integration with Amplify Gen 2's Git-based deployment workflow
-- **Definition of Done:** Quality gates prevent bad code from reaching Amplify, database migrations are automated, Amplify handles deployment automatically on successful quality gate passage
-- **Note:** Amplify Gen 2 handles the deployment pipeline automatically. This story focuses on quality assurance and database management that Amplify doesn't handle.
+  - Integration with Vercel's Git-based deployment workflow
+- **Definition of Done:** Quality gates prevent bad code from reaching Vercel, database migrations are automated, Vercel handles deployment automatically on successful quality gate passage
+- **Note:** Vercel handles the deployment pipeline automatically. This story focuses on quality assurance and database management that Vercel doesn't handle.
 
 **US0.4 - Database Configuration**
 - As a developer, I want PostgreSQL database set up so that I can store user and PR data
 - **Acceptance Criteria:**
   - Local development: Docker Compose with PostgreSQL container for consistent local development
-  - Production: AWS RDS PostgreSQL instance provisioned
+  - Production: Neon PostgreSQL instance provisioned (serverless)
   - Database schema migration system (Prisma or similar) works across both environments
   - Initial table schemas for users, repositories, PRs, and sessions
   - Database connection pooling configured for production
@@ -77,19 +77,18 @@
   - Import organization rules configured
 - **Definition of Done:** Code passes linting, formatting is consistent, pre-commit hooks prevent style violations
 
-**US0.7 - AWS Infrastructure Setup** [SPRINT 3 PRIORITY]
-- As a developer, I want AWS infrastructure configured based on real application requirements so that the application can be deployed with optimal cost/performance characteristics
+**US0.7 - Infrastructure Setup** [SPRINT 3 PRIORITY]
+- As a developer, I want infrastructure configured based on real application requirements so that the application can be deployed with optimal cost/performance characteristics
 - **Acceptance Criteria:**
-  - Infrastructure platform selected based on Sprint 1-2 requirements analysis
-  - Chosen platform (Amplify Gen 2, Pure CDK, or OpenNext+SST) configured with TypeScript infrastructure-as-code
-  - PostgreSQL database provisioned with appropriate instance sizing
+  - Vercel project connected to GitHub repository
+  - Neon PostgreSQL database provisioned with appropriate configuration
   - Environment management configured for secure deployment
-  - Git-based deployment pipeline configured for chosen platform
-  - CDN and caching strategy optimized for application performance patterns
-  - Database backup and monitoring configured
-  - Cost monitoring and alerting established
+  - Git-based deployment pipeline configured (automatic via Vercel)
+  - CDN and caching strategy optimized via Vercel Edge Network
+  - Database backup and monitoring configured via Neon Dashboard
+  - Cost monitoring established (Vercel + Neon usage tracking)
   - Infrastructure deployment is reproducible and environment-aware
-- **Definition of Done:** Chosen infrastructure platform deployed successfully, Next.js application deployed and accessible, database operational, monitoring functional
+- **Definition of Done:** Vercel project deployed successfully, Next.js application deployed and accessible, Neon database operational, monitoring functional
 - **Dependencies:** Requires completion of Sprint 1-2 feature development to inform infrastructure requirements
-- **Platform Decision Criteria:** Cost efficiency, deployment complexity, learning value, maintenance overhead, future scalability needs
+- **Platform Decision:** Vercel + Neon selected for MVP - zero cost, zero infrastructure management, 5-minute deployment
 

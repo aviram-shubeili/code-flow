@@ -195,8 +195,9 @@ CREATE INDEX "repositories_user_id_is_active_idx" ON "repositories"("user_id", "
 # .env.local (development)
 DATABASE_URL="postgresql://username:password@localhost:5432/codeflow_dev"
 
-# .env.production (production)  
-DATABASE_URL="postgresql://username:password@rds-endpoint:5432/codeflow_prod"
+# .env.production (production - Neon)  
+DATABASE_URL="postgresql://username:password@ep-xxx.neon.tech/codeflow?sslmode=require"
+DIRECT_URL="postgresql://username:password@ep-xxx.neon.tech/codeflow?sslmode=require"
 
 # Auth.js
 NEXTAUTH_SECRET="your-secret-key"
@@ -233,8 +234,8 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
 **Connection Pooling:**
 - **Prisma Connection Pool**: Handles serverless connection management
-- **AWS RDS**: Configured for 5-50 concurrent users
-- **Connection Limits**: RDS instance sized appropriately
+- **Neon Pooler**: Built-in PgBouncer for serverless connections
+- **Connection Limits**: Neon auto-scales based on usage
 
 **Query Optimization:**
 - **Selective Loading**: Only load required fields
@@ -276,4 +277,4 @@ await prisma.userProfile.update({
 - **Bulk Operations**: Efficient updates for multiple repositories
 
 This database schema provides a minimal yet robust foundation for the MVP, with clear upgrade paths for future features.
-
+

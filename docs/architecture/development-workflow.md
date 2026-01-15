@@ -23,20 +23,15 @@ CodeFlow follows a features-first development strategy, building core functional
 nvm install 18
 nvm use 18
 
-# PostgreSQL 15+ (for Sprint 1)
+# Docker (for local PostgreSQL)
 # macOS:
-brew install postgresql@15
-brew services start postgresql@15
+brew install docker docker-compose
 
 # Windows:
-# Download from https://www.postgresql.org/download/windows/
+# Download Docker Desktop from https://www.docker.com/products/docker-desktop
 
-# AWS CLI (for Sprint 3 infrastructure deployment)
-# macOS:
-brew install awscli
-
-# Windows:
-# Download from https://aws.amazon.com/cli/
+# Vercel CLI (optional - deployment via GitHub integration preferred)
+# npm install -g vercel
 ```
 
 #### Initial Setup
@@ -107,9 +102,13 @@ npm run start
 # Bundle analysis
 npm run analyze
 
-# Infrastructure deployment
-npm run cdk:deploy        # Deploy to AWS
-npm run cdk:destroy       # Destroy AWS resources
+# Vercel deployment (automatic via GitHub integration)
+# Push to main branch triggers production deployment
+# Push to PR branches triggers preview deployments
+
+# Manual Vercel deployment (if needed)
+vercel              # Deploy to preview
+vercel --prod       # Deploy to production
 ```
 
 ### Environment Configuration
