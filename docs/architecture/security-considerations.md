@@ -111,38 +111,33 @@ export async function withAuth(handler: NextApiHandler) {
 #### Encryption Strategy
 
 **Data at Rest:**
-- **Database**: RDS PostgreSQL with encryption enabled (AES-256)
-- **S3 Buckets**: Server-side encryption (SSE-S3)
-- **Lambda Environment**: Variables encrypted with AWS KMS
-- **Backups**: RDS automated backups encrypted
+- **Database**: Neon PostgreSQL with encryption enabled (AES-256)
+- **Environment Variables**: Encrypted in Vercel dashboard
+- **Backups**: Neon automated point-in-time recovery
 
 **Data in Transit:**
-- **HTTPS Only**: All traffic forced to HTTPS via CloudFront
+- **HTTPS Only**: All traffic forced to HTTPS via Vercel Edge Network
 - **TLS 1.2+**: Minimum TLS version enforced
-- **Database Connections**: SSL/TLS required for RDS connections
+- **Database Connections**: SSL/TLS required for Neon connections
 - **API Calls**: GitHub API calls over HTTPS only
 
 **Secrets Management:**
 ```typescript
-// AWS Secrets Manager integration
-import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager"
+// Environment variables from Vercel
+// All secrets are stored in Vercel Dashboard → Settings → Environment Variables
+// They are automatically encrypted and injected at runtime
 
-export async function getSecret(secretName: string): Promise<string> {
-  const client = new SecretsManagerClient({ region: process.env.AWS_REGION })
-  
-  try {
-    const response = await client.send(
-      new GetSecretValueCommand({ SecretId: secretName })
-    )
-    return response.SecretString!
-  } catch (error) {
-    throw new Error(`Failed to retrieve secret: ${secretName}`)
+export function getSecret(secretName: string): string {
+  const value = process.env[secretName]
+  if (!value) {
+    throw new Error(`Missing environment variable: ${secretName}`)
   }
+  return value
 }
 
-// Usage in Lambda functions
-const dbPassword = await getSecret('codeflow/database/password')
-const githubSecret = await getSecret('codeflow/github/client-secret')
+// Usage in API routes
+const dbUrl = getSecret('DATABASE_URL')
+const githubSecret = getSecret('GITHUB_CLIENT_SECRET')
 ```
 
 #### Personal Data Handling
@@ -192,42 +187,26 @@ export async function cleanupInactiveUsers() {
 
 ### Network Security
 
-#### AWS Security Groups & VPC
+#### Managed Security (Vercel + Neon)
 
 **Network Isolation:**
+Both Vercel and Neon handle network security automatically:
+
+- **Vercel Functions**: Run in isolated containers with no shared state
+- **Neon Database**: Fully managed with built-in network isolation
+- **Connection Security**: All connections require SSL/TLS
+
+**Platform Security:**
+- **Vercel**: SOC 2 Type 2 compliant, automatic DDoS protection
+- **Neon**: SOC 2 Type 2 compliant, encrypted connections only
+- **No VPC Management**: Security handled by platform providers
+
 ```typescript
-// Security group configuration
-const databaseSecurityGroup = new ec2.SecurityGroup(this, 'DatabaseSG', {
-  vpc,
-  description: 'Database access from Lambda only',
-  allowAllOutbound: false,
-})
-
-const lambdaSecurityGroup = new ec2.SecurityGroup(this, 'LambdaSG', {
-  vpc, 
-  description: 'Lambda function access',
-})
-
-// Restrict database access
-databaseSecurityGroup.addIngressRule(
-  lambdaSecurityGroup,
-  ec2.Port.tcp(5432),
-  'Lambda to PostgreSQL'
-)
-
-// Lambda outbound for GitHub API
-lambdaSecurityGroup.addEgressRule(
-  ec2.Peer.anyIpv4(),
-  ec2.Port.tcp(443),
-  'HTTPS to GitHub API'
-)
+// Database connection is secured via connection string
+// SSL mode is enforced by default
+const databaseUrl = process.env.DATABASE_URL
+// Example: postgresql://user:pass@ep-xxx.neon.tech/db?sslmode=require
 ```
-
-**VPC Configuration:**
-- **Private Subnets**: Database in isolated subnets
-- **Public Subnets**: CloudFront and Load Balancer only
-- **No Direct Internet**: Database has no internet access
-- **NAT Gateway**: Only if Lambda needs internet access
 
 #### API Security
 
@@ -288,9 +267,9 @@ export async function validateInput<T>(
 
 #### Security Logging
 
-**CloudWatch Security Events:**
+**Vercel Logs & Security Events:**
 ```typescript
-// Security event logging
+// Security event logging (captured by Vercel Logs)
 export function logSecurityEvent(event: SecurityEvent) {
   console.log(JSON.stringify({
     timestamp: new Date().toISOString(),
@@ -325,7 +304,7 @@ logSecurityEvent({
 
 **Security Incident Playbook:**
 
-1. **Detection**: CloudWatch alarms for suspicious activity
+1. **Detection**: Vercel logs monitoring for suspicious activity
 2. **Containment**: Automatic session termination for compromised accounts
 3. **Investigation**: Detailed logging for forensic analysis
 4. **Recovery**: Database restore procedures if needed
@@ -376,5 +355,7 @@ export async function handleSecurityIncident(incident: SecurityIncident) {
 - **Annually**: Penetration testing and security audit
 - **Continuous**: Security monitoring and incident response
 
-This comprehensive security architecture ensures CodeFlow meets enterprise security standards while maintaining usability and performance for the MVP phase.
-
+This security architecture leverages the built-in security features of Vercel and Neon, providing strong security without the overhead of managing infrastructure. Both platforms are SOC 2 Type 2 compliant and handle network security, encryption, and compliance automatically.
+
+**Note on Scaling:** If CodeFlow grows to require enterprise-grade security controls (custom VPCs, AWS PrivateLink, etc.), the application can be migrated to AWS with dedicated infrastructure.
+

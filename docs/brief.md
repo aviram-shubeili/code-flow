@@ -131,9 +131,9 @@ CodeFlow evolves into the central nervous system for development team workflows,
 
 ### Technology Preferences
 - **Full-Stack Framework:** Next.js with TypeScript (unified frontend/backend, aligns with portfolio development goals)
-- **API Routes:** Next.js API routes deployed as AWS Lambda functions
-- **Database:** PostgreSQL on AWS RDS, Redis on AWS ElastiCache for caching
-- **Hosting/Infrastructure:** AWS Amplify Gen 2 serverless deployment with TypeScript infrastructure-as-code - managed Lambda functions, automatic CDN optimization, custom RDS PostgreSQL, Git-based deployment with per-developer sandboxes
+- **API Routes:** Next.js API routes deployed as Vercel Functions
+- **Database:** PostgreSQL on Neon (serverless, generous free tier, Prisma compatible)
+- **Hosting/Infrastructure:** Vercel (zero-config Next.js deployment, automatic preview deployments, global CDN)
 
 ### Architecture Considerations
 - **Repository Structure:** Monorepo for rapid MVP development

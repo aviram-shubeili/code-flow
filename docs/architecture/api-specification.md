@@ -1,8 +1,8 @@
 # API Specification
 
-This section defines the REST API endpoints for CodeFlow's MVP, implemented as Next.js API routes deployed on AWS Lambda. All endpoints follow RESTful conventions and return consistent JSON responses with proper error handling.
+This section defines the REST API endpoints for CodeFlow's MVP, implemented as Next.js API routes deployed on **Vercel**. All endpoints follow RESTful conventions and return consistent JSON responses with proper error handling.
 
-**Base URL:** `https://api.codeflow.dev` (production) | `http://localhost:3000` (development)  
+**Base URL:** `https://codeflow.vercel.app` (production) | `http://localhost:3000` (development)  
 **Authentication:** All endpoints require Auth.js session authentication except `/api/auth/*`  
 **Content-Type:** `application/json` for all requests/responses  
 **Rate Limiting:** Handled at application level with graceful degradation
@@ -293,4 +293,4 @@ interface ApiError {
 - Database stores only user profiles and repository monitoring preferences
 - TanStack Query handles all performance optimization through intelligent client-side caching
 - Each user's rate limit is independent (5000 requests/hour per GitHub token)
-
+

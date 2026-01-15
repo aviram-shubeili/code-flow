@@ -2,21 +2,19 @@
 
 ### Technical Summary
 
-CodeFlow employs a **serverless-first Next.js architecture** deployed on AWS Lambda with PostgreSQL data persistence, optimizing for rapid MVP development while maintaining enterprise scalability. The system implements **intelligent GitHub GraphQL API rate limiting** with mathematical cost calculations and exponential backoff strategies to support 5-50 concurrent users during peak collaboration hours. **Slack integration** via Bot API enables direct messaging and channel notifications for PR status updates, while the **four-section dashboard** provides scan-to-action workflows optimized for developer productivity. The MVP architecture emphasizes **cost efficiency** through AWS free-tier optimization, simple database-level caching, and **graceful degradation** during API rate limiting scenarios.
+CodeFlow employs a **serverless-first Next.js architecture** deployed on **Vercel** with **Neon PostgreSQL** data persistence, optimizing for rapid MVP development while maintaining enterprise scalability. The system implements **intelligent GitHub GraphQL API rate limiting** with mathematical cost calculations and exponential backoff strategies to support 5-50 concurrent users during peak collaboration hours. **Slack integration** via Bot API enables direct messaging and channel notifications for PR status updates, while the **four-section dashboard** provides scan-to-action workflows optimized for developer productivity. The MVP architecture emphasizes **cost efficiency** through Vercel and Neon free-tier optimization, simple database-level caching, and **graceful degradation** during API rate limiting scenarios.
 
 ### Platform and Infrastructure Strategy
 
 **Development Approach:** Features-First Architecture  
-**Platform Evaluation:** Three deployment options under consideration based on real requirements:  
-1. **AWS Amplify Gen 2**: TypeScript-first platform with CDK integration ($30-55/month)
-2. **Pure CDK**: S3 + CloudFront + Lambda with full control ($18-35/month)
-3. **OpenNext + SST**: Self-hosted Next.js optimization (variable cost)
+**Platform Decision:** Vercel + Neon selected for MVP deployment:
+- **Vercel**: Zero-config Next.js deployment, automatic preview deployments, global Edge Network ($0/month Hobby tier)
+- **Neon**: Serverless PostgreSQL with built-in connection pooling, auto-suspend, instant wake ($0/month free tier)
 
-**Current Focus:** Next.js application development with deployment platform agnostic design  
-**Infrastructure Decision Timeline:** Sprint 3 (weeks 5-6) after core features establish real requirements  
-**Key Services (Planned):** Lambda or container hosting, PostgreSQL database, CDN, authentication service
+**Current Focus:** Next.js application development with Vercel-native deployment  
+**Key Services:** Vercel Functions (serverless), Neon PostgreSQL, Vercel Edge Network (CDN), Auth.js authentication
 
-**Rationale:** Features-first development enables infrastructure decisions based on actual application requirements rather than theoretical needs. Next.js provides deployment flexibility across all platform options, ensuring architectural choices optimize for real performance and cost characteristics.
+**Rationale:** Vercel + Neon provides the fastest path to production with zero infrastructure management, zero cost for MVP, and 5-minute deployment cycles. Migration to AWS/enterprise infrastructure remains straightforward if commercial scaling demands require it.
 
 ### Repository Structure
 
@@ -35,12 +33,12 @@ graph TB
         SLACK[Slack Workspace]
     end
 
-    subgraph "CDN/Edge Layer"
-        CF[CloudFront CDN]
-        S3[S3 Static Assets]
+    subgraph "Vercel Platform"
+        EDGE[Vercel Edge Network / CDN]
+        FUNCTIONS[Vercel Serverless Functions]
     end
 
-    subgraph "Application Layer - AWS Lambda"
+    subgraph "Application Layer"
         NEXTJS[Next.js SSR/API Routes]
         AUTH[Auth.js v5]
         RATELIMIT[Rate Limit Manager]
@@ -52,33 +50,37 @@ graph TB
         SLACKAPI[Slack Bot API]
     end
 
-    subgraph "Data Layer"
-        RDS[(PostgreSQL RDS)]
+    subgraph "Data Layer - Neon"
+        NEON[(Neon PostgreSQL)]
+        POOLER[Connection Pooler]
     end
 
-    DEV --> CF
+    DEV --> EDGE
     SLACK --> NEXTJS
-    CF --> S3
-    CF --> NEXTJS
+    EDGE --> FUNCTIONS
+    FUNCTIONS --> NEXTJS
     NEXTJS --> AUTH
     NEXTJS --> RATELIMIT
     NEXTJS --> NOTIFY
     RATELIMIT --> GITHUB
     NOTIFY --> SLACKAPI
-    NEXTJS --> RDS
+    NEXTJS --> POOLER
+    POOLER --> NEON
     
-    classDef aws fill:#ff9900,stroke:#232f3e,color:#fff
+    classDef vercel fill:#000,stroke:#fff,color:#fff
+    classDef neon fill:#00e599,stroke:#000,color:#000
     classDef external fill:#4285f4,stroke:#1a73e8,color:#fff
     classDef app fill:#00d4aa,stroke:#00a088,color:#fff
     
-    class CF,S3,NEXTJS,RDS aws
+    class EDGE,FUNCTIONS vercel
+    class NEON,POOLER neon
     class GITHUB,SLACKAPI,SLACK external
-    class AUTH,RATELIMIT,NOTIFY app
+    class NEXTJS,AUTH,RATELIMIT,NOTIFY app
 ```
 
 ### Architectural Patterns
 
-- **Serverless Architecture:** AWS Lambda for compute with automatic scaling - _Rationale:_ Optimal for variable load patterns and cost efficiency during MVP phase
+- **Serverless Architecture:** Vercel Functions for compute with automatic scaling - _Rationale:_ Optimal for variable load patterns and cost efficiency during MVP phase
 - **API Gateway Pattern:** Single Next.js API entry point with route-based organization - _Rationale:_ Centralized rate limiting, authentication, and monitoring
 - **Repository Pattern:** Abstract data access for PR and user management - _Rationale:_ Enables testing and supports future database scaling strategies
 - **Circuit Breaker Pattern:** Graceful degradation during GitHub API rate limiting - _Rationale:_ Maintains service availability with cached data during API constraints

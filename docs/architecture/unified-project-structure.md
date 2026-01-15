@@ -137,15 +137,7 @@ codeflow/
 │   │   └── 001_init/
 │   │       └── migration.sql
 │   └── seed.ts                       # Database seeding
-├── infrastructure/                   # AWS CDK infrastructure
-│   ├── lib/
-│   │   ├── codeflow-stack.ts         # Main CDK stack
-│   │   ├── database-stack.ts         # Database infrastructure
-│   │   └── monitoring-stack.ts       # CloudWatch monitoring
-│   ├── bin/
-│   │   └── codeflow.ts               # CDK app entry point
-│   ├── cdk.json                      # CDK configuration
-│   └── package.json                  # Infrastructure dependencies
+├── vercel.json                       # Vercel configuration (optional)
 ├── tests/                            # Test files
 │   ├── __mocks__/                    # Test mocks
 │   │   ├── next-auth.ts
@@ -335,8 +327,8 @@ module.exports = nextConfig
     "db:migrate:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
-    "cdk:deploy": "cd infrastructure && npm run deploy",
-    "cdk:destroy": "cd infrastructure && npm run destroy",
+    "deploy": "vercel",
+    "deploy:prod": "vercel --prod",
     "format": "prettier --write .",
     "clean": "rm -rf .next dist",
     "analyze": "cross-env ANALYZE=true next build"
@@ -361,9 +353,7 @@ NEXTAUTH_URL="http://localhost:3000"
 GITHUB_CLIENT_ID="your-github-oauth-client-id"
 GITHUB_CLIENT_SECRET="your-github-oauth-client-secret"
 
-# AWS deployment (production only)
-AWS_REGION="us-east-1"
-AWS_ACCOUNT_ID="123456789012"
+# Vercel deployment (automatic via GitHub integration)
 ```
 
 **VS Code Workspace Settings:**
@@ -385,4 +375,4 @@ AWS_ACCOUNT_ID="123456789012"
 ```
 
 This unified project structure provides a scalable, maintainable codebase following Next.js 14 best practices with clear separation of concerns and comprehensive tooling support.
-
+
