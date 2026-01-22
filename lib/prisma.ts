@@ -35,13 +35,21 @@ function getDatabaseUrl(): string {
   return url
 }
 
+// Cached client instance (separate from globalForPrisma to avoid proxy issues)
+let cachedClient: PrismaClient | undefined
+
 /**
  * Lazily creates and caches the Prisma client
  * This allows the module to be imported during build without DATABASE_URL
  */
 function createPrismaClient(): PrismaClient {
+  if (cachedClient) {
+    return cachedClient
+  }
+  
   if (globalForPrisma.prisma) {
-    return globalForPrisma.prisma
+    cachedClient = globalForPrisma.prisma
+    return cachedClient
   }
 
   // Create connection pool
@@ -56,7 +64,7 @@ function createPrismaClient(): PrismaClient {
   // Create Prisma adapter
   const adapter = new PrismaPg(pool)
 
-  const client = new PrismaClient({
+  cachedClient = new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === 'development'
       ? ['query', 'error', 'warn']
@@ -64,10 +72,10 @@ function createPrismaClient(): PrismaClient {
   })
 
   if (process.env.NODE_ENV !== 'production') {
-    globalForPrisma.prisma = client
+    globalForPrisma.prisma = cachedClient
   }
 
-  return client
+  return cachedClient
 }
 
 // Export a lazy proxy that creates the client on first use
@@ -78,17 +86,13 @@ export const prisma = new Proxy({} as PrismaClient, {
   }
 })
 
-if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = prisma
-}
-
 /**
  * Graceful shutdown handler for Prisma Client
  * Call this in serverless cleanup or process termination handlers
  */
 export async function disconnectPrisma() {
-  if (globalForPrisma.prisma) {
-    await globalForPrisma.prisma.$disconnect()
+  if (cachedClient) {
+    await cachedClient.$disconnect()
   }
   if (globalForPrisma.pool) {
     await globalForPrisma.pool.end()
