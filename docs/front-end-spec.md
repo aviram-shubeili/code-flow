@@ -7,7 +7,7 @@ This document defines the user experience goals, information architecture, user 
 ### Target User Personas
 
 **Primary: Mid-Size Development Team Members (5-15 developers)**
-Software engineers using GitHub for code review and Microsoft Teams for daily communication. They work on shared repositories with moderate-to-high PR volume (10-50 PRs weekly). Currently spend 20+ minutes daily triaging PR notifications and lose track of PR status between review cycles.
+Software engineers using GitHub for code review and Slack for daily communication. They work on shared repositories with moderate-to-high PR volume (10-50 PRs weekly). Currently spend 20+ minutes daily triaging PR notifications and lose track of PR status between review cycles.
 
 **Secondary: Enterprise Development Team Members (15+ developers)** 
 Engineers in larger organizations with multiple repositories, complex review requirements, and distributed teams across time zones. They handle hundreds of PR notifications weekly with complex ownership models and cross-team coordination challenges.
@@ -54,18 +54,17 @@ graph TD
     G --> G1[Profile & Preferences]
     G --> G2[Notification Settings]
     G --> G3[Repository Management]
-    G --> G4[Teams Integration]
+    G --> G4[Slack Integration]
     
     B --> B1[PR Detail View]
     C --> B1
     D --> B1
     E --> B1
     
-    B1 --> B2[Review Interface]
+    B1 --> B2[GitHub PR Link]
     B1 --> B3[PR Timeline]
-    B1 --> B4[Team Actions]
     
-    H[Teams Integration] --> H1[Status Notifications]
+    H[Slack Integration] --> H1[Status Notifications]
     H --> H2[Quick Actions]
     H --> H3[Deep Link to Web]
     
@@ -81,7 +80,7 @@ graph TD
 
 **Secondary Navigation:** Contextual actions within each section - Filter/Sort controls, Team view toggle (for managers), Settings access, Help/Tutorial access for new users
 
-**Breadcrumb Strategy:** Minimal breadcrumbs for deep navigation (Dashboard > PR Detail > Review Interface), with quick "Back to Dashboard" action always available. Teams integration uses deep linking to maintain context when users click through from notifications.
+**Breadcrumb Strategy:** Minimal breadcrumbs for deep navigation (Dashboard > PR Detail), with quick "Back to Dashboard" action always available. Slack integration uses deep linking to maintain context when users click through from notifications. PR cards link directly to GitHub for review actions.
 
 ## User Flows
 
@@ -89,7 +88,7 @@ graph TD
 
 **User Goal:** Quickly identify and prioritize all PRs requiring immediate attention across multiple repositories
 
-**Entry Points:** Direct URL, Teams notification click, browser bookmark, scheduled daily routine
+**Entry Points:** Direct URL, Slack notification click, browser bookmark, scheduled daily routine
 
 **Success Criteria:** Complete assessment of all actionable PRs in under 3 minutes, clear next actions identified
 
@@ -115,7 +114,7 @@ graph TD
     K -->|No| M[Scan 'My PRs' status]
     
     L --> N[Update and re-submit]
-    N --> O[Teams notification sent to reviewers]
+    N --> O[Slack notification sent to reviewers]
     O --> M
     
     M --> P{Any blocked/ready PRs?}
@@ -136,33 +135,33 @@ graph TD
 
 **User Goal:** Complete a review cycle from initial notification through final approval/merge
 
-**Entry Points:** Teams notification, dashboard "Needs Review", email fallback
+**Entry Points:** Slack notification, dashboard "Needs Review", email fallback
 
 **Success Criteria:** Review completed with clear outcome communicated to author and team
 
 #### Flow Diagram
 ```mermaid
 graph TD
-    A[Teams notification: 'PR ready for review'] --> B[Click 'Start Review']
-    B --> C{Review in Teams or Web?}
-    C -->|Teams| D[Inline quick actions]
-    C -->|Web| E[Deep link to PR detail]
+    A[Slack notification: 'PR ready for review'] --> B[Click notification]
+    B --> C{Quick action or Full review?}
+    C -->|Quick| D[Slack quick actions]
+    C -->|Full| E[Open GitHub PR]
     
-    D --> F[Quick approve/request changes]
-    E --> G[Full review interface]
-    G --> H[Add comments/suggestions]
+    D --> F[Quick approve/comment]
+    E --> G[GitHub review interface]
+    G --> H[Add comments/suggestions in GitHub]
     
     F --> I[Outcome notification sent]
-    H --> J[Submit review]
+    H --> J[Submit review in GitHub]
     J --> I
     
-    I --> K[Author receives Teams notification]
+    I --> K[Author receives Slack notification]
     K --> L{Changes requested?}
-    L -->|Yes| M[Author addresses feedback]
+    L -->|Yes| M[Author addresses feedback in GitHub]
     L -->|No| N[Ready to merge]
     
     M --> O[Re-review notification to reviewer]
-    O --> P[Quick re-approval or deeper review]
+    O --> P[Review changes in GitHub]
     P --> Q[Final outcome]
     
     N --> R[Merge notification to team]
@@ -173,8 +172,8 @@ graph TD
 
 #### Edge Cases & Error Handling:
 - **Reviewer offline:** Escalation to secondary reviewers after defined timeout
-- **Conflicting reviews:** Clear conflict resolution UI with team discussion thread
-- **Large changesets:** Progressive loading with file-by-file review capability
+- **Conflicting reviews:** Clear status indicators, review happens in GitHub
+- **Large changesets:** Handled by GitHub's review interface
 - **External dependencies:** Integration status indicators with clear waiting states
 - **Review fatigue:** Smart assignment rotation suggestions
 
@@ -200,32 +199,33 @@ graph TD
 **Design File Reference:** [To be created in Figma - Dashboard wireframes]
 
 #### PR Detail View
-**Purpose:** Comprehensive view of individual PR with all review information and actions
+**Purpose:** Summary view of individual PR with quick access to GitHub for full review
 
 **Key Elements:**
 - PR header with title, author, branch info, and status badges
-- File changes navigator with diff preview
-- Review comments timeline with threaded discussions
-- Action bar with review controls (Approve, Request Changes, Comment)
-- Reviewer assignment and Teams notification controls
+- PR summary and description
+- Review status and comments count
+- Prominent "Review in GitHub" button
+- Reviewer assignment and Slack notification controls
 - Related PRs and dependency indicators
+- Activity timeline showing recent updates
 
-**Interaction Notes:** Inline comment creation, collapsible file diffs, smart notification preferences based on user role
+**Interaction Notes:** Primary action is "Review in GitHub" opening PR in new tab, preserving dashboard state for return
 
 **Design File Reference:** [To be created in Figma - PR Detail screens]
 
-#### Teams Integration Cards
-**Purpose:** Rich notification cards within Microsoft Teams with actionable controls
+#### Slack Integration Cards
+**Purpose:** Rich notification messages within Slack with actionable controls
 
 **Key Elements:**
 - PR summary with key metadata (author, repository, urgency)
 - Status indicator and change summary
-- Quick action buttons (Start Review, Quick Approve, View Details)
-- Deep link to web interface for complex actions
+- Quick action buttons (View in GitHub, View Dashboard, Quick Actions)
+- Deep link to dashboard and GitHub PR
 
-**Interaction Notes:** Buttons trigger actions directly in Teams when possible, graceful fallback to web interface for complex workflows
+**Interaction Notes:** Buttons link to GitHub for reviews or dashboard for status overview, with Slack quick actions for common tasks
 
-**Design File Reference:** [To be created in Figma - Teams integration mockups]
+**Design File Reference:** [To be created in Figma - Slack integration mockups]
 
 ## Component Library / Design System
 

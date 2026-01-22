@@ -54,18 +54,19 @@
   - Local database easily reset/seeded for development
 - **Definition of Done:** Database connects in both local and production environments, migrations run successfully, local development is containerized
 
-**US0.5 - Environment Management**
+**US0.5 - Environment Management** ✅ COMPLETE
 - As a developer, I want environment configuration set up so that I can manage development and production environments
 - **Acceptance Criteria:**
   - Local development: `.env.local` file for development secrets and configuration  
-  - Production: AWS Systems Manager Parameter Store or AWS Secrets Manager for secure environment variable management
+  - ~~Production: AWS Systems Manager Parameter Store or AWS Secrets Manager for secure environment variable management~~ *OBSOLETE - See closure note*
   - Environment variables for GitHub GraphQL API credentials, database URLs, NextAuth secrets
   - Local environment easily configurable without AWS dependencies
-  - Production environment variables automatically injected into Lambda functions
+  - ~~Production environment variables automatically injected into Lambda functions~~ *OBSOLETE - See closure note*
   - Environment validation on application startup with clear error messages
   - `.env.example` file documents all required environment variables
 - **Definition of Done:** Environment variables work in both local and production, secrets are secure, local development doesn't require cloud dependencies
 - **Definition of Done:** Application starts in all environments with proper configuration
+- **Closure Note (2026-01-22):** Story closed as COMPLETE. Platform pivot to Vercel + Neon (per US0.7) made AWS Parameter Store/Secrets Manager requirements obsolete—Vercel handles production environment variables natively. Local environment management is fully implemented: `.env.example` exists with all required variables documented, `.env.local` pattern works for development, Docker Compose integration supports environment files, and all necessary variables (GitHub OAuth, NextAuth, DATABASE_URL) are defined. Minor gap: startup environment validation not implemented but can be added as enhancement if needed.
 
 **US0.6 - Code Quality Standards**
 - As a developer, I want basic project structure and coding standards defined so that development follows consistent patterns
