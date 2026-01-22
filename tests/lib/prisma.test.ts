@@ -10,11 +10,12 @@ import { prisma } from '@/lib/prisma'
 describe('Prisma Client', () => {
   it('should export a Prisma client instance', () => {
     expect(prisma).toBeDefined()
-    expect(prisma).toHaveProperty('user')
-    expect(prisma).toHaveProperty('userProfile')
-    expect(prisma).toHaveProperty('repository')
-    expect(prisma).toHaveProperty('account')
-    expect(prisma).toHaveProperty('session')
+    // Access properties through the lazy proxy
+    expect(prisma.user).toBeDefined()
+    expect(prisma.userProfile).toBeDefined()
+    expect(prisma.repository).toBeDefined()
+    expect(prisma.account).toBeDefined()
+    expect(prisma.session).toBeDefined()
   })
 
   it('should have proper Prisma client methods', () => {
