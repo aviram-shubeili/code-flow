@@ -1,6 +1,6 @@
 # Story 0.3: Basic Quality Gates & Branch Protection
 
-Status: review
+Status: done
 
 ## Story
 
