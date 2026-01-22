@@ -34,3 +34,26 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Branch Protection
+
+The `main` branch is protected with the following rules:
+
+### Required Status Checks
+- **CI workflow** (`ci` job) must pass before merging
+
+### Branch Protection Settings
+Configure these in GitHub Repository Settings → Branches → Add branch protection rule:
+
+1. **Branch name pattern:** `main`
+2. **Require a pull request before merging:** ✅ Enabled
+3. **Require status checks to pass before merging:** ✅ Enabled
+   - Required check: `ci`
+4. **Do not allow force pushes:** ✅ Enabled
+
+### CI Workflow
+The CI workflow (`.github/workflows/ci.yml`) runs on all pull requests to `main` and executes:
+- Type checking (`npx tsc --noEmit`)
+- Linting (`npm run lint`)
+- Tests (`npm run test`)
+- Build validation (`npm run build`)

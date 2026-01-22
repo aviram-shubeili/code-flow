@@ -39,7 +39,7 @@ development_status:
   epic-0: in-progress
   0-1-nextjs-project-setup: done
   0-2-testing-framework-configuration: done
-  0-3-quality-gates-database-migration-setup: ready-for-dev
+  0-3-quality-gates-database-migration-setup: review
   0-4-database-configuration: done
   0-5-environment-management: backlog
   0-6-code-quality-standards: ready-for-dev
