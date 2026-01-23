@@ -1,12 +1,14 @@
 /**
  * Unit Tests for Database Service
- * 
+ *
  * Tests business logic methods with mocked Prisma client
  */
 
-import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest'
+import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
+
 import { DatabaseService } from '@/lib/database'
-import type { PrismaClient, UserProfile, Repository } from '@prisma/client'
+
+import type { PrismaClient, Repository, UserProfile } from '@prisma/client'
 
 // Type for mocked Prisma client with vi.fn() methods
 type MockPrismaClient = {

@@ -13,16 +13,19 @@ This guide covers local development database setup, management, and troubleshoot
 ### Initial Setup
 
 1. **Start the PostgreSQL container:**
+
    ```powershell
    npm run db:up
    ```
 
 2. **Run database migrations:**
+
    ```powershell
    npm run db:migrate
    ```
 
 3. **Seed development data:**
+
    ```powershell
    npm run db:seed
    ```
@@ -36,29 +39,29 @@ This guide covers local development database setup, management, and troubleshoot
 
 ### Database Lifecycle
 
-| Command | Description |
-|---------|-------------|
-| `npm run db:up` | Start PostgreSQL container in detached mode |
-| `npm run db:down` | Stop and remove PostgreSQL container |
-| `npm run db:logs` | View PostgreSQL container logs |
+| Command            | Description                                    |
+| ------------------ | ---------------------------------------------- |
+| `npm run db:up`    | Start PostgreSQL container in detached mode    |
+| `npm run db:down`  | Stop and remove PostgreSQL container           |
+| `npm run db:logs`  | View PostgreSQL container logs                 |
 | `npm run db:reset` | Complete reset: stop, start, migrate, and seed |
 
 ### Prisma Operations
 
-| Command | Description |
-|---------|-------------|
-| `npm run db:migrate` | Run pending migrations (development) |
-| `npm run db:migrate:deploy` | Deploy migrations (production) |
-| `npm run db:generate` | Regenerate Prisma Client from schema |
-| `npm run db:seed` | Seed database with development data |
-| `npm run db:studio` | Open Prisma Studio (visual database browser) |
+| Command                     | Description                                  |
+| --------------------------- | -------------------------------------------- |
+| `npm run db:migrate`        | Run pending migrations (development)         |
+| `npm run db:migrate:deploy` | Deploy migrations (production)               |
+| `npm run db:generate`       | Regenerate Prisma Client from schema         |
+| `npm run db:seed`           | Seed database with development data          |
+| `npm run db:studio`         | Open Prisma Studio (visual database browser) |
 
 ### Test Database
 
-| Command | Description |
-|---------|-------------|
-| `npm run db:test:up` | Start test PostgreSQL container (port 5433) |
-| `npm run db:test:down` | Stop test PostgreSQL container |
+| Command                | Description                                 |
+| ---------------------- | ------------------------------------------- |
+| `npm run db:test:up`   | Start test PostgreSQL container (port 5433) |
+| `npm run db:test:down` | Stop test PostgreSQL container              |
 
 > **Note:** The test database uses `tmpfs` (in-memory storage) for faster test execution. Test data is intentionally ephemeral and will be lost when the container stops. This is by design to ensure clean test isolation.
 
@@ -84,18 +87,18 @@ After seeding, the following test data is available:
 
 ### Test Users
 
-| Email | GitHub ID | Username | Repositories |
-|-------|-----------|----------|--------------|
-| dev@codeflow.dev | 123456789 | dev-user | 3 (2 active, 1 inactive) |
-| dev2@codeflow.dev | 987654321 | dev-user-2 | 0 |
+| Email             | GitHub ID | Username   | Repositories             |
+| ----------------- | --------- | ---------- | ------------------------ |
+| dev@codeflow.dev  | 123456789 | dev-user   | 3 (2 active, 1 inactive) |
+| dev2@codeflow.dev | 987654321 | dev-user-2 | 0                        |
 
 ### Test Repositories
 
-| Full Name | GitHub ID | Status |
-|-----------|-----------|--------|
-| dev-org/codeflow | 1001 | Active |
-| dev-org/test-repo | 1002 | Active |
-| dev-org/archived-repo | 1003 | Inactive |
+| Full Name             | GitHub ID | Status   |
+| --------------------- | --------- | -------- |
+| dev-org/codeflow      | 1001      | Active   |
+| dev-org/test-repo     | 1002      | Active   |
+| dev-org/archived-repo | 1003      | Inactive |
 
 ## Environment Variables
 
@@ -155,6 +158,7 @@ chmod +x scripts/db-*.sh
 **Problem:** `docker-compose up` fails or container exits immediately.
 
 **Solutions:**
+
 1. Check if port 5432 is already in use:
    ```powershell
    netstat -ano | findstr :5432
@@ -170,6 +174,7 @@ chmod +x scripts/db-*.sh
 **Problem:** `ECONNREFUSED` or connection timeout errors.
 
 **Solutions:**
+
 1. Verify container is running:
    ```powershell
    docker ps | findstr codeflow-postgres
@@ -182,6 +187,7 @@ chmod +x scripts/db-*.sh
 **Problem:** `prisma migrate` fails with schema conflicts.
 
 **Solutions:**
+
 1. Check migration status:
    ```powershell
    npx prisma migrate status
@@ -197,6 +203,7 @@ chmod +x scripts/db-*.sh
 **Problem:** TypeScript errors about missing Prisma Client types.
 
 **Solutions:**
+
 1. Regenerate Prisma Client:
    ```powershell
    npm run db:generate
@@ -208,6 +215,7 @@ chmod +x scripts/db-*.sh
 **Problem:** Seeding fails with duplicate key or constraint violations.
 
 **Solutions:**
+
 1. Reset database (will clear all data):
    ```powershell
    npm run db:reset
@@ -225,17 +233,19 @@ chmod +x scripts/db-*.sh
    - Copy connection string
 
 2. **Connection String Format:**
+
    ```bash
    # For Prisma (use pooled connection)
    DATABASE_URL="postgresql://user:pass@ep-xxx-pooler.us-east-1.aws.neon.tech/codeflow?sslmode=require"
-   
+
    # For migrations (use direct connection)
    DIRECT_URL="postgresql://user:pass@ep-xxx.us-east-1.aws.neon.tech/codeflow?sslmode=require"
    ```
 
 3. **Prisma Configuration:**
-   
+
    When deploying to production with Neon, update `prisma/schema.prisma` to include `directUrl`:
+
    ```prisma
    // prisma/schema.prisma
    datasource db {
@@ -244,7 +254,7 @@ chmod +x scripts/db-*.sh
      directUrl = env("DIRECT_URL")  // Required for Neon pooler migrations
    }
    ```
-   
+
    > **Note:** The current schema omits `directUrl` for local development simplicity. This will be configured in Story 0.7 (Infrastructure Setup) when production deployment is implemented.
 
 4. **Connection Pooling:**
@@ -294,6 +304,7 @@ Neon provides automatic point-in-time recovery:
 4. **Launch Tier**: 30-day history retention
 
 To create a backup branch:
+
 ```bash
 # Via Neon Console or API
 # Create a branch from a specific point in time for testing

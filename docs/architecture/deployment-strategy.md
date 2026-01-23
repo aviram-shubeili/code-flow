@@ -20,36 +20,36 @@ graph TB
         EDGE[Edge Network / CDN]
         FUNCTIONS[Serverless Functions]
     end
-    
+
     subgraph "Neon (Serverless PostgreSQL)"
         NEON[(Neon PostgreSQL)]
         POOLER[Connection Pooler]
     end
-    
+
     subgraph "External Services"
         GITHUB[GitHub OAuth & API]
         REPO[Git Repository]
     end
-    
+
     subgraph "Local Development"
         DOCKER[Docker PostgreSQL]
         NEXTJS_DEV[Next.js Dev Server]
     end
-    
+
     REPO --> VERCEL
     VERCEL --> EDGE
     VERCEL --> FUNCTIONS
     FUNCTIONS --> POOLER
     POOLER --> NEON
     FUNCTIONS --> GITHUB
-    
+
     NEXTJS_DEV --> DOCKER
-    
+
     classDef vercel fill:#000,stroke:#fff,color:#fff
     classDef neon fill:#00e599,stroke:#000,color:#000
     classDef external fill:#4285f4,stroke:#1a73e8,color:#fff
     classDef local fill:#666,stroke:#333,color:#fff
-    
+
     class VERCEL,EDGE,FUNCTIONS vercel
     class NEON,POOLER neon
     class GITHUB,REPO external
@@ -60,17 +60,18 @@ graph TB
 
 ### Vercel (Frontend + API Hosting)
 
-| Feature | Value |
-|---------|-------|
-| **Cost** | Free (Hobby tier) |
-| **Next.js Support** | Native (Vercel created Next.js) |
-| **Deployment** | Push to GitHub → Auto deploy |
-| **Preview Deployments** | Automatic for PRs |
-| **Edge Network** | Global CDN included |
-| **SSL** | Automatic HTTPS |
-| **Functions** | Serverless, auto-scaling |
+| Feature                 | Value                           |
+| ----------------------- | ------------------------------- |
+| **Cost**                | Free (Hobby tier)               |
+| **Next.js Support**     | Native (Vercel created Next.js) |
+| **Deployment**          | Push to GitHub → Auto deploy    |
+| **Preview Deployments** | Automatic for PRs               |
+| **Edge Network**        | Global CDN included             |
+| **SSL**                 | Automatic HTTPS                 |
+| **Functions**           | Serverless, auto-scaling        |
 
 **Hobby Tier Limits (Free Forever):**
+
 - 100 GB bandwidth/month
 - 100 deployments/day
 - 1M function invocations/month
@@ -79,16 +80,17 @@ graph TB
 
 ### Neon (Serverless PostgreSQL)
 
-| Feature | Value |
-|---------|-------|
-| **Cost** | Free tier available |
-| **PostgreSQL Version** | 15+ |
-| **Connection Pooling** | Built-in (PgBouncer) |
-| **Branching** | Database branches for preview deployments |
-| **Prisma Compatible** | Full support |
-| **Serverless Optimized** | Auto-suspend, instant wake |
+| Feature                  | Value                                     |
+| ------------------------ | ----------------------------------------- |
+| **Cost**                 | Free tier available                       |
+| **PostgreSQL Version**   | 15+                                       |
+| **Connection Pooling**   | Built-in (PgBouncer)                      |
+| **Branching**            | Database branches for preview deployments |
+| **Prisma Compatible**    | Full support                              |
+| **Serverless Optimized** | Auto-suspend, instant wake                |
 
 **Free Tier Limits:**
+
 - 0.5 GB storage
 - 1 project
 - 10 branches
@@ -128,12 +130,12 @@ GITHUB_CLIENT_SECRET=<from-github-oauth-app>
 
 **3. Build Settings (Auto-detected for Next.js)**
 
-| Setting | Value |
-|---------|-------|
-| Framework Preset | Next.js |
-| Build Command | `npm run build` |
-| Output Directory | `.next` |
-| Install Command | `npm ci` |
+| Setting          | Value           |
+| ---------------- | --------------- |
+| Framework Preset | Next.js         |
+| Build Command    | `npm run build` |
+| Output Directory | `.next`         |
+| Install Command  | `npm ci`        |
 
 ### Neon Setup
 
@@ -188,26 +190,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Lint
         run: npm run lint
-      
+
       - name: Type check
         run: npx tsc --noEmit
-      
+
       - name: Test
         run: npm run test
         env:
           DATABASE_URL: postgresql://test:test@localhost:5432/test
-      
+
       - name: Build
         run: npm run build
         env:
@@ -272,20 +274,20 @@ npm run dev
 
 ### MVP Phase (Free)
 
-| Service | Tier | Monthly Cost |
-|---------|------|--------------|
-| Vercel | Hobby | $0 |
-| Neon | Free | $0 |
-| GitHub | Free | $0 |
-| **Total** | | **$0** |
+| Service   | Tier  | Monthly Cost |
+| --------- | ----- | ------------ |
+| Vercel    | Hobby | $0           |
+| Neon      | Free  | $0           |
+| GitHub    | Free  | $0           |
+| **Total** |       | **$0**       |
 
 ### Growth Phase (If Needed)
 
-| Service | Tier | Monthly Cost |
-|---------|------|--------------|
-| Vercel | Pro | $20 |
-| Neon | Launch | $19 |
-| **Total** | | **$39** |
+| Service   | Tier   | Monthly Cost |
+| --------- | ------ | ------------ |
+| Vercel    | Pro    | $20          |
+| Neon      | Launch | $19          |
+| **Total** |        | **$39**      |
 
 ### When to Upgrade
 
@@ -341,15 +343,14 @@ npx prisma migrate deploy # Apply to production
 
 ## Comparison: Why Vercel + Neon vs AWS Amplify
 
-| Factor | Vercel + Neon | AWS Amplify + RDS |
-|--------|---------------|-------------------|
-| **Setup Time** | 5 minutes | Hours |
-| **Monthly Cost (MVP)** | $0 | $15-25 (RDS minimum) |
-| **Infrastructure Code** | None | CDK/TypeScript |
-| **Learning Curve** | Minimal | Steep |
-| **Next.js Integration** | Native | Good |
-| **Scaling Complexity** | Upgrade tier | Significant changes |
-| **Migration Path** | Easy to AWS later | Already on AWS |
+| Factor                  | Vercel + Neon     | AWS Amplify + RDS    |
+| ----------------------- | ----------------- | -------------------- |
+| **Setup Time**          | 5 minutes         | Hours                |
+| **Monthly Cost (MVP)**  | $0                | $15-25 (RDS minimum) |
+| **Infrastructure Code** | None              | CDK/TypeScript       |
+| **Learning Curve**      | Minimal           | Steep                |
+| **Next.js Integration** | Native            | Good                 |
+| **Scaling Complexity**  | Upgrade tier      | Significant changes  |
+| **Migration Path**      | Easy to AWS later | Already on AWS       |
 
 **Bottom Line**: For a personal project that might be shared with a team, Vercel + Neon provides the fastest path to production with zero cost and minimal complexity. If CodeFlow becomes a commercial product, migration to AWS is straightforward.
-

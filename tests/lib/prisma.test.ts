@@ -1,10 +1,11 @@
 /**
  * Unit Tests for Prisma Client Singleton
- * 
+ *
  * Tests the Prisma client initialization and singleton pattern
  */
 
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
+
 import { prisma } from '@/lib/prisma'
 
 describe('Prisma Client', () => {

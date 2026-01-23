@@ -1,11 +1,12 @@
 /**
  * Database Service Layer
- * 
+ *
  * Provides business logic methods for database operations using Prisma.
  * Implements repository pattern for data access abstraction.
  */
 
-import { PrismaClient, UserProfile, Repository } from '@prisma/client'
+import { type PrismaClient, type Repository, type UserProfile } from '@prisma/client'
+
 import { prisma as defaultPrisma } from './prisma'
 
 export interface CreateUserProfileData {
@@ -105,10 +106,7 @@ export class DatabaseService {
    * Get all repositories for a user
    * @param activeOnly - If true, only return active repositories
    */
-  async getUserRepositories(
-    userId: string,
-    activeOnly = false
-  ): Promise<Repository[]> {
+  async getUserRepositories(userId: string, activeOnly = false): Promise<Repository[]> {
     return this.prisma.repository.findMany({
       where: {
         userId,
@@ -140,10 +138,7 @@ export class DatabaseService {
    * Add a new repository to monitor for a user
    * @throws Error if repository already exists
    */
-  async addRepository(
-    userId: string,
-    data: RepositoryData
-  ): Promise<Repository> {
+  async addRepository(userId: string, data: RepositoryData): Promise<Repository> {
     try {
       return await this.prisma.repository.create({
         data: {
@@ -167,10 +162,7 @@ export class DatabaseService {
    * Update repository settings
    * Currently supports updating isActive status
    */
-  async updateRepository(
-    id: string,
-    data: { isActive?: boolean }
-  ): Promise<Repository> {
+  async updateRepository(id: string, data: { isActive?: boolean }): Promise<Repository> {
     return this.prisma.repository.update({
       where: { id },
       data,

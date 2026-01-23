@@ -42,7 +42,8 @@ CodeFlow transforms PR management through three core innovations:
 
 **Current Behaviors:** Developers check GitHub notifications multiple times daily, often losing track of PR status between reviews. They use Teams for quick questions and coordination but switch to GitHub for PR work, creating context-switching overhead.
 
-**Pain Points:** 
+**Pain Points:**
+
 - Spending 20+ minutes daily triaging PR notifications
 - Missing when their PRs are ready for re-review after addressing feedback
 - Losing track of PRs they've reviewed that need follow-up
@@ -63,18 +64,21 @@ CodeFlow transforms PR management through three core innovations:
 ## Goals & Success Metrics
 
 ### Business Objectives
+
 - Achieve 100+ team signups within 6 months of MVP launch
 - Demonstrate 50% reduction in average PR review cycle time for active users
 - Establish CodeFlow as the preferred PR workflow tool for Teams-integrated development environments
 - Build foundation for broader DevOps workflow management platform
 
 ### User Success Metrics
+
 - Daily active usage: 80% of team members using dashboard within first month
 - Notification engagement: 70% action rate on Teams notifications (vs. <20% for email)
 - Time savings: Average 15 minutes/day saved on PR management tasks
 - Team velocity: 25% faster merge cycles for teams using full feature set
 
 ### Key Performance Indicators (KPIs)
+
 - **PR Cycle Time:** Average hours from "ready for review" to merge (target: 50% reduction)
 - **User Engagement:** Daily dashboard views per active user (target: 3+ sessions)
 - **Teams Integration Usage:** Percentage of PR actions taken through Teams vs. GitHub (target: 40%)
@@ -83,6 +87,7 @@ CodeFlow transforms PR management through three core innovations:
 ## MVP Scope
 
 ### Core Features (Must Have)
+
 - **OAuth GitHub Integration:** Secure authentication and repository access for PR data retrieval
 - **Four-Section Dashboard:** Automated PR categorization (Needs Review, Returned to You, My PRs, Reviewed-Awaiting)
 - **Basic PR Cards:** Essential information display (title, author, reviewers, status, comment count)
@@ -91,8 +96,9 @@ CodeFlow transforms PR management through three core innovations:
 - **Review Outcome Templates:** Structured messaging ("APPROVED", "3 comments need addressing", "Changes requested")
 
 ### Out of Scope for MVP
+
 - LLM-powered feature detection and personalized PR highlighting
-- Complex code ownership parsing and subscription management  
+- Complex code ownership parsing and subscription management
 - Advanced filtering, sorting, and grouping capabilities
 - 24-hour merge history dashboard for regression detection
 - Interactive Teams actions (Start Review, Quick Approve buttons)
@@ -101,11 +107,13 @@ CodeFlow transforms PR management through three core innovations:
 - Advanced analytics and reporting features
 
 ### MVP Success Criteria
+
 MVP succeeds if a 5-person development team can complete their daily PR management 50% faster, with 80% of PR status updates received through Teams resulting in immediate action within 2 hours.
 
 ## Post-MVP Vision
 
 ### Phase 2 Features
+
 - Interactive Teams notifications with actionable buttons (Start Review, Acknowledge, Quick Approve)
 - Advanced PR filtering and grouping for large repository management
 - LLM-powered feature detection matching user-defined interest areas
@@ -113,9 +121,11 @@ MVP succeeds if a 5-person development team can complete their daily PR manageme
 - Basic analytics dashboard showing team review patterns
 
 ### Long-term Vision
+
 CodeFlow evolves into the central nervous system for development team workflows, expanding beyond PR management to include deployment notifications, incident management, and cross-platform DevOps coordination. The platform becomes the definitive solution for reducing context-switching overhead in modern development environments.
 
 ### Expansion Opportunities
+
 - Integration with additional git platforms (GitLab, Bitbucket)
 - Support for other communication platforms (Slack, Discord)
 - Advanced AI-powered code review assistance
@@ -125,17 +135,20 @@ CodeFlow evolves into the central nervous system for development team workflows,
 ## Technical Considerations
 
 ### Platform Requirements
+
 - **Target Platforms:** Web application (responsive design)
 - **Browser Support:** Modern browsers (Chrome, Firefox, Safari, Edge) - last 2 versions
 - **Performance Requirements:** Dashboard load time <2 seconds, real-time updates within 60 seconds
 
 ### Technology Preferences
+
 - **Full-Stack Framework:** Next.js with TypeScript (unified frontend/backend, aligns with portfolio development goals)
 - **API Routes:** Next.js API routes deployed as Vercel Functions
 - **Database:** PostgreSQL on Neon (serverless, generous free tier, Prisma compatible)
 - **Hosting/Infrastructure:** Vercel (zero-config Next.js deployment, automatic preview deployments, global CDN)
 
 ### Architecture Considerations
+
 - **Repository Structure:** Monorepo for rapid MVP development
 - **Service Architecture:** Monolithic initially, designed for future microservices migration
 - **Integration Requirements:** GitHub API, Microsoft Graph API for Teams, OAuth 2.0
@@ -144,12 +157,14 @@ CodeFlow evolves into the central nervous system for development team workflows,
 ## Constraints & Assumptions
 
 ### Constraints
+
 - **Budget:** Bootstrap/self-funded development, minimal external service costs during MVP
 - **Timeline:** 2-week MVP development target for initial team validation
 - **Resources:** Single developer initially, focus on lean implementation
 - **Technical:** Must work with existing GitHub permissions, Teams admin approval required
 
 ### Key Assumptions
+
 - Teams integration provides sufficient notification reach for target users
 - 60-second polling frequency meets real-time requirements without API rate limiting
 - GitHub API rate limits support planned usage patterns for target team sizes
@@ -159,18 +174,21 @@ CodeFlow evolves into the central nervous system for development team workflows,
 ## Risks & Open Questions
 
 ### Key Risks
+
 - **API Rate Limiting:** GitHub API limits may constrain real-time updates for large teams
 - **Teams Approval Process:** Microsoft Teams app approval may delay enterprise adoption
 - **User Adoption:** Developers may resist changing established GitHub workflows
 - **Competition Response:** GitHub may enhance native PR management features
 
 ### Open Questions
+
 - What's the optimal notification frequency balance between real-time and API efficiency?
 - How do we handle GitHub permissions and private repository access securely?
 - What's the minimum viable Teams integration that delivers maximum value?
 - Should we prioritize browser notifications or Teams integration for MVP?
 
 ### Areas Needing Further Research
+
 - Microsoft Teams bot development and approval process timeline
 - GitHub API rate limiting impact on planned polling frequency
 - Competitive landscape analysis of existing PR management tools
@@ -179,9 +197,11 @@ CodeFlow evolves into the central nervous system for development team workflows,
 ## Appendices
 
 ### A. Research Summary
+
 Based on brainstorming session analysis using First Principles Thinking, Resource Constraints, Role Playing, and SCAMPER methods. Key insights include Teams integration as primary differentiator, focus on review outcomes over events, and 2-week MVP feasibility with simplified feature set.
 
 ### C. References
+
 - Brainstorming Session Results (August 22, 2025)
 - GitHub API Documentation
 - Microsoft Teams Bot Framework Documentation
@@ -190,6 +210,7 @@ Based on brainstorming session analysis using First Principles Thinking, Resourc
 ## Next Steps
 
 ### Immediate Actions
+
 1. Set up development environment and Next.js project structure
 2. Create GitHub OAuth application for API access
 3. Research Microsoft Teams bot development requirements and approval process
@@ -198,5 +219,5 @@ Based on brainstorming session analysis using First Principles Thinking, Resourc
 6. Set up Next.js application with TypeScript and required dependencies
 
 ### PM Handoff
-This Project Brief provides the full context for CodeFlow. Please start in 'PRD Generation Mode', review the brief thoroughly to work with the user to create the PRD section by section as the template indicates, asking for any necessary clarification or suggesting improvements.
 
+This Project Brief provides the full context for CodeFlow. Please start in 'PRD Generation Mode', review the brief thoroughly to work with the user to create the PRD section by section as the template indicates, asking for any necessary clarification or suggesting improvements.

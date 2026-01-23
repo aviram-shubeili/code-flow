@@ -9,9 +9,9 @@ export const authOptions = {}
 
 // Mock NextAuth default export
 const NextAuth = {
-    getServerSession,
-    signIn,
-    signOut,
+  getServerSession,
+  signIn,
+  signOut,
 }
 
 export default NextAuth

@@ -9,7 +9,8 @@ This section defines the local development setup, commands, and processes for co
 CodeFlow follows a features-first development strategy, building core functionality before finalizing infrastructure decisions. This approach enables architecture decisions based on real requirements rather than theoretical needs.
 
 **Sprint Structure:**
-- **Sprint 1 (Weeks 1-2)**: Next.js foundation + GitHub integration  
+
+- **Sprint 1 (Weeks 1-2)**: Next.js foundation + GitHub integration
 - **Sprint 2 (Weeks 3-4)**: Dashboard UI + core features
 - **Sprint 3 (Weeks 5-6)**: Infrastructure decision + deployment
 
@@ -18,6 +19,7 @@ CodeFlow follows a features-first development strategy, building core functional
 #### Prerequisites
 
 **Required Software:**
+
 ```bash
 # Node.js 18+ (recommended via nvm)
 nvm install 18
@@ -37,6 +39,7 @@ brew install docker docker-compose
 #### Initial Setup
 
 **Clone and Setup:**
+
 ```bash
 # Clone repository
 git clone https://github.com/your-org/codeflow.git
@@ -64,6 +67,7 @@ npm run dev
 #### Development Commands
 
 **Core Development:**
+
 ```bash
 # Start development server (http://localhost:3000)
 npm run dev
@@ -94,6 +98,7 @@ npm run type-check        # TypeScript
 ```
 
 **Build and Deployment:**
+
 ```bash
 # Production build
 npm run build
@@ -136,9 +141,10 @@ LOG_LEVEL="debug"
 #### GitHub OAuth App Setup
 
 **Create GitHub OAuth App:**
+
 1. Go to GitHub Settings → Developer settings → OAuth Apps
 2. Click "New OAuth App"
-3. **Application name**: CodeFlow Development  
+3. **Application name**: CodeFlow Development
 4. **Homepage URL**: `http://localhost:3000`
 5. **Authorization callback URL**: `http://localhost:3000/api/auth/callback/github`
 6. Copy Client ID and Client Secret to `.env.local`
@@ -146,6 +152,7 @@ LOG_LEVEL="debug"
 #### Database Setup Scripts
 
 **Database initialization:**
+
 ```typescript
 // prisma/seed.ts
 import { PrismaClient } from '@prisma/client'
@@ -154,14 +161,14 @@ const prisma = new PrismaClient()
 
 async function main() {
   console.log('🌱 Seeding development database...')
-  
+
   // Create test user profile
   const testUser = await prisma.user.create({
     data: {
       email: 'dev@codeflow.dev',
       name: 'Development User',
       image: 'https://avatars.githubusercontent.com/u/1?v=4',
-    }
+    },
   })
 
   await prisma.userProfile.create({
@@ -169,7 +176,7 @@ async function main() {
       userId: testUser.id,
       githubId: 123456789,
       username: 'dev-user',
-    }
+    },
   })
 
   // Create test repositories
@@ -191,7 +198,7 @@ async function main() {
         isActive: false,
         userId: testUser.id,
       },
-    ]
+    ],
   })
 
   console.log('✅ Database seeded successfully!')
@@ -212,6 +219,7 @@ main()
 #### Unit Testing (Vitest + Testing Library)
 
 **Component Testing:**
+
 ```typescript
 // tests/components/dashboard/PullRequestCard.test.tsx
 import { render, screen, fireEvent } from '@testing-library/react'
@@ -255,6 +263,7 @@ describe('PullRequestCard', () => {
 ```
 
 **API Hook Testing:**
+
 ```typescript
 // tests/hooks/api/useDashboard.test.ts
 import { renderHook, waitFor } from '@testing-library/react'
@@ -299,6 +308,7 @@ describe('useDashboard', () => {
 **Integration tests validate interactions between layers using real database and mocked external services.**
 
 **Database Layer Integration:**
+
 ```typescript
 // tests/integration/database/user-repository.test.ts
 import { prisma } from '@/lib/prisma'
@@ -319,17 +329,17 @@ describe('User Repository Integration', () => {
     const userData = {
       userId: 'test-user-id',
       githubId: 12345,
-      username: 'testuser'
+      username: 'testuser',
     }
-    
+
     const profile = await db.createUserProfile(userData)
-    
+
     // Verify data persisted to real database
     expect(profile.id).toBeDefined()
     expect(profile.githubId).toBe(12345)
-    
+
     const dbProfile = await prisma.userProfile.findUnique({
-      where: { githubId: 12345 }
+      where: { githubId: 12345 },
     })
     expect(dbProfile).toBeTruthy()
   })
@@ -337,6 +347,7 @@ describe('User Repository Integration', () => {
 ```
 
 **API Route Integration with Mocked External Services:**
+
 ```typescript
 // tests/integration/api/pull-requests.test.ts
 import request from 'supertest'
@@ -348,19 +359,19 @@ vi.mock('@octokit/rest', () => ({
   Octokit: vi.fn().mockImplementation(() => ({
     rest: {
       pulls: {
-        list: vi.fn().mockResolvedValue({ data: mockGitHubPRs })
-      }
-    }
-  }))
+        list: vi.fn().mockResolvedValue({ data: mockGitHubPRs }),
+      },
+    },
+  })),
 }))
 
 describe('GET /api/pull-requests', () => {
   let app: any
-  
+
   beforeAll(async () => {
     app = await createTestApp()
   })
-  
+
   beforeEach(async () => {
     await prisma.$executeRaw`TRUNCATE TABLE users, sessions CASCADE`
   })
@@ -369,18 +380,18 @@ describe('GET /api/pull-requests', () => {
     const response = await request(app).get('/api/pull-requests')
     expect(response.status).toBe(401)
   })
-  
+
   it('returns dashboard data for authenticated user', async () => {
     // Create real user in test database
     const user = await prisma.user.create({
-      data: { email: 'test@example.com', name: 'Test User' }
+      data: { email: 'test@example.com', name: 'Test User' },
     })
     const session = await createTestSession(user.id)
-    
+
     const response = await request(app)
       .get('/api/pull-requests')
       .set('Cookie', `session-token=${session.sessionToken}`)
-    
+
     expect(response.status).toBe(200)
     expect(response.body.needsReview).toBeArray()
   })
@@ -388,6 +399,7 @@ describe('GET /api/pull-requests', () => {
 ```
 
 **Test Database Configuration:**
+
 ```typescript
 // vitest.config.integration.ts
 import { defineConfig } from 'vitest/config'
@@ -399,13 +411,13 @@ export default defineConfig({
     setupFiles: ['./tests/integration/setup.ts'],
     threads: false, // Run serially to avoid DB conflicts
     testTimeout: 10000, // Longer timeout for DB operations
-    include: ['tests/integration/**/*.test.ts']
+    include: ['tests/integration/**/*.test.ts'],
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './')
-    }
-  }
+      '@': path.resolve(__dirname, './'),
+    },
+  },
 })
 ```
 
@@ -424,7 +436,7 @@ beforeAll(async () => {
   // Ensure test database is running
   console.log('Starting test database...')
   await execAsync('docker-compose up -d postgres-test')
-  
+
   // Run migrations on test database
   await execAsync('DATABASE_URL=$TEST_DATABASE_URL npx prisma migrate deploy')
 }, 30000)
@@ -435,6 +447,7 @@ afterAll(async () => {
 ```
 
 **Docker Test Database Setup:**
+
 ```yaml
 # docker-compose.yml addition
 postgres-test:
@@ -444,14 +457,15 @@ postgres-test:
     POSTGRES_USER: test_user
     POSTGRES_PASSWORD: test_pass
   ports:
-    - "5433:5432"
+    - '5433:5432'
   tmpfs:
-    - /var/lib/postgresql/data  # In-memory for speed
+    - /var/lib/postgresql/data # In-memory for speed
 ```
 
 #### E2E Testing (Playwright)
 
 **Authentication Flow:**
+
 ```typescript
 // tests/e2e/authentication.spec.ts
 import { test, expect } from '@playwright/test'
@@ -459,16 +473,16 @@ import { test, expect } from '@playwright/test'
 test.describe('Authentication', () => {
   test('user can sign in with GitHub', async ({ page }) => {
     await page.goto('/')
-    
+
     // Click sign in button
     await page.click('text=Sign in with GitHub')
-    
+
     // Should redirect to GitHub OAuth (or mock in test env)
     await expect(page).toHaveURL(/github\.com\/login\/oauth/)
-    
+
     // Mock OAuth callback success
     await page.goto('/api/auth/callback/github?code=mock-code&state=mock-state')
-    
+
     // Should redirect to dashboard
     await expect(page).toHaveURL('/dashboard')
     await expect(page.locator('h1')).toContainText('Dashboard')
@@ -476,7 +490,7 @@ test.describe('Authentication', () => {
 
   test('protected routes redirect to sign in', async ({ page }) => {
     await page.goto('/dashboard')
-    
+
     // Should redirect to sign in page
     await expect(page).toHaveURL('/auth/signin')
     await expect(page.locator('h1')).toContainText('Sign in')
@@ -485,6 +499,7 @@ test.describe('Authentication', () => {
 ```
 
 **Dashboard Functionality:**
+
 ```typescript
 // tests/e2e/dashboard.spec.ts
 import { test, expect } from '@playwright/test'
@@ -496,9 +511,9 @@ test.describe('Dashboard', () => {
     await page.addInitScript(() => {
       window.sessionStorage.setItem('next-auth.session-token', 'mock-token')
     })
-    
+
     // Mock API responses
-    await page.route('/api/pull-requests', async route => {
+    await page.route('/api/pull-requests', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -509,13 +524,13 @@ test.describe('Dashboard', () => {
 
   test('displays dashboard sections correctly', async ({ page }) => {
     await page.goto('/dashboard')
-    
+
     // Check all four sections are present
     await expect(page.locator('[data-testid="needs-review"]')).toBeVisible()
     await expect(page.locator('[data-testid="returned-to-you"]')).toBeVisible()
     await expect(page.locator('[data-testid="my-prs"]')).toBeVisible()
     await expect(page.locator('[data-testid="reviewed-awaiting"]')).toBeVisible()
-    
+
     // Check PR cards are rendered
     const prCards = page.locator('[data-testid="pr-card"]')
     await expect(prCards).toHaveCount(mockDashboardData.needsReview.length)
@@ -523,13 +538,13 @@ test.describe('Dashboard', () => {
 
   test('can refresh dashboard data', async ({ page }) => {
     await page.goto('/dashboard')
-    
+
     // Click refresh button
     await page.click('[data-testid="refresh-button"]')
-    
+
     // Should show loading state temporarily
     await expect(page.locator('[data-testid="refresh-spinner"]')).toBeVisible()
-    
+
     // Should complete refresh
     await expect(page.locator('[data-testid="refresh-spinner"]')).not.toBeVisible()
   })
@@ -539,6 +554,7 @@ test.describe('Dashboard', () => {
 #### Test Configuration
 
 **Jest Configuration:**
+
 ```javascript
 // jest.config.js
 const nextJest = require('next/jest')
@@ -575,6 +591,7 @@ module.exports = createJestConfig(customJestConfig)
 ```
 
 **Playwright Configuration:**
+
 ```typescript
 // playwright.config.ts
 import { defineConfig, devices } from '@playwright/test'
@@ -613,4 +630,3 @@ export default defineConfig({
 ```
 
 This development workflow provides a comprehensive foundation for consistent, high-quality development with robust testing and quality assurance processes.
-

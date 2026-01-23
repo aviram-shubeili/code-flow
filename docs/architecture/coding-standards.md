@@ -5,35 +5,41 @@ This section defines the essential coding standards and patterns for AI agents a
 ### Critical Fullstack Rules
 
 **Type Safety and Sharing:**
+
 - **Shared Types**: Always define types in `types/` directory and import from there - never duplicate type definitions
 - **API Contracts**: API request/response types must match exactly between frontend and backend
 - **Database Types**: Use Prisma-generated types, never manually type database models
 - **GitHub API Types**: Import from `types/github.ts`, don't use `any` for GitHub API responses
 
 **API Development:**
+
 - **Error Handling**: All API routes must use `withErrorHandling` wrapper and return structured errors
 - **Authentication**: Never skip session validation - use `getServerSession` in all protected routes
 - **Rate Limiting**: Always check GitHub rate limits before making API calls
 - **Request IDs**: Generate unique request IDs for tracing and debugging
 
 **State Management:**
+
 - **TanStack Query**: Never bypass TanStack Query for server state - it's the single source of truth
 - **Zustand**: Use only for UI state (modals, filters, etc.) - never for server data
 - **Local State**: Prefer server state over local state when data comes from APIs
 - **Cache Invalidation**: Always invalidate related queries after mutations
 
 **Database Operations:**
+
 - **Prisma Only**: Never write raw SQL - use Prisma client for all database operations
 - **Connection Management**: Use the singleton Prisma instance from `lib/prisma.ts`
 - **Transactions**: Use Prisma transactions for operations affecting multiple tables
 - **Error Handling**: Wrap database operations in try-catch and throw AppError instances
 
 **Environment Variables:**
+
 - **Validation**: All environment variables must be validated in `lib/env.ts`
 - **Access Pattern**: Access environment variables only through validated config objects
 - **Secrets**: Use AWS Secrets Manager for production secrets, never hardcode
 
 **TypeScript Standards:**
+
 - **Strict Mode**: All TypeScript files must pass strict mode compilation with zero errors
 - **No Any**: Never use `any` type - use `unknown` for truly unknown types, proper interfaces otherwise
 - **Explicit Return Types**: All functions must have explicit return type annotations
@@ -44,22 +50,23 @@ This section defines the essential coding standards and patterns for AI agents a
 ### Strict TypeScript Configuration
 
 **Required tsconfig.json Settings:**
+
 ```json
 // tsconfig.json - MANDATORY strict settings
 {
   "compilerOptions": {
-    "strict": true,                    // Enable all strict type-checking options
-    "noImplicitAny": true,            // Error on expressions with implied 'any'
-    "noImplicitReturns": true,        // Error when not all code paths return a value
-    "noImplicitThis": true,           // Error on 'this' with implied 'any'
-    "noUnusedLocals": true,           // Error on unused local variables
-    "noUnusedParameters": true,       // Error on unused function parameters
+    "strict": true, // Enable all strict type-checking options
+    "noImplicitAny": true, // Error on expressions with implied 'any'
+    "noImplicitReturns": true, // Error when not all code paths return a value
+    "noImplicitThis": true, // Error on 'this' with implied 'any'
+    "noUnusedLocals": true, // Error on unused local variables
+    "noUnusedParameters": true, // Error on unused function parameters
     "exactOptionalPropertyTypes": true, // Strict optional property types
     "noUncheckedIndexedAccess": true, // Add 'undefined' to index signature results
-    "noImplicitOverride": true,       // Error when override modifier is missing
-    "allowUnreachableCode": false,    // Error on unreachable code
-    "allowUnusedLabels": false,       // Error on unused labels
-    "skipLibCheck": false,            // Check all .d.ts files (even node_modules)
+    "noImplicitOverride": true, // Error when override modifier is missing
+    "allowUnreachableCode": false, // Error on unreachable code
+    "allowUnusedLabels": false, // Error on unused labels
+    "skipLibCheck": false, // Check all .d.ts files (even node_modules)
     "forceConsistentCasingInFileNames": true // Error on inconsistent casing
   }
 }
@@ -68,19 +75,22 @@ This section defines the essential coding standards and patterns for AI agents a
 **Mandatory Type Patterns:**
 
 **Function Signatures:**
+
 ```typescript
 // ❌ WRONG - Missing return type
 export function processData(data) {
-  return data.map(item => item.value)
+  return data.map((item) => item.value)
 }
 
 // ✅ CORRECT - Explicit types throughout
 export function processData(data: DataItem[]): ProcessedValue[] {
-  return data.map((item: DataItem): ProcessedValue => ({
-    id: item.id,
-    value: item.value,
-    timestamp: new Date(),
-  }))
+  return data.map(
+    (item: DataItem): ProcessedValue => ({
+      id: item.id,
+      value: item.value,
+      timestamp: new Date(),
+    })
+  )
 }
 
 // ❌ WRONG - Using 'any'
@@ -95,6 +105,7 @@ export function handleApiResponse<T extends ApiResponse>(response: T): T['data']
 ```
 
 **Type Guards Instead of Assertions:**
+
 ```typescript
 // ❌ WRONG - Type assertion
 const user = data as User
@@ -102,11 +113,13 @@ const userName = user.name
 
 // ✅ CORRECT - Type guard
 function isUser(data: unknown): data is User {
-  return typeof data === 'object' && 
-         data !== null && 
-         'id' in data && 
-         'name' in data &&
-         typeof (data as User).name === 'string'
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    'id' in data &&
+    'name' in data &&
+    typeof (data as User).name === 'string'
+  )
 }
 
 if (isUser(data)) {
@@ -115,6 +128,7 @@ if (isUser(data)) {
 ```
 
 **Null Safety Patterns:**
+
 ```typescript
 // ❌ WRONG - Not handling null/undefined
 function processUser(user: User | null) {
@@ -126,7 +140,7 @@ function processUser(user: User | null): string | null {
   if (user === null) {
     return null
   }
-  
+
   return user.name?.toUpperCase() ?? 'Unknown'
 }
 
@@ -135,13 +149,14 @@ function processUser(user: User | null): string {
   if (user === null) {
     throw new Error('User cannot be null')
   }
-  
+
   // TypeScript knows user is not null here
   return user.name.toUpperCase()
 }
 ```
 
 **API Response Typing:**
+
 ```typescript
 // ❌ WRONG - Generic object
 interface ApiResponse {
@@ -164,16 +179,17 @@ interface RepositoriesApiResponse extends ApiResponse<{ repositories: Repository
 // Usage with proper typing
 export async function fetchDashboard(): Promise<DashboardApiResponse> {
   const response = await fetch('/api/pull-requests')
-  
+
   if (!response.ok) {
     throw new Error(`API error: ${response.status}`)
   }
-  
+
   return response.json() as Promise<DashboardApiResponse>
 }
 ```
 
 **Component Props Typing:**
+
 ```typescript
 // ❌ WRONG - Loose prop types
 interface Props {
@@ -200,6 +216,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 ```
 
 **Error Handling Types:**
+
 ```typescript
 // ❌ WRONG - Catching unknown errors loosely
 try {
@@ -240,16 +257,17 @@ function handleError(error: unknown): never {
       validationCode: error.code,
     })
   }
-  
+
   if (error instanceof Error) {
     throw new AppError(ApiErrorCode.INTERNAL_ERROR, error.message, 500)
   }
-  
+
   throw new AppError(ApiErrorCode.INTERNAL_ERROR, 'Unknown error', 500)
 }
 ```
 
 **Environment Variable Validation:**
+
 ```typescript
 // lib/env.ts - MANDATORY for all environment variables
 import { z } from 'zod'
@@ -280,6 +298,7 @@ const dbUrl = env.DATABASE_URL // TypeScript knows this is a string
 ```
 
 **TypeScript Compilation Validation:**
+
 ```bash
 # MANDATORY - Must pass before any commit
 npm run type-check
@@ -290,20 +309,21 @@ npm run type-check --noEmit
 
 ### Naming Conventions
 
-| Element | Convention | Example |
-|---------|------------|---------|
-| React Components | PascalCase | `DashboardGrid`, `PullRequestCard` |
-| Custom Hooks | camelCase with 'use' | `useDashboard`, `useRepositories` |
-| API Routes | kebab-case | `/api/pull-requests`, `/api/rate-limit` |
-| Database Tables | snake_case | `user_profiles`, `repositories` |
-| TypeScript Interfaces | PascalCase | `GitHubPullRequest`, `DashboardData` |
-| Zustand Stores | camelCase with 'Store' | `authStore`, `dashboardStore` |
-| Constants | SCREAMING_SNAKE_CASE | `API_BASE_URL`, `MAX_RETRIES` |
-| CSS Classes | kebab-case (Tailwind) | `bg-blue-600`, `hover:bg-blue-700` |
+| Element               | Convention             | Example                                 |
+| --------------------- | ---------------------- | --------------------------------------- |
+| React Components      | PascalCase             | `DashboardGrid`, `PullRequestCard`      |
+| Custom Hooks          | camelCase with 'use'   | `useDashboard`, `useRepositories`       |
+| API Routes            | kebab-case             | `/api/pull-requests`, `/api/rate-limit` |
+| Database Tables       | snake_case             | `user_profiles`, `repositories`         |
+| TypeScript Interfaces | PascalCase             | `GitHubPullRequest`, `DashboardData`    |
+| Zustand Stores        | camelCase with 'Store' | `authStore`, `dashboardStore`           |
+| Constants             | SCREAMING_SNAKE_CASE   | `API_BASE_URL`, `MAX_RETRIES`           |
+| CSS Classes           | kebab-case (Tailwind)  | `bg-blue-600`, `hover:bg-blue-700`      |
 
 ### Component Development Standards
 
 **Component Structure:**
+
 ```typescript
 // components/dashboard/PullRequestCard.tsx
 import { GitHubPullRequest } from '@/types/github'
@@ -317,11 +337,11 @@ interface PullRequestCardProps {
   className?: string
 }
 
-export function PullRequestCard({ 
-  pullRequest, 
-  section, 
-  onClick, 
-  className 
+export function PullRequestCard({
+  pullRequest,
+  section,
+  onClick,
+  className
 }: PullRequestCardProps) {
   // Component implementation
   return (
@@ -336,6 +356,7 @@ export type { PullRequestCardProps }
 ```
 
 **Hook Development:**
+
 ```typescript
 // hooks/api/useDashboard.ts
 import { useQuery } from '@tanstack/react-query'
@@ -345,9 +366,10 @@ import { apiRequest } from '@/lib/api-client'
 export function useDashboard(repositoryId?: string) {
   return useQuery({
     queryKey: ['dashboard', repositoryId] as const,
-    queryFn: () => apiRequest<DashboardCategorizationResult>(
-      `/pull-requests${repositoryId ? `?repository=${repositoryId}` : ''}`
-    ),
+    queryFn: () =>
+      apiRequest<DashboardCategorizationResult>(
+        `/pull-requests${repositoryId ? `?repository=${repositoryId}` : ''}`
+      ),
     staleTime: 2 * 60 * 1000, // 2 minutes
     enabled: true,
     retry: (failureCount, error) => {
@@ -358,13 +380,13 @@ export function useDashboard(repositoryId?: string) {
 }
 
 // Export query key for external cache invalidation
-export const dashboardQueryKey = (repositoryId?: string) => 
-  ['dashboard', repositoryId] as const
+export const dashboardQueryKey = (repositoryId?: string) => ['dashboard', repositoryId] as const
 ```
 
 ### API Route Standards
 
 **Route Handler Pattern:**
+
 ```typescript
 // app/api/repositories/route.ts
 import { NextRequest, NextResponse } from 'next/server'
@@ -421,6 +443,7 @@ export const POST = withErrorHandling(async (req: NextRequest) => {
 ### Testing Standards
 
 **Component Testing:**
+
 ```typescript
 // tests/components/dashboard/PullRequestCard.test.tsx
 import { render, screen, fireEvent } from '@testing-library/react'
@@ -440,14 +463,14 @@ describe('PullRequestCard', () => {
 
   it('renders PR information correctly', () => {
     render(<PullRequestCard {...defaultProps} />)
-    
+
     expect(screen.getByText(mockPullRequest.title)).toBeInTheDocument()
     expect(screen.getByText(`#${mockPullRequest.number}`)).toBeInTheDocument()
   })
 
   it('calls onClick when card is clicked', () => {
     render(<PullRequestCard {...defaultProps} />)
-    
+
     fireEvent.click(screen.getByRole('article'))
     expect(defaultProps.onClick).toHaveBeenCalledWith(mockPullRequest)
   })
@@ -455,6 +478,7 @@ describe('PullRequestCard', () => {
 ```
 
 **API Route Testing:**
+
 ```typescript
 // tests/api/repositories.test.ts
 // UNIT TEST PATTERN - Mock everything including database
@@ -476,7 +500,7 @@ describe('Unit: /api/repositories', () => {
   describe('GET /api/repositories', () => {
     it('returns user repositories when authenticated', async () => {
       mockGetServerSession.mockResolvedValue(mockSession)
-      
+
       const req = new NextRequest('http://localhost:3000/api/repositories')
       const response = await GET(req, {})
       const data = await response.json()
@@ -487,7 +511,7 @@ describe('Unit: /api/repositories', () => {
 
     it('returns 401 when not authenticated', async () => {
       mockGetServerSession.mockResolvedValue(null)
-      
+
       const req = new NextRequest('http://localhost:3000/api/repositories')
       const response = await GET(req, {})
 
@@ -506,16 +530,16 @@ vi.mock('@octokit/rest')
 
 describe('Integration: /api/repositories', () => {
   let app: any
-  
+
   beforeAll(async () => {
     app = await createTestApp()
   })
-  
+
   beforeEach(async () => {
     // Clean real test database
     await prisma.$executeRaw`TRUNCATE TABLE users, repositories CASCADE`
   })
-  
+
   afterAll(async () => {
     await prisma.$disconnect()
   })
@@ -523,17 +547,17 @@ describe('Integration: /api/repositories', () => {
   it('persists repository to database when added', async () => {
     // Create real user in test database
     const user = await prisma.user.create({
-      data: { email: 'test@example.com', name: 'Test' }
+      data: { email: 'test@example.com', name: 'Test' },
     })
     const session = await createTestSession(user.id)
-    
+
     const response = await request(app)
       .post('/api/repositories')
       .set('Cookie', `session-token=${session.sessionToken}`)
       .send({ githubId: 12345, name: 'test-repo', fullName: 'user/test-repo', owner: 'user' })
-    
+
     expect(response.status).toBe(201)
-    
+
     // Verify persisted to real database
     const repo = await prisma.repository.findFirst({ where: { githubId: 12345 } })
     expect(repo).toBeTruthy()

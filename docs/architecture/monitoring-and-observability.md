@@ -9,6 +9,7 @@ This section defines the monitoring stack and observability strategy for CodeFlo
 #### Vercel Logs & Speed Insights (Free Tier)
 
 **Log Aggregation Strategy:**
+
 ```typescript
 // lib/logger.ts
 import winston from 'winston'
@@ -27,23 +28,22 @@ const logger = winston.createLogger({
   },
   transports: [
     // Console logging for development
-    ...(process.env.NODE_ENV === 'development' 
-      ? [new winston.transports.Console({
-          format: winston.format.combine(
-            winston.format.colorize(),
-            winston.format.simple()
-          )
-        })]
-      : []
-    ),
-    
+    ...(process.env.NODE_ENV === 'development'
+      ? [
+          new winston.transports.Console({
+            format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
+          }),
+        ]
+      : []),
+
     // Vercel captures console.log in production automatically
     ...(process.env.NODE_ENV === 'production'
-      ? [new winston.transports.Console({
-          format: winston.format.json()
-        })]
-      : []
-    ),
+      ? [
+          new winston.transports.Console({
+            format: winston.format.json(),
+          }),
+        ]
+      : []),
   ],
 })
 
@@ -73,6 +73,7 @@ export function logApiError(error: unknown, context: Record<string, any>) {
 #### Key Metrics Collection
 
 **Application Metrics:**
+
 ```typescript
 // lib/metrics.ts
 interface Metric {
@@ -121,7 +122,12 @@ export class MetricsCollector {
     this.addMetric({ name, value: duration, unit: 'Milliseconds', dimensions })
   }
 
-  recordGauge(name: string, value: number, unit: Metric['unit'], dimensions?: Record<string, string>) {
+  recordGauge(
+    name: string,
+    value: number,
+    unit: Metric['unit'],
+    dimensions?: Record<string, string>
+  ) {
     this.addMetric({ name, value, unit, dimensions })
   }
 }
@@ -129,12 +135,9 @@ export class MetricsCollector {
 export const metrics = new MetricsCollector()
 
 // Usage in API routes
-export function withMetrics<T>(
-  operation: string,
-  handler: () => Promise<T>
-): Promise<T> {
+export function withMetrics<T>(operation: string, handler: () => Promise<T>): Promise<T> {
   const startTime = Date.now()
-  
+
   return handler()
     .then((result) => {
       metrics.recordDuration(`${operation}.Duration`, Date.now() - startTime)
@@ -177,6 +180,7 @@ Neon provides built-in monitoring through the Neon Dashboard:
 4. **Compute Usage** - Auto-suspend and compute time tracking
 
 **Custom Application Metrics:**
+
 ```typescript
 // lib/metrics.ts - Simplified for Vercel
 export function trackGitHubAPIUsage(remaining: number, used: number, limit: number) {
@@ -188,7 +192,7 @@ export function trackGitHubAPIUsage(remaining: number, used: number, limit: numb
     isThrottled: remaining < 100,
     timestamp: new Date().toISOString(),
   })
-  
+
   // Alert when approaching rate limit
   if (remaining < 500) {
     console.warn('GitHubAPI.RateLimitWarning', {
@@ -211,6 +215,7 @@ export function trackDatabaseHealth(connectionCount: number, maxConnections: num
 **Alerting Strategy (Optional - Third-Party Integration):**
 
 For production alerting beyond Vercel's built-in notifications:
+
 - **Sentry** - Error tracking and alerting
 - **Axiom** - Log aggregation with Vercel integration
 - **Better Uptime** - Uptime monitoring and incident management
@@ -237,10 +242,10 @@ export class PerformanceTracker {
 
     // Core Web Vitals tracking
     this.trackCoreWebVitals()
-    
+
     // Navigation timing
     this.trackNavigationTiming()
-    
+
     // Resource timing
     this.trackResourceTiming()
   }
@@ -309,7 +314,7 @@ export class PerformanceTracker {
     try {
       clsObserver.observe({ entryTypes: ['layout-shift'] })
       this.observers.push(clsObserver)
-      
+
       // Send CLS on page hide
       window.addEventListener('beforeunload', () => {
         this.sendMetric({
@@ -326,7 +331,9 @@ export class PerformanceTracker {
   private trackNavigationTiming() {
     window.addEventListener('load', () => {
       setTimeout(() => {
-        const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
+        const navigation = performance.getEntriesByType(
+          'navigation'
+        )[0] as PerformanceNavigationTiming
 
         this.sendMetric({
           name: 'TTI',
@@ -346,7 +353,7 @@ export class PerformanceTracker {
   private trackResourceTiming() {
     const resourceObserver = new PerformanceObserver((list) => {
       const entries = list.getEntries() as PerformanceResourceTiming[]
-      
+
       entries.forEach((entry) => {
         if (entry.name.includes('/_next/static/')) {
           this.sendMetric({
@@ -395,7 +402,7 @@ export class PerformanceTracker {
   }
 
   cleanup() {
-    this.observers.forEach(observer => observer.disconnect())
+    this.observers.forEach((observer) => observer.disconnect())
     this.observers = []
   }
 }
@@ -405,4 +412,3 @@ if (typeof window !== 'undefined') {
   PerformanceTracker.getInstance().init()
 }
 ```
-

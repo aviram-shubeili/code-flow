@@ -10,7 +10,7 @@ This section defines the frontend component structure and backend service organi
 src/
 ├── app/                    # Next.js 14 App Router
 │   ├── (dashboard)/        # Protected dashboard routes
-│   │   ├── dashboard/      
+│   │   ├── dashboard/
 │   │   │   └── page.tsx    # Main dashboard page
 │   │   ├── repositories/
 │   │   │   ├── page.tsx    # Repository management
@@ -116,27 +116,29 @@ src/
 #### Dashboard Components
 
 **DashboardGrid.tsx** - Main dashboard layout implementing four-section structure
+
 ```typescript
 interface DashboardGridProps {
-  data: DashboardCategorizationResult;
-  isLoading: boolean;
-  error: Error | null;
-  onRefresh: () => void;
+  data: DashboardCategorizationResult
+  isLoading: boolean
+  error: Error | null
+  onRefresh: () => void
 }
 
 // Implements responsive grid layout for:
 // - Needs Review (top-left)
-// - Returned to You (top-right)  
+// - Returned to You (top-right)
 // - My PRs (bottom-left)
 // - Reviewed & Awaiting (bottom-right)
 ```
 
 **PullRequestCard.tsx** - Individual PR display component
+
 ```typescript
 interface PullRequestCardProps {
-  pullRequest: GitHubPullRequest;
-  section: 'needsReview' | 'returnedToYou' | 'myPRs' | 'reviewedAwaiting';
-  onClick: (pr: GitHubPullRequest) => void;
+  pullRequest: GitHubPullRequest
+  section: 'needsReview' | 'returnedToYou' | 'myPRs' | 'reviewedAwaiting'
+  onClick: (pr: GitHubPullRequest) => void
 }
 
 // Features:
@@ -148,12 +150,13 @@ interface PullRequestCardProps {
 ```
 
 **SectionHeader.tsx** - Section titles with PR counts and actions
+
 ```typescript
 interface SectionHeaderProps {
-  title: string;
-  count: number;
-  description: string;
-  actions?: React.ReactNode;
+  title: string
+  count: number
+  description: string
+  actions?: React.ReactNode
 }
 
 // Displays section title, PR count, description
@@ -171,6 +174,7 @@ interface SectionHeaderProps {
 #### API Route Handlers
 
 **Authentication Services (Auth.js Integration)**
+
 ```typescript
 // app/api/auth/[...nextauth]/route.ts
 export const authOptions: NextAuthOptions = {
@@ -183,21 +187,23 @@ export const authOptions: NextAuthOptions = {
 ```
 
 **GitHub API Services**
+
 ```typescript
 // lib/github.ts
 export class GitHubService {
   constructor(private accessToken: string) {}
-  
+
   async getDashboardData(repositories: Repository[]): Promise<DashboardCategorizationResult>
   async getRepositories(query?: string): Promise<GitHubRepository[]>
   async getPullRequest(owner: string, repo: string, number: number): Promise<GitHubPullRequest>
   async getRateLimit(): Promise<GitHubRateLimit>
-  
+
   // Implements rate limiting, error handling, retry logic
 }
 ```
 
 **Database Services (Prisma)**
+
 ```typescript
 // lib/database.ts
 export class DatabaseService {
@@ -206,7 +212,7 @@ export class DatabaseService {
   async getUserRepositories(userId: string, active?: boolean): Promise<Repository[]>
   async updateRepository(id: string, data: UpdateRepositoryData): Promise<Repository>
   async deleteRepository(id: string): Promise<void>
-  
+
   // Handles user profiles and repository monitoring preferences only
 }
 ```
@@ -214,12 +220,14 @@ export class DatabaseService {
 ### Component Communication Patterns
 
 **State Management Strategy:**
+
 - **Zustand**: Global UI state (dashboard filters, modal states)
-- **TanStack Query**: Server state (GitHub API data, caching)  
+- **TanStack Query**: Server state (GitHub API data, caching)
 - **Auth.js**: Authentication state (session, user info)
 - **React State**: Local component state (form inputs, UI toggles)
 
 **Data Flow Pattern:**
+
 1. **User Action** → Component event handler
 2. **Component** → Custom hook (TanStack Query)
 3. **Hook** → API route handler
@@ -227,6 +235,7 @@ export class DatabaseService {
 5. **Response** → Hook cache → Component update
 
 **Error Handling Strategy:**
+
 - **API Errors**: Handled by TanStack Query with retry logic
 - **Rate Limiting**: Graceful degradation with stale data serving
 - **Network Errors**: Toast notifications with retry options
@@ -235,15 +244,16 @@ export class DatabaseService {
 ### Responsive Design Strategy
 
 **Breakpoint Strategy (Tailwind CSS):**
+
 - **Mobile**: Single-column dashboard, drawer navigation
-- **Tablet**: Two-column dashboard grid, sidebar navigation  
+- **Tablet**: Two-column dashboard grid, sidebar navigation
 - **Desktop**: Four-column dashboard grid, persistent sidebar
 
 **Component Adaptivity:**
+
 - Dashboard grid collapses to single column on mobile
 - PR cards show condensed information on small screens
 - Repository management uses full-screen modals on mobile
 - Navigation transforms to hamburger menu on mobile
 
 This component architecture provides a scalable foundation for the MVP while maintaining clear separation of concerns and following Next.js best practices.
-

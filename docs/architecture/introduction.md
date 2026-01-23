@@ -18,9 +18,8 @@ This is a new project starting from scratch without an existing codebase or star
 
 ### Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|--------|
-| 2025-08-24 | 1.0 | Initial architecture document creation | Winston (Architect) |
-| 2025-09-20 | 2.0 | Strategic pivot to features-first development approach | Winston (Architect) |
-| 2025-09-21 | 2.1 | Updated sprint organization and platform decision timeline | Winston (Architect) |
-
+| Date       | Version | Description                                                | Author              |
+| ---------- | ------- | ---------------------------------------------------------- | ------------------- |
+| 2025-08-24 | 1.0     | Initial architecture document creation                     | Winston (Architect) |
+| 2025-09-20 | 2.0     | Strategic pivot to features-first development approach     | Winston (Architect) |
+| 2025-09-21 | 2.1     | Updated sprint organization and platform decision timeline | Winston (Architect) |

@@ -7,6 +7,7 @@ This section defines the detailed frontend architecture for CodeFlow's React/Nex
 #### Component Organization Strategy
 
 **File Structure:**
+
 ```
 src/components/
 ├── ui/                     # Base UI components (reusable)
@@ -17,7 +18,7 @@ src/components/
 │   ├── Badge.tsx
 │   ├── Spinner.tsx
 │   └── index.ts            # Barrel exports
-├── dashboard/              # Dashboard-specific components  
+├── dashboard/              # Dashboard-specific components
 │   ├── DashboardGrid.tsx   # Four-section layout
 │   ├── PullRequestCard.tsx # Individual PR display
 │   ├── SectionHeader.tsx   # Section titles with counts
@@ -43,6 +44,7 @@ src/components/
 #### Component Templates
 
 **Base Component Template:**
+
 ```typescript
 // components/ui/Button.tsx
 import { forwardRef, type ButtonHTMLAttributes } from 'react'
@@ -91,6 +93,7 @@ export { Button }
 ```
 
 **Dashboard Component Template:**
+
 ```typescript
 // components/dashboard/PullRequestCard.tsx
 import { GitHubPullRequest } from '@/types/github'
@@ -105,9 +108,9 @@ interface PullRequestCardProps {
 
 export function PullRequestCard({ pullRequest, section, onClick }: PullRequestCardProps) {
   const timeAgo = formatDistanceToNow(new Date(pullRequest.updated_at), { addSuffix: true })
-  
+
   return (
-    <Card 
+    <Card
       className="p-4 hover:shadow-md transition-shadow cursor-pointer"
       onClick={() => onClick(pullRequest)}
     >
@@ -119,10 +122,10 @@ export function PullRequestCard({ pullRequest, section, onClick }: PullRequestCa
           <p className="text-sm text-gray-600 mt-1">
             {pullRequest.head.repo?.full_name} #{pullRequest.number}
           </p>
-          
+
           <div className="flex items-center mt-2 space-x-2">
-            <img 
-              src={pullRequest.user.avatar_url} 
+            <img
+              src={pullRequest.user.avatar_url}
               alt={pullRequest.user.login}
               className="h-5 w-5 rounded-full"
             />
@@ -133,7 +136,7 @@ export function PullRequestCard({ pullRequest, section, onClick }: PullRequestCa
             <span className="text-sm text-gray-500">{timeAgo}</span>
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-2 ml-4">
           {pullRequest.draft && (
             <Badge variant="secondary">Draft</Badge>
@@ -156,6 +159,7 @@ export function PullRequestCard({ pullRequest, section, onClick }: PullRequestCa
 #### Zustand Store Structure
 
 **Global State Organization:**
+
 ```typescript
 // stores/authStore.ts
 import { create } from 'zustand'
@@ -173,7 +177,7 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       user: null,
       isLoading: false,
-      
+
       signIn: async () => {
         set({ isLoading: true })
         try {
@@ -182,7 +186,7 @@ export const useAuthStore = create<AuthState>()(
           set({ isLoading: false })
         }
       },
-      
+
       signOut: async () => {
         set({ isLoading: true })
         try {
@@ -199,6 +203,7 @@ export const useAuthStore = create<AuthState>()(
 ```
 
 **Dashboard State Management:**
+
 ```typescript
 // stores/dashboardStore.ts
 import { create } from 'zustand'
@@ -216,7 +221,7 @@ export const useDashboardStore = create<DashboardState>((set) => ({
   selectedRepository: null,
   refreshing: false,
   lastRefreshTime: null,
-  
+
   setSelectedRepository: (repoId) => set({ selectedRepository: repoId }),
   setRefreshing: (refreshing) => set({ refreshing }),
   markRefreshed: () => set({ lastRefreshTime: new Date(), refreshing: false }),
@@ -228,6 +233,7 @@ export const useDashboardStore = create<DashboardState>((set) => ({
 #### Next.js App Router Structure
 
 **Route Organization:**
+
 ```
 app/
 ├── (auth)/                 # Auth group (no layout)
@@ -253,6 +259,7 @@ app/
 ```
 
 **Protected Route Implementation:**
+
 ```typescript
 // app/(dashboard)/layout.tsx
 import { redirect } from 'next/navigation'
@@ -265,11 +272,11 @@ export default async function DashboardLayout({
   children: React.ReactNode
 }) {
   const session = await getServerSession(authOptions)
-  
+
   if (!session) {
     redirect('/auth/signin')
   }
-  
+
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar />
@@ -287,6 +294,7 @@ export default async function DashboardLayout({
 #### TanStack Query Integration
 
 **API Client Setup:**
+
 ```typescript
 // lib/api-client.ts
 import { QueryClient } from '@tanstack/react-query'
@@ -306,10 +314,7 @@ export const queryClient = new QueryClient({
 })
 
 // Generic API fetch wrapper
-export async function apiRequest<T>(
-  endpoint: string,
-  options?: RequestInit
-): Promise<T> {
+export async function apiRequest<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`/api${endpoint}`, {
     headers: {
       'Content-Type': 'application/json',
@@ -317,17 +322,18 @@ export async function apiRequest<T>(
     },
     ...options,
   })
-  
+
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}))
     throw new Error(errorData.error?.message || 'API request failed')
   }
-  
+
   return response.json()
 }
 ```
 
 **Service Hook Examples:**
+
 ```typescript
 // hooks/api/useDashboard.ts
 import { useQuery } from '@tanstack/react-query'
@@ -337,9 +343,10 @@ import { DashboardCategorizationResult } from '@/types/github'
 export function useDashboard(repositoryId?: string) {
   return useQuery({
     queryKey: ['dashboard', repositoryId],
-    queryFn: () => apiRequest<DashboardCategorizationResult>(
-      `/pull-requests${repositoryId ? `?repository=${repositoryId}` : ''}`
-    ),
+    queryFn: () =>
+      apiRequest<DashboardCategorizationResult>(
+        `/pull-requests${repositoryId ? `?repository=${repositoryId}` : ''}`
+      ),
     staleTime: 2 * 60 * 1000, // 2 minutes
     enabled: true,
   })
@@ -360,9 +367,9 @@ export function useRepositories() {
 
 export function useAddRepository() {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
-    mutationFn: (data: AddRepositoryData) => 
+    mutationFn: (data: AddRepositoryData) =>
       apiRequest<{ repository: Repository }>('/repositories', {
         method: 'POST',
         body: JSON.stringify(data),
@@ -374,4 +381,3 @@ export function useAddRepository() {
   })
 }
 ```
-

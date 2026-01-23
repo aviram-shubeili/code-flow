@@ -28,4 +28,3 @@
 10. **NFR10:** AWS deployment must optimize for cost efficiency, targeting free-tier usage where feasible
 11. **NFR11:** During peak collaboration hours (8-11 AM local time), the system must maintain acceptable performance despite increased GitHub API usage across all team members
 12. **NFR12:** When GitHub API rate limits are reached, the system must continue operating with cached data and clearly indicate data staleness to users (maximum 15-minute-old data acceptable)
-
