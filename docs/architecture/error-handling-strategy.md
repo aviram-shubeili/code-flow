@@ -15,7 +15,7 @@ sequenceDiagram
     User->>Frontend: Action (e.g., load dashboard)
     Frontend->>API: API Request
     API->>GitHub: GitHub API Call
-    
+
     alt GitHub API Error
         GitHub-->>API: 403 Rate Limited
         API-->>Frontend: Structured Error Response
@@ -43,13 +43,13 @@ sequenceDiagram
 // types/api.ts
 interface ApiError {
   error: {
-    code: string;           // Machine-readable error code
-    message: string;        // Human-readable error message
-    details?: Record<string, any>; // Additional error context
-    timestamp: string;      // ISO datetime
-    requestId: string;      // Unique request identifier
-    retryable?: boolean;    // Whether request can be retried
-  };
+    code: string // Machine-readable error code
+    message: string // Human-readable error message
+    details?: Record<string, any> // Additional error context
+    timestamp: string // ISO datetime
+    requestId: string // Unique request identifier
+    retryable?: boolean // Whether request can be retried
+  }
 }
 
 // Error codes enum
@@ -58,24 +58,24 @@ export enum ApiErrorCode {
   UNAUTHORIZED = 'UNAUTHORIZED',
   TOKEN_EXPIRED = 'TOKEN_EXPIRED',
   INVALID_CREDENTIALS = 'INVALID_CREDENTIALS',
-  
+
   // Authorization errors
   FORBIDDEN = 'FORBIDDEN',
   REPOSITORY_ACCESS_DENIED = 'REPOSITORY_ACCESS_DENIED',
-  
+
   // Resource errors
   NOT_FOUND = 'NOT_FOUND',
   REPOSITORY_NOT_FOUND = 'REPOSITORY_NOT_FOUND',
   PULL_REQUEST_NOT_FOUND = 'PULL_REQUEST_NOT_FOUND',
-  
+
   // Validation errors
   INVALID_INPUT = 'INVALID_INPUT',
   MISSING_REQUIRED_FIELD = 'MISSING_REQUIRED_FIELD',
-  
+
   // External service errors
   GITHUB_API_ERROR = 'GITHUB_API_ERROR',
   GITHUB_RATE_LIMITED = 'GITHUB_RATE_LIMITED',
-  
+
   // System errors
   DATABASE_ERROR = 'DATABASE_ERROR',
   INTERNAL_ERROR = 'INTERNAL_ERROR',
@@ -165,7 +165,7 @@ export function handleApiError(error: unknown, requestId: string): NextResponse<
   // Handle GitHub API errors
   if (error && typeof error === 'object' && 'status' in error) {
     const githubError = error as { status: number; message?: string }
-    
+
     if (githubError.status === 403) {
       return NextResponse.json(
         {
@@ -219,7 +219,7 @@ export function withErrorHandling(
 ) {
   return async (req: NextRequest, context: any): Promise<NextResponse> => {
     const requestId = crypto.randomUUID()
-    
+
     try {
       return await handler(req, context)
     } catch (error) {
@@ -236,16 +236,13 @@ export function withErrorHandling(
 export class GitHubService {
   // ... existing methods
 
-  private async makeRequest<T>(
-    request: () => Promise<T>,
-    operation: string
-  ): Promise<T> {
+  private async makeRequest<T>(request: () => Promise<T>, operation: string): Promise<T> {
     try {
       return await request()
     } catch (error) {
       if (error && typeof error === 'object' && 'status' in error) {
         const githubError = error as { status: number; message?: string }
-        
+
         switch (githubError.status) {
           case 403:
             throw new AppError(
@@ -279,7 +276,7 @@ export class GitHubService {
             )
         }
       }
-      
+
       throw new AppError(
         ApiErrorCode.GITHUB_API_ERROR,
         `Unexpected error during ${operation}`,
@@ -296,7 +293,7 @@ export class GitHubService {
       'fetch dashboard data'
     )
   }
-  
+
   // ... other methods wrapped similarly
 }
 ```
@@ -313,7 +310,7 @@ import { useToast } from '@/hooks/ui/useToast'
 
 export function useDashboard(repositoryId?: string) {
   const { toast } = useToast()
-  
+
   return useQuery({
     queryKey: ['dashboard', repositoryId],
     queryFn: () => apiRequest<DashboardCategorizationResult>(
@@ -322,29 +319,29 @@ export function useDashboard(repositoryId?: string) {
     staleTime: 2 * 60 * 1000,
     retry: (failureCount, error) => {
       const apiError = error as ApiError
-      
+
       // Don't retry auth errors
       if (apiError?.error?.code === 'UNAUTHORIZED') return false
-      
+
       // Retry rate limit errors with exponential backoff
       if (apiError?.error?.code === 'GITHUB_RATE_LIMITED') {
         return failureCount < 3
       }
-      
+
       // Retry retryable errors
       if (apiError?.error?.retryable) {
         return failureCount < 2
       }
-      
+
       return false
     },
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     onError: (error: ApiError) => {
       const message = error?.error?.message || 'Failed to load dashboard data'
-      
+
       // Don't show toast for rate limits (handled by banner component)
       if (error?.error?.code === 'GITHUB_RATE_LIMITED') return
-      
+
       toast({
         title: 'Error',
         description: message,
@@ -393,7 +390,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Error caught by boundary:', error, errorInfo)
-    
+
     this.setState({
       error,
       errorInfo,
@@ -425,7 +422,7 @@ export class ErrorBoundary extends Component<Props, State> {
           <p className="text-gray-600 mb-4 text-center">
             An unexpected error occurred. Please try refreshing the page.
           </p>
-          
+
           <div className="space-x-2">
             <Button
               onClick={() => window.location.reload()}
@@ -433,7 +430,7 @@ export class ErrorBoundary extends Component<Props, State> {
             >
               Refresh Page
             </Button>
-            
+
             {process.env.NODE_ENV === 'development' && (
               <Button
                 onClick={() => this.setState({ hasError: false })}
@@ -443,7 +440,7 @@ export class ErrorBoundary extends Component<Props, State> {
               </Button>
             )}
           </div>
-          
+
           {process.env.NODE_ENV === 'development' && this.state.error && (
             <details className="mt-4 max-w-2xl">
               <summary className="cursor-pointer text-sm text-gray-500">
@@ -489,25 +486,25 @@ export default function Error({
       <h2 className="text-2xl font-bold text-gray-900 mb-4">
         Oops! Something went wrong
       </h2>
-      
+
       <p className="text-gray-600 mb-6 text-center max-w-md">
         We apologize for the inconvenience. An unexpected error has occurred.
         Please try again or contact support if the problem persists.
       </p>
-      
+
       <div className="space-x-4">
         <Button onClick={reset} variant="primary">
           Try Again
         </Button>
-        
-        <Button 
+
+        <Button
           onClick={() => window.location.href = '/'}
           variant="outline"
         >
           Go Home
         </Button>
       </div>
-      
+
       {error.digest && (
         <p className="text-xs text-gray-400 mt-4">
           Error ID: {error.digest}
@@ -517,4 +514,3 @@ export default function Error({
   )
 }
 ```
-

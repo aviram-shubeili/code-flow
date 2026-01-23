@@ -26,23 +26,23 @@ model Account {
   scope              String?
   id_token           String? @db.Text
   session_state      String?
- 
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   @@unique([provider, providerAccountId])
   @@map("accounts")
 }
- 
+
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique @map("session_token")
   userId       String   @map("user_id")
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   @@map("sessions")
 }
- 
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -51,15 +51,15 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
- 
+
   @@map("users")
 }
- 
+
 model VerificationToken {
   identifier String
   token      String
   expires    DateTime
- 
+
   @@unique([identifier, token])
   @@map("verification_tokens")
 }
@@ -75,11 +75,11 @@ model UserProfile {
   lastActiveAt DateTime @default(now()) @map("last_active_at")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
-  
+
   // Relationships
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   repositories Repository[]
-  
+
   @@map("user_profiles")
 }
 
@@ -93,10 +93,10 @@ model Repository {
   userId    String   @map("user_id")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-  
+
   // Relationships
   userProfile UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   // Indexes for performance
   @@index([userId, isActive])
   @@index([fullName])
@@ -107,6 +107,7 @@ model Repository {
 ### Database Design Decisions
 
 **Auth.js Integration:**
+
 - **Standard Auth.js Tables**: `Account`, `Session`, `User`, `VerificationToken`
 - **Snake_case Mapping**: Database columns use snake_case convention
 - **Cascade Deletes**: User deletion removes all associated data
@@ -115,12 +116,14 @@ model Repository {
 **Business Domain Tables:**
 
 #### UserProfile Table
+
 - **Purpose**: Extends Auth.js User with GitHub-specific data
 - **Key Fields**: `githubId`, `username`, `lastActiveAt` for cleanup
 - **Relationships**: One-to-One with Auth.js User, One-to-Many with Repository
 - **Indexes**: Auto-indexed on unique fields (`userId`, `githubId`, `username`)
 
-#### Repository Table  
+#### Repository Table
+
 - **Purpose**: Stores user's repository monitoring preferences
 - **Key Fields**: `githubId` (GitHub repo ID), `fullName` (owner/repo), `isActive`
 - **Relationships**: Many-to-One with UserProfile (user can monitor multiple repos)
@@ -129,6 +132,7 @@ model Repository {
 ### Database Migrations Strategy
 
 **Migration Management:**
+
 ```bash
 # Generate migration for schema changes
 npx prisma migrate dev --name init
@@ -141,6 +145,7 @@ npx prisma generate
 ```
 
 **Initial Migration:** `001_init.sql`
+
 ```sql
 -- Auth.js required tables
 CREATE TABLE "accounts" (
@@ -150,7 +155,7 @@ CREATE TABLE "accounts" (
   "provider" TEXT NOT NULL,
   "provider_account_id" TEXT NOT NULL,
   -- Additional Auth.js columns...
-  
+
   CONSTRAINT "accounts_pkey" PRIMARY KEY ("id")
 );
 
@@ -163,7 +168,7 @@ CREATE TABLE "user_profiles" (
   "last_active_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updated_at" TIMESTAMP(3) NOT NULL,
-  
+
   CONSTRAINT "user_profiles_pkey" PRIMARY KEY ("id")
 );
 
@@ -177,7 +182,7 @@ CREATE TABLE "repositories" (
   "user_id" TEXT NOT NULL,
   "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updated_at" TIMESTAMP(3) NOT NULL,
-  
+
   CONSTRAINT "repositories_pkey" PRIMARY KEY ("id")
 );
 
@@ -191,11 +196,12 @@ CREATE INDEX "repositories_user_id_is_active_idx" ON "repositories"("user_id", "
 ### Database Connection Configuration
 
 **Environment Variables:**
+
 ```bash
 # .env.local (development)
 DATABASE_URL="postgresql://username:password@localhost:5432/codeflow_dev"
 
-# .env.production (production - Neon)  
+# .env.production (production - Neon)
 DATABASE_URL="postgresql://username:password@ep-xxx.neon.tech/codeflow?sslmode=require"
 DIRECT_URL="postgresql://username:password@ep-xxx.neon.tech/codeflow?sslmode=require"
 
@@ -209,6 +215,7 @@ GITHUB_CLIENT_SECRET="your-github-oauth-secret"
 ```
 
 **Prisma Client Configuration:**
+
 ```typescript
 // lib/prisma.ts
 import { PrismaClient } from '@prisma/client'
@@ -217,7 +224,8 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
-export const prisma = globalForPrisma.prisma ?? 
+export const prisma =
+  globalForPrisma.prisma ??
   new PrismaClient({
     log: ['query', 'error', 'warn'],
     datasources: {
@@ -233,48 +241,52 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 ### Performance Considerations
 
 **Connection Pooling:**
+
 - **Prisma Connection Pool**: Handles serverless connection management
 - **Neon Pooler**: Built-in PgBouncer for serverless connections
 - **Connection Limits**: Neon auto-scales based on usage
 
 **Query Optimization:**
+
 - **Selective Loading**: Only load required fields
 - **Batch Operations**: Use Prisma transactions for bulk updates
 - **Index Strategy**: Optimized for dashboard query patterns
 
 **Example Optimized Queries:**
+
 ```typescript
 // Efficient repository loading for dashboard
 const repositories = await prisma.repository.findMany({
-  where: { 
-    userId: user.id, 
-    isActive: true 
+  where: {
+    userId: user.id,
+    isActive: true,
   },
   select: {
     id: true,
     githubId: true,
     fullName: true,
     owner: true,
-  }
-});
+  },
+})
 
-// Update last active timestamp efficiently  
+// Update last active timestamp efficiently
 await prisma.userProfile.update({
   where: { userId: session.user.id },
-  data: { lastActiveAt: new Date() }
-});
+  data: { lastActiveAt: new Date() },
+})
 ```
 
 ### Data Cleanup Strategy
 
 **User Activity Tracking:**
+
 - **lastActiveAt**: Updated on dashboard visits
 - **Cleanup Job**: Remove inactive users after 90 days
 - **Cascade Deletes**: Automatically remove associated repositories
 
 **Repository Management:**
+
 - **Soft Deletes**: Use `isActive: false` instead of hard deletes
 - **Bulk Operations**: Efficient updates for multiple repositories
 
 This database schema provides a minimal yet robust foundation for the MVP, with clear upgrade paths for future features.
-

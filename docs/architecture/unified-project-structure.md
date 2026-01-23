@@ -227,6 +227,7 @@ codeflow/
 ### Configuration Files
 
 #### TypeScript Configuration
+
 ```json
 // tsconfig.json
 {
@@ -265,6 +266,7 @@ codeflow/
 ```
 
 #### Next.js Configuration
+
 ```javascript
 // next.config.js
 /** @type {import('next').NextConfig} */
@@ -307,6 +309,7 @@ module.exports = nextConfig
 ```
 
 #### Package.json Scripts
+
 ```json
 {
   "name": "codeflow",
@@ -339,12 +342,14 @@ module.exports = nextConfig
 ### Development Workflow Organization
 
 **Branch Strategy:**
+
 - `main` - Production branch (protected)
-- `staging` - Staging branch (protected)  
+- `staging` - Staging branch (protected)
 - `feature/*` - Feature branches
 - `hotfix/*` - Production hotfixes
 
 **Environment Files:**
+
 ```bash
 # .env.example (template)
 DATABASE_URL="postgresql://username:password@localhost:5432/codeflow_dev"
@@ -357,6 +362,7 @@ GITHUB_CLIENT_SECRET="your-github-oauth-client-secret"
 ```
 
 **VS Code Workspace Settings:**
+
 ```json
 // .vscode/settings.json
 {
@@ -375,4 +381,3 @@ GITHUB_CLIENT_SECRET="your-github-oauth-client-secret"
 ```
 
 This unified project structure provides a scalable, maintainable codebase following Next.js 14 best practices with clear separation of concerns and comprehensive tooling support.
-

@@ -7,6 +7,7 @@ This section defines the serverless backend architecture using Next.js API route
 #### Vercel Functions Organization
 
 **Next.js API Routes Structure:**
+
 ```
 app/api/
 ├── auth/
@@ -34,6 +35,7 @@ app/api/
 ```
 
 **API Route Template:**
+
 ```typescript
 // app/api/pull-requests/route.ts
 import { NextRequest, NextResponse } from 'next/server'
@@ -65,8 +67,8 @@ export async function GET(request: NextRequest) {
     )
 
     // Filter by specific repository if requested
-    const filteredRepos = repositoryId 
-      ? repositories.filter(r => r.id === repositoryId)
+    const filteredRepos = repositoryId
+      ? repositories.filter((r) => r.id === repositoryId)
       : repositories
 
     // Fetch dashboard data from GitHub API
@@ -77,18 +79,17 @@ export async function GET(request: NextRequest) {
     await db.updateUserLastActive(session.user.id)
 
     return NextResponse.json(dashboardData)
-
   } catch (error) {
     console.error('Dashboard API error:', error)
-    
+
     return NextResponse.json(
-      { 
-        error: { 
-          code: 'INTERNAL_ERROR', 
+      {
+        error: {
+          code: 'INTERNAL_ERROR',
           message: 'Failed to fetch dashboard data',
           timestamp: new Date().toISOString(),
-          requestId: crypto.randomUUID()
-        } 
+          requestId: crypto.randomUUID(),
+        },
       },
       { status: 500 }
     )
@@ -101,6 +102,7 @@ export async function GET(request: NextRequest) {
 #### Data Access Layer (Repository Pattern)
 
 **Database Service Implementation:**
+
 ```typescript
 // lib/database.ts
 import { PrismaClient } from '@prisma/client'
@@ -131,10 +133,7 @@ export class DatabaseService {
   }
 
   // Repository Management
-  async getUserRepositories(
-    userId: string, 
-    activeOnly = false
-  ): Promise<Repository[]> {
+  async getUserRepositories(userId: string, activeOnly = false): Promise<Repository[]> {
     return this.prisma.repository.findMany({
       where: {
         userId,
@@ -162,10 +161,7 @@ export class DatabaseService {
     })
   }
 
-  async updateRepository(
-    id: string,
-    data: { isActive?: boolean }
-  ): Promise<Repository> {
+  async updateRepository(id: string, data: { isActive?: boolean }): Promise<Repository> {
     return this.prisma.repository.update({
       where: { id },
       data,
@@ -181,7 +177,7 @@ export class DatabaseService {
   // Cleanup operations
   async cleanupInactiveUsers(daysInactive = 30): Promise<number> {
     const cutoffDate = new Date(Date.now() - daysInactive * 24 * 60 * 60 * 1000)
-    
+
     const inactiveProfiles = await this.prisma.userProfile.findMany({
       where: {
         lastActiveAt: { lt: cutoffDate },
@@ -192,7 +188,7 @@ export class DatabaseService {
     // Delete users (cascade will handle profiles and repositories)
     const deleteResult = await this.prisma.user.deleteMany({
       where: {
-        id: { in: inactiveProfiles.map(p => p.userId) },
+        id: { in: inactiveProfiles.map((p) => p.userId) },
       },
     })
 
@@ -204,6 +200,7 @@ export class DatabaseService {
 #### GitHub API Service
 
 **GitHub Integration Layer:**
+
 ```typescript
 // lib/github.ts
 import { Octokit } from '@octokit/rest'
@@ -224,7 +221,7 @@ export class GitHubService {
 
   async getDashboardData(repositories: Repository[]): Promise<DashboardCategorizationResult> {
     const allPRs: GitHubPullRequest[] = []
-    
+
     // Fetch PRs from all monitored repositories
     for (const repo of repositories) {
       try {
@@ -249,7 +246,7 @@ export class GitHubService {
   }
 
   private async categorizePRs(
-    prs: GitHubPullRequest[], 
+    prs: GitHubPullRequest[],
     username: string
   ): Promise<DashboardCategorizationResult> {
     const needsReview: GitHubPullRequest[] = []
@@ -266,7 +263,7 @@ export class GitHubService {
         myPRs.push(pr)
 
         // Check if changes were requested on my PR
-        if (!isDraft && await this.hasChangesRequested(pr, username)) {
+        if (!isDraft && (await this.hasChangesRequested(pr, username))) {
           returnedToYou.push(pr)
         }
         continue
@@ -277,7 +274,7 @@ export class GitHubService {
 
       // Needs Review - PRs where user is requested reviewer
       const isReviewRequested = pr.requested_reviewers?.some(
-        reviewer => reviewer.login === username
+        (reviewer) => reviewer.login === username
       )
       if (isReviewRequested) {
         needsReview.push(pr)
@@ -308,7 +305,7 @@ export class GitHubService {
 
       // Check if latest review requested changes
       const latestReviews = reviews
-        .filter(review => review.state === 'CHANGES_REQUESTED')
+        .filter((review) => review.state === 'CHANGES_REQUESTED')
         .sort((a, b) => new Date(b.submitted_at!).getTime() - new Date(a.submitted_at!).getTime())
 
       return latestReviews.length > 0
@@ -317,7 +314,10 @@ export class GitHubService {
     }
   }
 
-  private async hasReviewedAwaitingAuthor(pr: GitHubPullRequest, username: string): Promise<boolean> {
+  private async hasReviewedAwaitingAuthor(
+    pr: GitHubPullRequest,
+    username: string
+  ): Promise<boolean> {
     try {
       const { data: reviews } = await this.octokit.pulls.listReviews({
         owner: pr.head.repo.owner.login,
@@ -326,9 +326,10 @@ export class GitHubService {
       })
 
       // Check if I've submitted a review (approved or changes requested)
-      const myReviews = reviews.filter(review => 
-        review.user?.login === username && 
-        ['APPROVED', 'CHANGES_REQUESTED'].includes(review.state)
+      const myReviews = reviews.filter(
+        (review) =>
+          review.user?.login === username &&
+          ['APPROVED', 'CHANGES_REQUESTED'].includes(review.state)
       )
 
       return myReviews.length > 0
@@ -338,9 +339,7 @@ export class GitHubService {
   }
 
   private sortByUpdatedAt(prs: GitHubPullRequest[]): GitHubPullRequest[] {
-    return prs.sort((a, b) => 
-      new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-    )
+    return prs.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
   }
 
   async getRateLimit() {
@@ -359,7 +358,7 @@ export class GitHubService {
       q: query,
       per_page: limit,
     })
-    
+
     return data.items
   }
 }
@@ -370,6 +369,7 @@ export class GitHubService {
 #### Auth.js Integration
 
 **Authentication Flow:**
+
 ```mermaid
 sequenceDiagram
     participant User
@@ -392,6 +392,7 @@ sequenceDiagram
 ```
 
 **Middleware Implementation:**
+
 ```typescript
 // middleware.ts
 import { withAuth } from 'next-auth/middleware'
@@ -408,13 +409,15 @@ export default withAuth(
         if (req.nextUrl.pathname.startsWith('/dashboard')) {
           return !!token
         }
-        
+
         // Protect API routes
-        if (req.nextUrl.pathname.startsWith('/api/') && 
-            !req.nextUrl.pathname.startsWith('/api/auth/')) {
+        if (
+          req.nextUrl.pathname.startsWith('/api/') &&
+          !req.nextUrl.pathname.startsWith('/api/auth/')
+        ) {
           return !!token
         }
-        
+
         return true
       },
     },
@@ -430,9 +433,8 @@ export const config = {
     '/api/repositories/:path*',
     '/api/pull-requests/:path*',
     '/api/github/:path*',
-  ]
+  ],
 }
 ```
 
 This backend architecture provides a robust, scalable serverless foundation on Vercel with clear separation of concerns and comprehensive GitHub API integration.
-

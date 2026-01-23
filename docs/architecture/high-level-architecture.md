@@ -8,6 +8,7 @@ CodeFlow employs a **serverless-first Next.js architecture** deployed on **Verce
 
 **Development Approach:** Features-First Architecture  
 **Platform Decision:** Vercel + Neon selected for MVP deployment:
+
 - **Vercel**: Zero-config Next.js deployment, automatic preview deployments, global Edge Network ($0/month Hobby tier)
 - **Neon**: Serverless PostgreSQL with built-in connection pooling, auto-suspend, instant wake ($0/month free tier)
 
@@ -66,12 +67,12 @@ graph TB
     NOTIFY --> SLACKAPI
     NEXTJS --> POOLER
     POOLER --> NEON
-    
+
     classDef vercel fill:#000,stroke:#fff,color:#fff
     classDef neon fill:#00e599,stroke:#000,color:#000
     classDef external fill:#4285f4,stroke:#1a73e8,color:#fff
     classDef app fill:#00d4aa,stroke:#00a088,color:#fff
-    
+
     class EDGE,FUNCTIONS vercel
     class NEON,POOLER neon
     class GITHUB,SLACKAPI,SLACK external
@@ -85,4 +86,3 @@ graph TB
 - **Repository Pattern:** Abstract data access for PR and user management - _Rationale:_ Enables testing and supports future database scaling strategies
 - **Circuit Breaker Pattern:** Graceful degradation during GitHub API rate limiting - _Rationale:_ Maintains service availability with cached data during API constraints
 - **Event-Driven Notifications:** Slack integration via Bot API with webhook support - _Rationale:_ Real-time PR status updates without constant polling overhead, faster approval process than Microsoft Graph API
-

@@ -40,9 +40,11 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 The `main` branch is protected with the following rules:
 
 ### Required Status Checks
+
 - **CI workflow** (`ci` job) must pass before merging
 
 ### Branch Protection Settings
+
 Configure these in GitHub Repository Settings → Branches → Add branch protection rule:
 
 1. **Branch name pattern:** `main`
@@ -52,7 +54,9 @@ Configure these in GitHub Repository Settings → Branches → Add branch protec
 4. **Do not allow force pushes:** ✅ Enabled
 
 ### CI Workflow
+
 The CI workflow (`.github/workflows/ci.yml`) runs on all pull requests to `main` and executes:
+
 - Type checking (`npx tsc --noEmit`)
 - Linting (`npm run lint`)
 - Tests (`npm run test`)

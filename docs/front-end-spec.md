@@ -9,12 +9,12 @@ This document defines the user experience goals, information architecture, user 
 **Primary: Mid-Size Development Team Members (5-15 developers)**
 Software engineers using GitHub for code review and Slack for daily communication. They work on shared repositories with moderate-to-high PR volume (10-50 PRs weekly). Currently spend 20+ minutes daily triaging PR notifications and lose track of PR status between review cycles.
 
-**Secondary: Enterprise Development Team Members (15+ developers)** 
+**Secondary: Enterprise Development Team Members (15+ developers)**
 Engineers in larger organizations with multiple repositories, complex review requirements, and distributed teams across time zones. They handle hundreds of PR notifications weekly with complex ownership models and cross-team coordination challenges.
 
 ### Usability Goals
 
-- **Individual Efficiency:** Power users complete PR triage in under 3 clicks; new users get guided assistance  
+- **Individual Efficiency:** Power users complete PR triage in under 3 clicks; new users get guided assistance
 - **Cognitive Load Reduction:** Process 2x more PRs in same mental effort with intelligent categorization
 - **Team Coordination:** Managers gain team bottleneck visibility without micromanaging individual developers
 - **Rapid Onboarding:** New team members productive within first session, existing users easily invite teammates
@@ -23,16 +23,16 @@ Engineers in larger organizations with multiple repositories, complex review req
 ### Design Principles
 
 1. **Outcome-focused clarity** - Show what needs to be done, with graceful handling of unclear states
-2. **Progressive expertise** - Support novice guidance and expert efficiency simultaneously  
+2. **Progressive expertise** - Support novice guidance and expert efficiency simultaneously
 3. **Transparent team dynamics** - Surface collaboration patterns without sacrificing individual privacy
 4. **Contextual communication** - Deliver notifications where developers work, with enterprise controls
 5. **Scalable zero-setup** - Work immediately for individuals, scale to enterprise without reconfiguration
 
 ### Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|--------|
-| 2025-09-09 | 1.0 | Initial specification with stakeholder-refined UX goals | UX Expert |
+| Date       | Version | Description                                             | Author    |
+| ---------- | ------- | ------------------------------------------------------- | --------- |
+| 2025-09-09 | 1.0     | Initial specification with stakeholder-refined UX goals | UX Expert |
 
 ## Information Architecture (IA)
 
@@ -44,30 +44,30 @@ graph TD
     A --> C[Returned to You]
     A --> D[My PRs]
     A --> E[Reviewed-Awaiting]
-    
+
     A --> F[Team View]
     F --> F1[Team Dashboard]
     F --> F2[Bottleneck Analysis]
     F --> F3[Team Settings]
-    
+
     A --> G[Settings]
     G --> G1[Profile & Preferences]
     G --> G2[Notification Settings]
     G --> G3[Repository Management]
     G --> G4[Slack Integration]
-    
+
     B --> B1[PR Detail View]
     C --> B1
     D --> B1
     E --> B1
-    
+
     B1 --> B2[GitHub PR Link]
     B1 --> B3[PR Timeline]
-    
+
     H[Slack Integration] --> H1[Status Notifications]
     H --> H2[Quick Actions]
     H --> H3[Deep Link to Web]
-    
+
     I[Onboarding] --> I1[OAuth Setup]
     I --> I2[Repository Selection]
     I --> I3[Team Invitation]
@@ -93,38 +93,40 @@ graph TD
 **Success Criteria:** Complete assessment of all actionable PRs in under 3 minutes, clear next actions identified
 
 #### Flow Diagram
+
 ```mermaid
 graph TD
     A[Land on Dashboard] --> B{First-time user?}
     B -->|Yes| C[Show guided tour overlay]
     B -->|No| D[Display four sections with counts]
-    
+
     C --> D
     D --> E[Scan 'Needs Review' section]
     E --> F{Any urgent PRs?}
     F -->|Yes| G[Click high-priority PR]
     F -->|No| H[Check 'Returned to You']
-    
+
     G --> I[Quick review or assign]
     I --> J[Return to dashboard]
     J --> H
-    
+
     H --> K{Any returned PRs?}
     K -->|Yes| L[Address feedback]
     K -->|No| M[Scan 'My PRs' status]
-    
+
     L --> N[Update and re-submit]
     N --> O[Slack notification sent to reviewers]
     O --> M
-    
+
     M --> P{Any blocked/ready PRs?}
     P -->|Yes| Q[Take merge or follow-up action]
     P -->|No| R[Triage complete]
-    
+
     Q --> R
 ```
 
 #### Edge Cases & Error Handling:
+
 - **Stale data:** Show "Last updated X minutes ago" with refresh button
 - **API rate limits:** Graceful degradation with cached data and retry mechanism
 - **Mixed permissions:** Clear indication when user can't access certain PRs
@@ -140,30 +142,31 @@ graph TD
 **Success Criteria:** Review completed with clear outcome communicated to author and team
 
 #### Flow Diagram
+
 ```mermaid
 graph TD
     A[Slack notification: 'PR ready for review'] --> B[Click notification]
     B --> C{Quick action or Full review?}
     C -->|Quick| D[Slack quick actions]
     C -->|Full| E[Open GitHub PR]
-    
+
     D --> F[Quick approve/comment]
     E --> G[GitHub review interface]
     G --> H[Add comments/suggestions in GitHub]
-    
+
     F --> I[Outcome notification sent]
     H --> J[Submit review in GitHub]
     J --> I
-    
+
     I --> K[Author receives Slack notification]
     K --> L{Changes requested?}
     L -->|Yes| M[Author addresses feedback in GitHub]
     L -->|No| N[Ready to merge]
-    
+
     M --> O[Re-review notification to reviewer]
     O --> P[Review changes in GitHub]
     P --> Q[Final outcome]
-    
+
     N --> R[Merge notification to team]
     Q --> S{Approved?}
     S -->|Yes| R
@@ -171,6 +174,7 @@ graph TD
 ```
 
 #### Edge Cases & Error Handling:
+
 - **Reviewer offline:** Escalation to secondary reviewers after defined timeout
 - **Conflicting reviews:** Clear status indicators, review happens in GitHub
 - **Large changesets:** Handled by GitHub's review interface
@@ -184,9 +188,11 @@ graph TD
 ### Key Screen Layouts
 
 #### Dashboard Home
+
 **Purpose:** Central hub for all PR management activities with four-section layout optimized for quick scanning
 
 **Key Elements:**
+
 - Header with user avatar, repository selector, and settings access
 - Four-section grid: "Needs Review" (top-left), "Returned to You" (top-right), "My PRs" (bottom-left), "Reviewed-Awaiting" (bottom-right)
 - Each section shows count badge, priority indicators, and "View All" expansion
@@ -199,9 +205,11 @@ graph TD
 **Design File Reference:** [To be created in Figma - Dashboard wireframes]
 
 #### PR Detail View
+
 **Purpose:** Summary view of individual PR with quick access to GitHub for full review
 
 **Key Elements:**
+
 - PR header with title, author, branch info, and status badges
 - PR summary and description
 - Review status and comments count
@@ -215,9 +223,11 @@ graph TD
 **Design File Reference:** [To be created in Figma - PR Detail screens]
 
 #### Slack Integration Cards
+
 **Purpose:** Rich notification messages within Slack with actionable controls
 
 **Key Elements:**
+
 - PR summary with key metadata (author, repository, urgency)
 - Status indicator and change summary
 - Quick action buttons (View in GitHub, View Dashboard, Quick Actions)
@@ -234,6 +244,7 @@ graph TD
 ### Core Components
 
 #### PR Card Component
+
 **Purpose:** Standardized display unit for pull request information across all dashboard sections
 
 **Variants:** Compact (dashboard), Detailed (section views), Teams (notification cards)
@@ -243,6 +254,7 @@ graph TD
 **Usage Guidelines:** Always include status indicator, author, and time-based information. Use color coding for urgency, not status (accessibility consideration).
 
 #### Status Badge System
+
 **Purpose:** Consistent visual language for PR states and review outcomes
 
 **Variants:** Review Status (Pending, Approved, Changes Requested), Priority (High, Medium, Low), Merge Status (Ready, Blocked, Merged)
@@ -252,6 +264,7 @@ graph TD
 **Usage Guidelines:** Combine with icons for accessibility, use consistent color mapping, include tooltips for complex states.
 
 #### Action Button Groups
+
 **Purpose:** Consistent interaction patterns for review actions
 
 **Variants:** Primary Actions (Approve, Request Changes), Secondary Actions (Comment, Assign), Quick Actions (Teams integration)
@@ -263,23 +276,25 @@ graph TD
 ## Branding & Style Guide
 
 ### Visual Identity
+
 **Brand Guidelines:** Clean, professional aesthetic aligned with developer tool expectations. High contrast for accessibility, efficient use of screen real estate.
 
 ### Color Palette
 
-| Color Type | Hex Code | Usage |
-|------------|----------|--------|
-| Primary | #0366d6 | Primary actions, links, GitHub brand alignment |
-| Secondary | #586069 | Secondary text, borders, inactive states |
-| Accent | #28a745 | Success states, approvals, positive feedback |
-| Success | #28a745 | Positive feedback, confirmations |
-| Warning | #ffd33d | Cautions, important notices |
-| Error | #d73a49 | Errors, destructive actions |
-| Neutral | #f6f8fa, #24292e | Text, borders, backgrounds |
+| Color Type | Hex Code         | Usage                                          |
+| ---------- | ---------------- | ---------------------------------------------- |
+| Primary    | #0366d6          | Primary actions, links, GitHub brand alignment |
+| Secondary  | #586069          | Secondary text, borders, inactive states       |
+| Accent     | #28a745          | Success states, approvals, positive feedback   |
+| Success    | #28a745          | Positive feedback, confirmations               |
+| Warning    | #ffd33d          | Cautions, important notices                    |
+| Error      | #d73a49          | Errors, destructive actions                    |
+| Neutral    | #f6f8fa, #24292e | Text, borders, backgrounds                     |
 
 ### Typography
 
 #### Font Families
+
 - **Primary:** -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif
 - **Secondary:** Same as primary (simplified stack)
 - **Monospace:** 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace
@@ -287,19 +302,21 @@ graph TD
 #### Type Scale
 
 | Element | Size | Weight | Line Height |
-|---------|------|---------|-------------|
-| H1 | 32px | 600 | 1.25 |
-| H2 | 24px | 600 | 1.25 |
-| H3 | 20px | 600 | 1.25 |
-| Body | 14px | 400 | 1.5 |
-| Small | 12px | 400 | 1.4 |
+| ------- | ---- | ------ | ----------- |
+| H1      | 32px | 600    | 1.25        |
+| H2      | 24px | 600    | 1.25        |
+| H3      | 20px | 600    | 1.25        |
+| Body    | 14px | 400    | 1.5         |
+| Small   | 12px | 400    | 1.4         |
 
 ### Iconography
+
 **Icon Library:** GitHub Octicons for consistency with developer expectations, supplemented with Heroicons for additional UI elements
 
 **Usage Guidelines:** 16px icons for UI elements, 20px for primary actions, maintain 2px stroke width for custom icons
 
 ### Spacing & Layout
+
 **Grid System:** 8px base unit system with 16px, 24px, 32px, 48px major intervals
 
 **Spacing Scale:** 4px, 8px, 12px, 16px, 24px, 32px, 48px, 64px progression
@@ -307,38 +324,43 @@ graph TD
 ## Accessibility Requirements
 
 ### Compliance Target
+
 **Standard:** WCAG 2.1 AA compliance with select AAA requirements for critical workflows
 
 ### Key Requirements
 
 **Visual:**
+
 - Color contrast ratios: 4.5:1 minimum for normal text, 3:1 for large text
 - Focus indicators: 2px solid outline with 2px offset, high contrast color
 - Text sizing: Supports zoom up to 200% without horizontal scrolling
 
 **Interaction:**
+
 - Keyboard navigation: Full functionality accessible via keyboard with logical tab order
 - Screen reader support: Semantic HTML, proper ARIA labels, meaningful alt text
 - Touch targets: Minimum 44px touch targets on mobile interfaces
 
 **Content:**
+
 - Alternative text: Descriptive alt text for all informational images and icons
 - Heading structure: Proper H1-H6 hierarchy for content organization
 - Form labels: Explicit labels for all form inputs with error state descriptions
 
 ### Testing Strategy
+
 Automated testing with axe-core, manual testing with screen readers (NVDA, JAWS, VoiceOver), keyboard-only navigation testing, color contrast validation
 
 ## Responsiveness Strategy
 
 ### Breakpoints
 
-| Breakpoint | Min Width | Max Width | Target Devices |
-|------------|-----------|-----------|----------------|
-| Mobile | 320px | 767px | Smartphones, small tablets |
-| Tablet | 768px | 1023px | Tablets, small laptops |
-| Desktop | 1024px | 1439px | Standard desktops, laptops |
-| Wide | 1440px | - | Large monitors, ultrawide displays |
+| Breakpoint | Min Width | Max Width | Target Devices                     |
+| ---------- | --------- | --------- | ---------------------------------- |
+| Mobile     | 320px     | 767px     | Smartphones, small tablets         |
+| Tablet     | 768px     | 1023px    | Tablets, small laptops             |
+| Desktop    | 1024px    | 1439px    | Standard desktops, laptops         |
+| Wide       | 1440px    | -         | Large monitors, ultrawide displays |
 
 ### Adaptation Patterns
 
@@ -353,9 +375,11 @@ Automated testing with axe-core, manual testing with screen readers (NVDA, JAWS,
 ## Animation & Micro-interactions
 
 ### Motion Principles
+
 Subtle, purposeful animations that provide feedback and guide attention. Respect user preferences for reduced motion. Duration scaled to content complexity.
 
 ### Key Animations
+
 - **Loading states:** Skeleton loading for PR cards (800ms duration, ease-out easing)
 - **State transitions:** Status badge changes with smooth color transition (300ms duration, ease-in-out easing)
 - **Navigation:** Section transitions with slide effect (400ms duration, ease-out easing)
@@ -365,16 +389,19 @@ Subtle, purposeful animations that provide feedback and guide attention. Respect
 ## Performance Considerations
 
 ### Performance Goals
+
 - **Page Load:** Initial dashboard load under 2 seconds on 3G connection
 - **Interaction Response:** UI feedback within 100ms, data updates within 500ms
 - **Animation FPS:** Maintain 60fps for all animations and transitions
 
 ### Design Strategies
+
 Progressive loading with skeleton screens, lazy loading for PR details, efficient caching strategy for frequently accessed data, optimized image assets and icon sprite sheets, minimal JavaScript bundle sizes with code splitting
 
 ## Next Steps
 
 ### Immediate Actions
+
 1. Create detailed Figma wireframes and high-fidelity mockups based on this specification
 2. Validate design concepts with target users (5-person development team)
 3. Create interactive prototype for key user flows (dashboard navigation, PR review process)
@@ -383,6 +410,7 @@ Progressive loading with skeleton screens, lazy loading for PR details, efficien
 6. Set up design system documentation and asset library
 
 ### Design Handoff Checklist
+
 - [x] All user flows documented with wireframes
 - [x] Component inventory complete with specifications
 - [x] Accessibility requirements defined with testing strategy

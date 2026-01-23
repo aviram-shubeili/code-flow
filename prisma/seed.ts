@@ -1,12 +1,12 @@
 /**
  * Database Seed Script
- * 
+ *
  * Creates development data for local testing
  * Run with: npm run db:seed
  */
 
-import { PrismaClient } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
+import { PrismaClient } from '@prisma/client'
 import { config } from 'dotenv'
 import pg from 'pg'
 

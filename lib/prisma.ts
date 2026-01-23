@@ -1,16 +1,16 @@
 /**
  * Prisma Client Singleton
- * 
+ *
  * Implements singleton pattern to prevent multiple Prisma Client instances
  * in serverless environments (AWS Lambda via Next.js).
- * 
+ *
  * Connection pooling is handled automatically by Prisma for serverless.
- * 
+ *
  * Prisma 7 requires adapter configuration for database connections
  */
 
-import { PrismaClient } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
+import { PrismaClient } from '@prisma/client'
 import pg from 'pg'
 
 const { Pool } = pg
@@ -29,7 +29,7 @@ function getDatabaseUrl(): string {
   if (!url) {
     throw new Error(
       'DATABASE_URL environment variable is required. ' +
-      'Please check your .env.local file or environment configuration.'
+        'Please check your .env.local file or environment configuration.'
     )
   }
   return url
@@ -46,16 +46,18 @@ function createPrismaClient(): PrismaClient {
   if (cachedClient) {
     return cachedClient
   }
-  
+
   if (globalForPrisma.prisma) {
     cachedClient = globalForPrisma.prisma
     return cachedClient
   }
 
   // Create connection pool
-  const pool = globalForPrisma.pool ?? new Pool({
-    connectionString: getDatabaseUrl()
-  })
+  const pool =
+    globalForPrisma.pool ??
+    new Pool({
+      connectionString: getDatabaseUrl(),
+    })
 
   if (process.env.NODE_ENV !== 'production') {
     globalForPrisma.pool = pool
@@ -66,9 +68,7 @@ function createPrismaClient(): PrismaClient {
 
   cachedClient = new PrismaClient({
     adapter,
-    log: process.env.NODE_ENV === 'development'
-      ? ['query', 'error', 'warn']
-      : ['error'],
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   })
 
   if (process.env.NODE_ENV !== 'production') {
@@ -83,7 +83,7 @@ export const prisma = new Proxy({} as PrismaClient, {
   get(_target, prop) {
     const client = createPrismaClient()
     return Reflect.get(client, prop)
-  }
+  },
 })
 
 /**

@@ -1,0 +1,19 @@
+# Build outputs
+.next
+node_modules
+coverage
+dist
+
+# Lock files
+*.lock
+
+# Database
+prisma/migrations
+
+# Unrelated directories
+_bmad
+_bmad-output
+docs
+.windsurf
+.github
+.vscode
