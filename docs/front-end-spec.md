@@ -7,7 +7,7 @@ This document defines the user experience goals, information architecture, user 
 ### Target User Personas
 
 **Primary: Mid-Size Development Team Members (5-15 developers)**
-Software engineers using GitHub for code review and Slack for daily communication. They work on shared repositories with moderate-to-high PR volume (10-50 PRs weekly). Currently spend 20+ minutes daily triaging PR notifications and lose track of PR status between review cycles.
+Software engineers using GitHub for code review and VS Code for daily development. They work on shared repositories with moderate-to-high PR volume (10-50 PRs weekly). Currently spend 20+ minutes daily triaging PR notifications and lose track of PR status between review cycles.
 
 **Secondary: Enterprise Development Team Members (15+ developers)**
 Engineers in larger organizations with multiple repositories, complex review requirements, and distributed teams across time zones. They handle hundreds of PR notifications weekly with complex ownership models and cross-team coordination challenges.
@@ -25,7 +25,7 @@ Engineers in larger organizations with multiple repositories, complex review req
 1. **Outcome-focused clarity** - Show what needs to be done, with graceful handling of unclear states
 2. **Progressive expertise** - Support novice guidance and expert efficiency simultaneously
 3. **Transparent team dynamics** - Surface collaboration patterns without sacrificing individual privacy
-4. **Contextual communication** - Deliver notifications where developers work, with enterprise controls
+4. **Contextual communication** - Deliver notifications inside VS Code with clear, actionable context
 5. **Scalable zero-setup** - Work immediately for individuals, scale to enterprise without reconfiguration
 
 ### Change Log
@@ -54,7 +54,7 @@ graph TD
     G --> G1[Profile & Preferences]
     G --> G2[Notification Settings]
     G --> G3[Repository Management]
-    G --> G4[Slack Integration]
+    G --> G4[Notification Integrations]
 
     B --> B1[PR Detail View]
     C --> B1
@@ -64,23 +64,23 @@ graph TD
     B1 --> B2[GitHub PR Link]
     B1 --> B3[PR Timeline]
 
-    H[Slack Integration] --> H1[Status Notifications]
+    H[VS Code Notifications] --> H1[Status Toasts]
     H --> H2[Quick Actions]
-    H --> H3[Deep Link to Web]
+    H --> H3[Deep Link to GitHub]
 
-    I[Onboarding] --> I1[OAuth Setup]
-    I --> I2[Repository Selection]
+    I[Onboarding] --> I1[PAT Setup]
+    I --> I2[Copilot CLI Check]
     I --> I3[Team Invitation]
     I --> I4[First Dashboard Tour]
 ```
 
 ### Navigation Structure
 
-**Primary Navigation:** Four-section dashboard tabs with persistent visibility - "Needs Review" (with count badge), "Returned to You" (with urgency indicator), "My PRs" (with status overview), "Reviewed-Awaiting" (with time since last action)
+**Primary Navigation:** Four-section dashboard tabs within the webview - "Needs Review" (with count badge), "Returned to You" (with urgency indicator), "My PRs" (with status overview), "Reviewed-Awaiting" (with time since last action)
 
-**Secondary Navigation:** Contextual actions within each section - Filter/Sort controls, Team view toggle (for managers), Settings access, Help/Tutorial access for new users
+**Secondary Navigation:** Contextual actions within each section - Filter/Sort controls, Team view toggle (for managers), Settings access, Help/Tutorial access for new users. Command Palette entry for “Open CodeFlow Dashboard.”
 
-**Breadcrumb Strategy:** Minimal breadcrumbs for deep navigation (Dashboard > PR Detail), with quick "Back to Dashboard" action always available. Slack integration uses deep linking to maintain context when users click through from notifications. PR cards link directly to GitHub for review actions.
+**Breadcrumb Strategy:** Minimal breadcrumbs for deep navigation (Dashboard > PR Detail), with quick "Back to Dashboard" action always available. VS Code notifications deep link into the dashboard. PR cards link directly to GitHub for review actions.
 
 ## User Flows
 
@@ -88,7 +88,7 @@ graph TD
 
 **User Goal:** Quickly identify and prioritize all PRs requiring immediate attention across multiple repositories
 
-**Entry Points:** Direct URL, Slack notification click, browser bookmark, scheduled daily routine
+**Entry Points:** VS Code command palette, notification toast click, editor icon, scheduled daily routine
 
 **Success Criteria:** Complete assessment of all actionable PRs in under 3 minutes, clear next actions identified
 
@@ -115,7 +115,7 @@ graph TD
     K -->|No| M[Scan 'My PRs' status]
 
     L --> N[Update and re-submit]
-    N --> O[Slack notification sent to reviewers]
+    N --> O[VS Code notification sent to reviewers]
     O --> M
 
     M --> P{Any blocked/ready PRs?}
@@ -137,7 +137,7 @@ graph TD
 
 **User Goal:** Complete a review cycle from initial notification through final approval/merge
 
-**Entry Points:** Slack notification, dashboard "Needs Review", email fallback
+**Entry Points:** VS Code notification, dashboard "Needs Review", email fallback
 
 **Success Criteria:** Review completed with clear outcome communicated to author and team
 
@@ -145,9 +145,9 @@ graph TD
 
 ```mermaid
 graph TD
-    A[Slack notification: 'PR ready for review'] --> B[Click notification]
+    A[VS Code notification: 'PR ready for review'] --> B[Click notification]
     B --> C{Quick action or Full review?}
-    C -->|Quick| D[Slack quick actions]
+    C -->|Quick| D[In-editor quick actions]
     C -->|Full| E[Open GitHub PR]
 
     D --> F[Quick approve/comment]
@@ -158,7 +158,7 @@ graph TD
     H --> J[Submit review in GitHub]
     J --> I
 
-    I --> K[Author receives Slack notification]
+    I --> K[Author receives VS Code notification]
     K --> L{Changes requested?}
     L -->|Yes| M[Author addresses feedback in GitHub]
     L -->|No| N[Ready to merge]
@@ -189,7 +189,7 @@ graph TD
 
 #### Dashboard Home
 
-**Purpose:** Central hub for all PR management activities with four-section layout optimized for quick scanning
+**Purpose:** Central hub for all PR management activities within a VS Code webview, optimized for quick scanning
 
 **Key Elements:**
 
@@ -214,7 +214,7 @@ graph TD
 - PR summary and description
 - Review status and comments count
 - Prominent "Review in GitHub" button
-- Reviewer assignment and Slack notification controls
+- Reviewer assignment and notification controls
 - Related PRs and dependency indicators
 - Activity timeline showing recent updates
 
@@ -222,9 +222,9 @@ graph TD
 
 **Design File Reference:** [To be created in Figma - PR Detail screens]
 
-#### Slack Integration Cards
+#### VS Code Notification Cards
 
-**Purpose:** Rich notification messages within Slack with actionable controls
+**Purpose:** Rich notification messages within VS Code with actionable controls
 
 **Key Elements:**
 
@@ -233,9 +233,9 @@ graph TD
 - Quick action buttons (View in GitHub, View Dashboard, Quick Actions)
 - Deep link to dashboard and GitHub PR
 
-**Interaction Notes:** Buttons link to GitHub for reviews or dashboard for status overview, with Slack quick actions for common tasks
+**Interaction Notes:** Buttons link to GitHub for reviews or dashboard for status overview, with in-editor quick actions for common tasks
 
-**Design File Reference:** [To be created in Figma - Slack integration mockups]
+**Design File Reference:** [To be created in Figma - VS Code notification mockups]
 
 ## Component Library / Design System
 
@@ -247,7 +247,7 @@ graph TD
 
 **Purpose:** Standardized display unit for pull request information across all dashboard sections
 
-**Variants:** Compact (dashboard), Detailed (section views), Teams (notification cards)
+**Variants:** Compact (dashboard), Detailed (section views), Notification (in-editor toasts/cards)
 
 **States:** Unread, Read, Urgent, Approved, Changes Requested, Merged, Draft
 
@@ -267,7 +267,7 @@ graph TD
 
 **Purpose:** Consistent interaction patterns for review actions
 
-**Variants:** Primary Actions (Approve, Request Changes), Secondary Actions (Comment, Assign), Quick Actions (Teams integration)
+**Variants:** Primary Actions (Approve, Request Changes), Secondary Actions (Comment, Assign), Quick Actions (in-editor)
 
 **States:** Default, Hover, Active, Disabled, Loading
 
@@ -355,22 +355,21 @@ Automated testing with axe-core, manual testing with screen readers (NVDA, JAWS,
 
 ### Breakpoints
 
-| Breakpoint | Min Width | Max Width | Target Devices                     |
-| ---------- | --------- | --------- | ---------------------------------- |
-| Mobile     | 320px     | 767px     | Smartphones, small tablets         |
-| Tablet     | 768px     | 1023px    | Tablets, small laptops             |
-| Desktop    | 1024px    | 1439px    | Standard desktops, laptops         |
-| Wide       | 1440px    | -         | Large monitors, ultrawide displays |
+| Breakpoint      | Min Width | Max Width | Target Containers                         |
+| --------------- | --------- | --------- | ----------------------------------------- |
+| Narrow Panel    | 320px     | 719px     | VS Code side panel, narrow splits         |
+| Standard Panel  | 720px     | 1199px    | Typical editor + panel layouts            |
+| Wide Panel      | 1200px    | -         | Full-width panel or secondary monitor     |
 
 ### Adaptation Patterns
 
-**Layout Changes:** Four-section grid becomes single-column stacked layout on mobile, two-column on tablet, maintains four-section grid on desktop+
+**Layout Changes:** Four-section grid becomes single-column in narrow panels, two-column in standard panels, maintains four-section grid in wide panels
 
-**Navigation Changes:** Hamburger menu for mobile navigation, tab navigation on tablet+, persistent navigation on desktop
+**Navigation Changes:** Compact tab labels in narrow panels, full tab labels in standard+ panels
 
-**Content Priority:** Most urgent PRs surface first on mobile, progressive disclosure for secondary information, maintain all functionality across breakpoints
+**Content Priority:** Most urgent PRs surface first in narrow panels, progressive disclosure for secondary information, maintain all functionality across breakpoints
 
-**Interaction Changes:** Touch-optimized controls on mobile/tablet, hover states on desktop, swipe gestures for mobile navigation
+**Interaction Changes:** Keyboard-first navigation, hover states on desktop, tooltips for condensed layouts
 
 ## Animation & Micro-interactions
 
@@ -390,7 +389,7 @@ Subtle, purposeful animations that provide feedback and guide attention. Respect
 
 ### Performance Goals
 
-- **Page Load:** Initial dashboard load under 2 seconds on 3G connection
+- **Page Load:** Initial dashboard load under 2 seconds on typical developer machines
 - **Interaction Response:** UI feedback within 100ms, data updates within 500ms
 - **Animation FPS:** Maintain 60fps for all animations and transitions
 

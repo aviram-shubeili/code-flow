@@ -2,13 +2,13 @@
 
 ## Executive Summary
 
-CodeFlow is a real-time pull request management platform designed to eliminate friction in code review workflows. The platform addresses the critical gap between GitHub's notification system and developer productivity by providing personalized PR dashboards, intelligent filtering, and Microsoft Teams integration. CodeFlow's key differentiator is its focus on review outcomes rather than just events, combined with seamless Teams integration for offline developer engagement.
+CodeFlow is a VS Code extension that delivers a real-time pull request management experience directly inside the editor. It closes the gap between GitHub notifications and developer productivity by providing an in-editor PR dashboard, intelligent categorization, and AI summaries powered by GitHub Copilot SDK. CodeFlow's key differentiator is its focus on review outcomes rather than just events, combined with zero-friction, in-editor workflows.
 
 **Primary Problem:** Developers waste significant time managing PR notifications, tracking review status, and coordinating review cycles across large teams and repositories.
 
-**Target Market:** Software development teams using GitHub and Microsoft Teams, particularly those with 5+ developers working on shared repositories.
+**Target Market:** Software development teams using GitHub and VS Code, particularly those with 5+ developers working on shared repositories.
 
-**Key Value Proposition:** Reduce PR review cycle time by 50% through personalized dashboards, real-time notifications, and integrated Teams workflow acceleration.
+**Key Value Proposition:** Reduce PR review cycle time by 50% through personalized dashboards, real-time in-editor updates, and AI-assisted PR insights.
 
 ## Problem Statement
 
@@ -18,7 +18,7 @@ Current PR management suffers from three critical inefficiencies:
 
 **Review Cycle Delays:** The biggest productivity killer isn't slow reviews—it's the time gaps between review cycles. Developers lose context switching between "PR needs initial review" and "changes addressed, ready for re-review," leading to delayed merges and blocked team velocity.
 
-**Disconnected Communication:** GitHub notifications exist in isolation from team communication platforms. Developers working in Teams, Slack, or other platforms miss critical PR status updates, creating additional delays when reviewers are offline from GitHub but active in team channels.
+**Disconnected Communication:** GitHub notifications exist outside the developer’s primary workspace. When updates arrive in the browser or email, engineers lose context and delay action, even though they are active in VS Code.
 
 **Quantified Impact:** Based on industry studies and team feedback, developers spend 15-30 minutes daily just managing PR notifications, and review cycle delays add 24-48 hours to average merge times. For a 10-person development team, this represents 2.5-5 hours of lost productivity daily.
 
@@ -30,17 +30,19 @@ CodeFlow transforms PR management through three core innovations:
 
 **Review Outcome Focus:** Instead of generic "PR updated" notifications, CodeFlow delivers actionable status: "APPROVED - ready to merge," "3 comments need addressing," or "Changes requested with blocking issues." This shifts attention from events to outcomes.
 
-**Microsoft Teams Integration:** Direct individual messaging through Teams for PR status updates, leveraging the platform where developers already collaborate. Interactive Teams actions ("Start Review," "Quick Approve," "Acknowledge") accelerate workflow without context switching.
+**In-Editor Experience:** A VS Code webview dashboard with quick actions keeps review work inside the editor, minimizing context switching.
 
-**Differentiation:** While tools like PullReminders and GitHub's built-in notifications focus on reminders, CodeFlow focuses on workflow acceleration. The Teams integration creates an unavoidable (in the best way) notification system that meets developers where they work.
+**Copilot-Powered Insights:** AI summaries and risk cues via GitHub Copilot SDK help reviewers assess changes faster without opening every file.
+
+**Differentiation:** While tools like PullReminders and GitHub's built-in notifications focus on reminders, CodeFlow accelerates workflow directly inside VS Code with outcome-focused insights and AI assistance.
 
 ## Target Users
 
 ### Primary User Segment: Mid-Size Development Teams (5-15 developers)
 
-**Profile:** Software engineering teams using GitHub for code review and Microsoft Teams for daily communication. Typically working on shared repositories with moderate-to-high PR volume (10-50 PRs per week).
+**Profile:** Software engineering teams using GitHub for code review and VS Code for daily development. Typically working on shared repositories with moderate-to-high PR volume (10-50 PRs per week).
 
-**Current Behaviors:** Developers check GitHub notifications multiple times daily, often losing track of PR status between reviews. They use Teams for quick questions and coordination but switch to GitHub for PR work, creating context-switching overhead.
+**Current Behaviors:** Developers check GitHub notifications multiple times daily, often losing track of PR status between reviews. They switch between VS Code and the browser for PR work, creating context-switching overhead.
 
 **Pain Points:**
 
@@ -65,15 +67,15 @@ CodeFlow transforms PR management through three core innovations:
 
 ### Business Objectives
 
-- Achieve 100+ team signups within 6 months of MVP launch
+- Achieve 500+ extension installs within 6 months of MVP launch
 - Demonstrate 50% reduction in average PR review cycle time for active users
-- Establish CodeFlow as the preferred PR workflow tool for Teams-integrated development environments
+- Establish CodeFlow as the preferred PR workflow tool inside VS Code
 - Build foundation for broader DevOps workflow management platform
 
 ### User Success Metrics
 
-- Daily active usage: 80% of team members using dashboard within first month
-- Notification engagement: 70% action rate on Teams notifications (vs. <20% for email)
+- Daily active usage: 80% of users opening the dashboard within first month
+- Notification engagement: 60% action rate on in-editor notifications
 - Time savings: Average 15 minutes/day saved on PR management tasks
 - Team velocity: 25% faster merge cycles for teams using full feature set
 
@@ -81,19 +83,20 @@ CodeFlow transforms PR management through three core innovations:
 
 - **PR Cycle Time:** Average hours from "ready for review" to merge (target: 50% reduction)
 - **User Engagement:** Daily dashboard views per active user (target: 3+ sessions)
-- **Teams Integration Usage:** Percentage of PR actions taken through Teams vs. GitHub (target: 40%)
-- **Team Adoption:** Percentage of team members actively using within 30 days (target: 75%)
+- **In-Editor Usage:** Percentage of PR actions taken from the extension vs. GitHub web (target: 40%)
+- **Activation Rate:** Percentage of users who connect GitHub and view dashboard within first session (target: 70%)
 
 ## MVP Scope
 
 ### Core Features (Must Have)
 
-- **OAuth GitHub Integration:** Secure authentication and repository access for PR data retrieval
+- **PAT GitHub Integration:** Secure token storage via VS Code SecretStorage
 - **Four-Section Dashboard:** Automated PR categorization (Needs Review, Returned to You, My PRs, Reviewed-Awaiting)
 - **Basic PR Cards:** Essential information display (title, author, reviewers, status, comment count)
-- **Microsoft Teams Bot Integration:** Individual DM notifications for PR status changes and review outcomes
+- **Copilot SDK Insights:** Optional AI summaries and risk cues when Copilot is available
+- **Local Notifications:** VS Code notifications for key PR status changes
 - **Real-time Updates:** 60-second polling for PR status changes and dashboard refresh
-- **Review Outcome Templates:** Structured messaging ("APPROVED", "3 comments need addressing", "Changes requested")
+- **Review Outcome Templates:** Structured status messaging ("Approved", "Changes requested", "Comments to address")
 
 ### Out of Scope for MVP
 
@@ -101,33 +104,33 @@ CodeFlow transforms PR management through three core innovations:
 - Complex code ownership parsing and subscription management
 - Advanced filtering, sorting, and grouping capabilities
 - 24-hour merge history dashboard for regression detection
-- Interactive Teams actions (Start Review, Quick Approve buttons)
+- Interactive notification actions beyond basic VS Code toasts
 - Browser push notifications
-- Multi-platform support (Slack, Discord integrations)
+- External messaging platform integrations (Teams, Slack, Discord)
 - Advanced analytics and reporting features
 
 ### MVP Success Criteria
 
-MVP succeeds if a 5-person development team can complete their daily PR management 50% faster, with 80% of PR status updates received through Teams resulting in immediate action within 2 hours.
+MVP succeeds if a 5-person development team can complete their daily PR management 50% faster, with 60% of in-editor notifications resulting in immediate action within 2 hours.
 
 ## Post-MVP Vision
 
 ### Phase 2 Features
 
-- Interactive Teams notifications with actionable buttons (Start Review, Acknowledge, Quick Approve)
+- Interactive in-editor notifications with actionable buttons
 - Advanced PR filtering and grouping for large repository management
 - LLM-powered feature detection matching user-defined interest areas
-- Browser push notifications for active GitHub users
+- Optional external notifications (Teams/Slack) via user-installed workflows
 - Basic analytics dashboard showing team review patterns
 
 ### Long-term Vision
 
-CodeFlow evolves into the central nervous system for development team workflows, expanding beyond PR management to include deployment notifications, incident management, and cross-platform DevOps coordination. The platform becomes the definitive solution for reducing context-switching overhead in modern development environments.
+CodeFlow evolves into the central nervous system for development team workflows, expanding beyond PR management to include deployment notifications, incident management, and cross-platform DevOps coordination. The extension becomes the definitive solution for reducing context-switching overhead in modern development environments.
 
 ### Expansion Opportunities
 
 - Integration with additional git platforms (GitLab, Bitbucket)
-- Support for other communication platforms (Slack, Discord)
+- Optional external notification integrations (Teams, Slack, Discord)
 - Advanced AI-powered code review assistance
 - Integration with CI/CD pipelines and deployment systems
 - Team productivity analytics and optimization recommendations
@@ -136,23 +139,23 @@ CodeFlow evolves into the central nervous system for development team workflows,
 
 ### Platform Requirements
 
-- **Target Platforms:** Web application (responsive design)
-- **Browser Support:** Modern browsers (Chrome, Firefox, Safari, Edge) - last 2 versions
+- **Target Platforms:** VS Code extension (desktop)
+- **Editor Support:** VS Code Stable and Insiders
 - **Performance Requirements:** Dashboard load time <2 seconds, real-time updates within 60 seconds
 
 ### Technology Preferences
 
-- **Full-Stack Framework:** Next.js with TypeScript (unified frontend/backend, aligns with portfolio development goals)
-- **API Routes:** Next.js API routes deployed as Vercel Functions
-- **Database:** PostgreSQL on Neon (serverless, generous free tier, Prisma compatible)
-- **Hosting/Infrastructure:** Vercel (zero-config Next.js deployment, automatic preview deployments, global CDN)
+- **Extension Runtime:** VS Code extension host (Node.js + TypeScript)
+- **UI Layer:** Webview with React + Vite
+- **AI Layer:** GitHub Copilot SDK (with graceful fallback)
+- **Storage:** VS Code SecretStorage for PATs; local cache for PR data
 
 ### Architecture Considerations
 
 - **Repository Structure:** Monorepo for rapid MVP development
-- **Service Architecture:** Monolithic initially, designed for future microservices migration
-- **Integration Requirements:** GitHub API, Microsoft Graph API for Teams, OAuth 2.0
-- **Security/Compliance:** Enterprise-grade authentication, secure token management, GDPR compliance
+- **Service Architecture:** Extension host acts as the backend
+- **Integration Requirements:** GitHub API (GraphQL preferred), PAT authentication, Copilot SDK
+- **Security/Compliance:** Secure token management via VS Code SecretStorage
 
 ## Constraints & Assumptions
 
@@ -161,22 +164,22 @@ CodeFlow evolves into the central nervous system for development team workflows,
 - **Budget:** Bootstrap/self-funded development, minimal external service costs during MVP
 - **Timeline:** 2-week MVP development target for initial team validation
 - **Resources:** Single developer initially, focus on lean implementation
-- **Technical:** Must work with existing GitHub permissions, Teams admin approval required
+- **Technical:** Must work with existing GitHub permissions and user-installed Copilot CLI
 
 ### Key Assumptions
 
-- Teams integration provides sufficient notification reach for target users
+- Developers spend most of their day in VS Code
 - 60-second polling frequency meets real-time requirements without API rate limiting
 - GitHub API rate limits support planned usage patterns for target team sizes
 - Developers prefer consolidated PR management over native GitHub interface
-- Microsoft Teams usage is prevalent in target development teams
+- Copilot SDK availability is sufficient for early adopters
 
 ## Risks & Open Questions
 
 ### Key Risks
 
 - **API Rate Limiting:** GitHub API limits may constrain real-time updates for large teams
-- **Teams Approval Process:** Microsoft Teams app approval may delay enterprise adoption
+- **Copilot SDK Volatility:** SDK is in technical preview and may change
 - **User Adoption:** Developers may resist changing established GitHub workflows
 - **Competition Response:** GitHub may enhance native PR management features
 
@@ -184,39 +187,40 @@ CodeFlow evolves into the central nervous system for development team workflows,
 
 - What's the optimal notification frequency balance between real-time and API efficiency?
 - How do we handle GitHub permissions and private repository access securely?
-- What's the minimum viable Teams integration that delivers maximum value?
-- Should we prioritize browser notifications or Teams integration for MVP?
+- What is the minimum viable Copilot experience without overusing premium requests?
+- Should external notifications be a Phase 2 workflow integration or a hosted backend?
 
 ### Areas Needing Further Research
 
-- Microsoft Teams bot development and approval process timeline
+- Copilot SDK onboarding friction (CLI install + auth)
 - GitHub API rate limiting impact on planned polling frequency
 - Competitive landscape analysis of existing PR management tools
-- User interview validation of Teams vs. browser notification preferences
+- User interview validation of in-editor notifications vs. external messaging
 
 ## Appendices
 
 ### A. Research Summary
 
-Based on brainstorming session analysis using First Principles Thinking, Resource Constraints, Role Playing, and SCAMPER methods. Key insights include Teams integration as primary differentiator, focus on review outcomes over events, and 2-week MVP feasibility with simplified feature set.
+Based on brainstorming session analysis using First Principles Thinking, Resource Constraints, Role Playing, and SCAMPER methods. Key insights include in-editor workflow acceleration as the primary differentiator, focus on review outcomes over events, and 2-week MVP feasibility with simplified feature set.
 
 ### C. References
 
 - Brainstorming Session Results (August 22, 2025)
 - GitHub API Documentation
-- Microsoft Teams Bot Framework Documentation
+- VS Code Extension API Documentation
+- GitHub Copilot SDK Documentation
 - Industry studies on developer productivity and context-switching costs
 
 ## Next Steps
 
 ### Immediate Actions
 
-1. Set up development environment and Next.js project structure
-2. Create GitHub OAuth application for API access
-3. Research Microsoft Teams bot development requirements and approval process
-4. Design database schema for PR data storage and user management
-5. Create wireframes for four-section dashboard layout
-6. Set up Next.js application with TypeScript and required dependencies
+1. Set up VS Code extension scaffold (TypeScript + Webview + Vite)
+2. Implement PAT storage with VS Code SecretStorage
+3. Add GitHub API client (GraphQL preferred) for PR data
+4. Integrate Copilot SDK adapter with graceful fallback
+5. Create wireframes for the in-editor dashboard
+6. Define notification UX for VS Code toasts
 
 ### PM Handoff
 
