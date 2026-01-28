@@ -41,8 +41,8 @@ development_status:
   0-2-testing-framework-configuration: done
   0-3-quality-gates-database-migration-setup: done
   0-4-database-configuration: done
-  0-5-environment-management: backlog
-  0-6-code-quality-standards: in-progress
+  0-5-environment-management: done
+  0-6-code-quality-standards: done
   0-7-aws-infrastructure-setup: backlog
   epic-0-retrospective: optional
 
