@@ -1,6 +1,6 @@
 /**
  * Mock for Auth.js (NextAuth.js v5)
- * 
+ *
  * Provides mock implementations for auth functions used in tests.
  */
 

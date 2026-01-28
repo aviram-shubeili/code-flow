@@ -1,18 +1,18 @@
 /**
  * Auth.js v5 Configuration (Full - Node.js Runtime)
- * 
+ *
  * Configures NextAuth with GitHub OAuth provider and Prisma database adapter.
  * Uses database sessions (NOT JWT) as per architecture requirements.
- * 
+ *
  * This file extends auth.config.ts with database-specific features.
  * - auth.config.ts: Edge-compatible (used by middleware)
  * - auth.ts: Full config with database (used by API routes & server components)
- * 
+ *
  * Environment Variables Required:
  * - AUTH_SECRET: Generated with `npx auth secret`
  * - AUTH_GITHUB_ID: GitHub OAuth App Client ID
  * - AUTH_GITHUB_SECRET: GitHub OAuth App Client Secret
- * 
+ *
  * @see https://authjs.dev/guides/edge-compatibility
  */
 
@@ -27,7 +27,7 @@ import authConfig from './auth.config'
 
 /**
  * NextAuth.js v5 configuration (Full - with database adapter)
- * 
+ *
  * Key features:
  * - Extends auth.config.ts with database-specific features
  * - GitHub OAuth with minimal scopes (read:user, user:email, repo:status)
@@ -61,7 +61,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const account = await prisma.account.findFirst({
           where: {
             userId: user.id,
-            provider: 'github'
+            provider: 'github',
           },
         })
 

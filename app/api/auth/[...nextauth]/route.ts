@@ -1,6 +1,6 @@
 /**
  * Auth.js API Route Handler
- * 
+ *
  * Handles all authentication routes:
  * - GET /api/auth/signin - Sign-in page
  * - GET /api/auth/signout - Sign-out page
@@ -8,7 +8,7 @@
  * - GET /api/auth/callback/:provider - OAuth callback
  * - GET /api/auth/session - Get current session
  * - POST /api/auth/signout - Sign out
- * 
+ *
  * These handlers are exported from the auth.ts configuration.
  */
 

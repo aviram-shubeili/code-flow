@@ -18,247 +18,247 @@ const mockCreateUserProfile = vi.fn()
 const mockUpdateUserLastActive = vi.fn()
 
 vi.mock('@/lib/database', () => ({
-    db: {
-        getUserProfile: (...args: unknown[]) => mockGetUserProfile(...args),
-        createUserProfile: (...args: unknown[]) => mockCreateUserProfile(...args),
-        updateUserLastActive: (...args: unknown[]) => mockUpdateUserLastActive(...args),
-    },
+  db: {
+    getUserProfile: (...args: unknown[]) => mockGetUserProfile(...args),
+    createUserProfile: (...args: unknown[]) => mockCreateUserProfile(...args),
+    updateUserLastActive: (...args: unknown[]) => mockUpdateUserLastActive(...args),
+  },
 }))
 
 // Mock Prisma account lookup
 const mockAccountFindFirst = vi.fn()
 
 vi.mock('@/lib/prisma', () => ({
-    prisma: {
-        account: {
-            findFirst: (...args: unknown[]) => mockAccountFindFirst(...args),
-        },
+  prisma: {
+    account: {
+      findFirst: (...args: unknown[]) => mockAccountFindFirst(...args),
     },
+  },
 }))
 
 describe('Auth Callbacks', () => {
-    beforeEach(() => {
-        vi.clearAllMocks()
-    })
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
-    describe('signIn callback logic', () => {
-        // Helper to get the signIn callback logic
-        async function simulateSignInCallback(
-            user: User,
-            account: Account | null,
-            profile: Profile | undefined
-        ): Promise<boolean> {
-            // Import database service
-            const { db } = await import('@/lib/database')
+  describe('signIn callback logic', () => {
+    // Helper to get the signIn callback logic
+    async function simulateSignInCallback(
+      user: User,
+      account: Account | null,
+      profile: Profile | undefined
+    ): Promise<boolean> {
+      // Import database service
+      const { db } = await import('@/lib/database')
 
-            // Simulate signIn callback logic (mirrors auth.ts implementation)
-            try {
-                if (account?.provider !== 'github' || !profile || !user.id) {
-                    return true
-                }
-
-                const existingProfile = await db.getUserProfile(user.id)
-
-                if (!existingProfile) {
-                    const githubProfile = profile as unknown as { login: string; id: number }
-                    await db.createUserProfile({
-                        userId: user.id,
-                        githubId: githubProfile.id,
-                        username: githubProfile.login,
-                    })
-                } else {
-                    await db.updateUserLastActive(user.id)
-                }
-
-                return true
-            } catch {
-                return true // Allow sign-in even on error
-            }
+      // Simulate signIn callback logic (mirrors auth.ts implementation)
+      try {
+        if (account?.provider !== 'github' || !profile || !user.id) {
+          return true
         }
 
-        it('creates UserProfile for new GitHub users', async () => {
-            const user: User = { id: 'user-123', name: 'Test User', email: 'test@example.com' }
-            const account: Account = {
-                provider: 'github',
-                providerAccountId: '456',
-                type: 'oauth',
-            }
-            const profile = {
-                login: 'testuser',
-                id: 456,
-            } as unknown as Profile
+        const existingProfile = await db.getUserProfile(user.id)
 
-            mockGetUserProfile.mockResolvedValue(null)
-            mockCreateUserProfile.mockResolvedValue({ userId: 'user-123', githubId: 456 })
-
-            const result = await simulateSignInCallback(user, account, profile)
-
-            expect(result).toBe(true)
-            expect(mockGetUserProfile).toHaveBeenCalledWith('user-123')
-            expect(mockCreateUserProfile).toHaveBeenCalledWith({
-                userId: 'user-123',
-                githubId: 456,
-                username: 'testuser',
-            })
-            expect(mockUpdateUserLastActive).not.toHaveBeenCalled()
-        })
-
-        it('updates lastActiveAt for returning users', async () => {
-            const user: User = { id: 'user-123', name: 'Test User', email: 'test@example.com' }
-            const account: Account = {
-                provider: 'github',
-                providerAccountId: '456',
-                type: 'oauth',
-            }
-            const profile = {
-                login: 'testuser',
-                id: 456,
-            } as unknown as Profile
-
-            mockGetUserProfile.mockResolvedValue({ userId: 'user-123', githubId: 456 })
-
-            const result = await simulateSignInCallback(user, account, profile)
-
-            expect(result).toBe(true)
-            expect(mockGetUserProfile).toHaveBeenCalledWith('user-123')
-            expect(mockCreateUserProfile).not.toHaveBeenCalled()
-            expect(mockUpdateUserLastActive).toHaveBeenCalledWith('user-123')
-        })
-
-        it('skips processing for non-GitHub providers', async () => {
-            const user: User = { id: 'user-123', name: 'Test User', email: 'test@example.com' }
-            const account: Account = {
-                provider: 'google',
-                providerAccountId: '456',
-                type: 'oauth',
-            }
-            const profile: Profile = {} as Profile
-
-            const result = await simulateSignInCallback(user, account, profile)
-
-            expect(result).toBe(true)
-            expect(mockGetUserProfile).not.toHaveBeenCalled()
-        })
-
-        it('skips processing when no profile is provided', async () => {
-            const user: User = { id: 'user-123', name: 'Test User', email: 'test@example.com' }
-            const account: Account = {
-                provider: 'github',
-                providerAccountId: '456',
-                type: 'oauth',
-            }
-
-            const result = await simulateSignInCallback(user, account, undefined)
-
-            expect(result).toBe(true)
-            expect(mockGetUserProfile).not.toHaveBeenCalled()
-        })
-
-        it('skips processing when user.id is undefined', async () => {
-            const user: User = { name: 'Test User', email: 'test@example.com' } as User
-            const account: Account = {
-                provider: 'github',
-                providerAccountId: '456',
-                type: 'oauth',
-            }
-            const profile = { login: 'testuser', id: 456 } as unknown as Profile
-
-            const result = await simulateSignInCallback(user, account, profile)
-
-            expect(result).toBe(true)
-            expect(mockGetUserProfile).not.toHaveBeenCalled()
-        })
-
-        it('allows sign-in even when database operation fails', async () => {
-            const user: User = { id: 'user-123', name: 'Test User', email: 'test@example.com' }
-            const account: Account = {
-                provider: 'github',
-                providerAccountId: '456',
-                type: 'oauth',
-            }
-            const profile = { login: 'testuser', id: 456 } as unknown as Profile
-
-            mockGetUserProfile.mockRejectedValue(new Error('Database error'))
-
-            const result = await simulateSignInCallback(user, account, profile)
-
-            expect(result).toBe(true) // Should still allow sign-in
-        })
-    })
-
-    describe('session callback logic', () => {
-        interface SessionWithUser {
-            user: { id: string; name?: string | null; email?: string | null; image?: string | null }
-            expires: string
-            accessToken?: string
+        if (!existingProfile) {
+          const githubProfile = profile as unknown as { login: string; id: number }
+          await db.createUserProfile({
+            userId: user.id,
+            githubId: githubProfile.id,
+            username: githubProfile.login,
+          })
+        } else {
+          await db.updateUserLastActive(user.id)
         }
 
-        async function simulateSessionCallback(
-            session: SessionWithUser,
-            userId: string
-        ): Promise<SessionWithUser> {
-            const { prisma } = await import('@/lib/prisma')
+        return true
+      } catch {
+        return true // Allow sign-in even on error
+      }
+    }
 
-            try {
-                const account = await prisma.account.findFirst({
-                    where: { userId, provider: 'github' },
-                })
+    it('creates UserProfile for new GitHub users', async () => {
+      const user: User = { id: 'user-123', name: 'Test User', email: 'test@example.com' }
+      const account: Account = {
+        provider: 'github',
+        providerAccountId: '456',
+        type: 'oauth',
+      }
+      const profile = {
+        login: 'testuser',
+        id: 456,
+      } as unknown as Profile
 
-                if (account?.access_token) {
-                    session.accessToken = account.access_token
-                }
+      mockGetUserProfile.mockResolvedValue(null)
+      mockCreateUserProfile.mockResolvedValue({ userId: 'user-123', githubId: 456 })
 
-                session.user.id = userId
+      const result = await simulateSignInCallback(user, account, profile)
 
-                return session
-            } catch {
-                return session
-            }
+      expect(result).toBe(true)
+      expect(mockGetUserProfile).toHaveBeenCalledWith('user-123')
+      expect(mockCreateUserProfile).toHaveBeenCalledWith({
+        userId: 'user-123',
+        githubId: 456,
+        username: 'testuser',
+      })
+      expect(mockUpdateUserLastActive).not.toHaveBeenCalled()
+    })
+
+    it('updates lastActiveAt for returning users', async () => {
+      const user: User = { id: 'user-123', name: 'Test User', email: 'test@example.com' }
+      const account: Account = {
+        provider: 'github',
+        providerAccountId: '456',
+        type: 'oauth',
+      }
+      const profile = {
+        login: 'testuser',
+        id: 456,
+      } as unknown as Profile
+
+      mockGetUserProfile.mockResolvedValue({ userId: 'user-123', githubId: 456 })
+
+      const result = await simulateSignInCallback(user, account, profile)
+
+      expect(result).toBe(true)
+      expect(mockGetUserProfile).toHaveBeenCalledWith('user-123')
+      expect(mockCreateUserProfile).not.toHaveBeenCalled()
+      expect(mockUpdateUserLastActive).toHaveBeenCalledWith('user-123')
+    })
+
+    it('skips processing for non-GitHub providers', async () => {
+      const user: User = { id: 'user-123', name: 'Test User', email: 'test@example.com' }
+      const account: Account = {
+        provider: 'google',
+        providerAccountId: '456',
+        type: 'oauth',
+      }
+      const profile: Profile = {} as Profile
+
+      const result = await simulateSignInCallback(user, account, profile)
+
+      expect(result).toBe(true)
+      expect(mockGetUserProfile).not.toHaveBeenCalled()
+    })
+
+    it('skips processing when no profile is provided', async () => {
+      const user: User = { id: 'user-123', name: 'Test User', email: 'test@example.com' }
+      const account: Account = {
+        provider: 'github',
+        providerAccountId: '456',
+        type: 'oauth',
+      }
+
+      const result = await simulateSignInCallback(user, account, undefined)
+
+      expect(result).toBe(true)
+      expect(mockGetUserProfile).not.toHaveBeenCalled()
+    })
+
+    it('skips processing when user.id is undefined', async () => {
+      const user: User = { name: 'Test User', email: 'test@example.com' } as User
+      const account: Account = {
+        provider: 'github',
+        providerAccountId: '456',
+        type: 'oauth',
+      }
+      const profile = { login: 'testuser', id: 456 } as unknown as Profile
+
+      const result = await simulateSignInCallback(user, account, profile)
+
+      expect(result).toBe(true)
+      expect(mockGetUserProfile).not.toHaveBeenCalled()
+    })
+
+    it('allows sign-in even when database operation fails', async () => {
+      const user: User = { id: 'user-123', name: 'Test User', email: 'test@example.com' }
+      const account: Account = {
+        provider: 'github',
+        providerAccountId: '456',
+        type: 'oauth',
+      }
+      const profile = { login: 'testuser', id: 456 } as unknown as Profile
+
+      mockGetUserProfile.mockRejectedValue(new Error('Database error'))
+
+      const result = await simulateSignInCallback(user, account, profile)
+
+      expect(result).toBe(true) // Should still allow sign-in
+    })
+  })
+
+  describe('session callback logic', () => {
+    interface SessionWithUser {
+      user: { id: string; name?: string | null; email?: string | null; image?: string | null }
+      expires: string
+      accessToken?: string
+    }
+
+    async function simulateSessionCallback(
+      session: SessionWithUser,
+      userId: string
+    ): Promise<SessionWithUser> {
+      const { prisma } = await import('@/lib/prisma')
+
+      try {
+        const account = await prisma.account.findFirst({
+          where: { userId, provider: 'github' },
+        })
+
+        if (account?.access_token) {
+          session.accessToken = account.access_token
         }
 
-        it('adds access token and user id to session', async () => {
-            const session: SessionWithUser = {
-                user: { id: '', name: 'Test', email: 'test@example.com' },
-                expires: new Date(Date.now() + 86400000).toISOString(),
-            }
+        session.user.id = userId
 
-            mockAccountFindFirst.mockResolvedValue({
-                access_token: 'gho_test_token_12345',
-                provider: 'github',
-            })
+        return session
+      } catch {
+        return session
+      }
+    }
 
-            const result = await simulateSessionCallback(session, 'user-123')
+    it('adds access token and user id to session', async () => {
+      const session: SessionWithUser = {
+        user: { id: '', name: 'Test', email: 'test@example.com' },
+        expires: new Date(Date.now() + 86400000).toISOString(),
+      }
 
-            expect(result.accessToken).toBe('gho_test_token_12345')
-            expect(result.user.id).toBe('user-123')
-        })
+      mockAccountFindFirst.mockResolvedValue({
+        access_token: 'gho_test_token_12345',
+        provider: 'github',
+      })
 
-        it('returns session without token when account not found', async () => {
-            const session: SessionWithUser = {
-                user: { id: '', name: 'Test', email: 'test@example.com' },
-                expires: new Date(Date.now() + 86400000).toISOString(),
-            }
+      const result = await simulateSessionCallback(session, 'user-123')
 
-            mockAccountFindFirst.mockResolvedValue(null)
-
-            const result = await simulateSessionCallback(session, 'user-123')
-
-            expect(result.accessToken).toBeUndefined()
-            expect(result.user.id).toBe('user-123')
-        })
-
-        it('handles database errors gracefully', async () => {
-            const session: SessionWithUser = {
-                user: { id: '', name: 'Test', email: 'test@example.com' },
-                expires: new Date(Date.now() + 86400000).toISOString(),
-            }
-
-            mockAccountFindFirst.mockRejectedValue(new Error('Connection error'))
-
-            const result = await simulateSessionCallback(session, 'user-123')
-
-            // Should return session even on error
-            expect(result).toBeDefined()
-        })
+      expect(result.accessToken).toBe('gho_test_token_12345')
+      expect(result.user.id).toBe('user-123')
     })
+
+    it('returns session without token when account not found', async () => {
+      const session: SessionWithUser = {
+        user: { id: '', name: 'Test', email: 'test@example.com' },
+        expires: new Date(Date.now() + 86400000).toISOString(),
+      }
+
+      mockAccountFindFirst.mockResolvedValue(null)
+
+      const result = await simulateSessionCallback(session, 'user-123')
+
+      expect(result.accessToken).toBeUndefined()
+      expect(result.user.id).toBe('user-123')
+    })
+
+    it('handles database errors gracefully', async () => {
+      const session: SessionWithUser = {
+        user: { id: '', name: 'Test', email: 'test@example.com' },
+        expires: new Date(Date.now() + 86400000).toISOString(),
+      }
+
+      mockAccountFindFirst.mockRejectedValue(new Error('Connection error'))
+
+      const result = await simulateSessionCallback(session, 'user-123')
+
+      // Should return session even on error
+      expect(result).toBeDefined()
+    })
+  })
 })
