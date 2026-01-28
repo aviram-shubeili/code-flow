@@ -1,6 +1,6 @@
 ---
 description: "Activates the Ux Designer agent persona."
-tools: ["changes","edit","fetch","githubRepo","problems","runCommands","runTasks","runTests","search","runSubagent","testFailure","todos","usages"]
+tools: ["changes","edit","fetch","githubRepo","problems","runCommands","runTasks","runTests","search","runSubagent","testFailure","todos","usages","context7/query-docs","context7/resolve-library-id"]
 ---
 
 # Ux Designer Agent
