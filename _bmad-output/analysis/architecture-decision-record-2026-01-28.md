@@ -202,7 +202,7 @@ Deliver advanced AI-powered prioritization:
 
 ## References
 
-- [Brainstorming Session 2023-01-23](_bmad-output/analysis/brainstorming-session-2026-01-23.md)
+- [Brainstorming Session 2026-01-23](_bmad-output/analysis/brainstorming-session-2026-01-23.md)
 - [GitHub Copilot SDK Documentation](https://docs.github.com/en/copilot)
 - [Architecture Introduction](docs/architecture/introduction.md)
 

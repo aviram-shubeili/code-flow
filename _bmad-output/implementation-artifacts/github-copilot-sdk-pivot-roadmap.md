@@ -255,7 +255,7 @@ interface CopilotReviewBadgeProps {
   reviewedAt?: Date
 }
 
-export function CopilotReviewBadge({ status, commentCount, reviewedAt }: Props) {
+export function CopilotReviewBadge({ status, commentCount, reviewedAt }: CopilotReviewBadgeProps) {
   // Renders different visual states based on status:
   // - NOT_REQUESTED: Faded icon + "No AI review"
   // - PENDING: Animated spinner + "Review starting..."
@@ -301,7 +301,7 @@ export function RequestAIReviewButton({
   pullRequestId, 
   currentStatus, 
   onReviewRequested 
-}: Props) {
+}: RequestAIReviewButtonProps) {
   // Disabled if review already exists
   // Shows loading state during API call
   // Displays success/error feedback
