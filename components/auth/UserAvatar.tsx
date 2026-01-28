@@ -1,22 +1,24 @@
 /**
  * UserAvatar Component
- * 
+ *
  * Displays user avatar with fallback to initials.
  * Works with Auth.js session data.
- * 
+ *
  * Usage:
  * ```tsx
  * import { auth } from '@/auth'
  * import { UserAvatar } from '@/components/auth'
- * 
+ *
  * export default async function Page() {
  *   const session = await auth()
  *   if (!session) return null
- *   
+ *
  *   return <UserAvatar user={session.user} />
  * }
  * ```
  */
+
+import Image from 'next/image'
 
 export interface UserAvatarProps {
   user: {
@@ -36,19 +38,36 @@ export interface UserAvatarProps {
 }
 
 /**
+ * Size mappings for avatar dimensions
+ */
+const sizeConfig = {
+  sm: { className: 'h-8 w-8 text-xs', pixels: 32 },
+  md: { className: 'h-10 w-10 text-sm', pixels: 40 },
+  lg: { className: 'h-12 w-12 text-base', pixels: 48 },
+}
+
+/**
  * Get user initials from name or email
  */
 function getUserInitials(user: UserAvatarProps['user']): string {
   if (user.name) {
-    const parts = user.name.trim().split(' ')
+    const parts = user.name.trim().split(' ').filter(Boolean)
     if (parts.length >= 2) {
-      return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
+      const firstChar = parts[0]?.[0] ?? ''
+      const lastChar = parts[parts.length - 1]?.[0] ?? ''
+      return `${firstChar}${lastChar}`.toUpperCase()
     }
-    return parts[0][0].toUpperCase()
+    const singleChar = parts[0]?.[0]
+    if (singleChar) {
+      return singleChar.toUpperCase()
+    }
   }
 
   if (user.email) {
-    return user.email[0].toUpperCase()
+    const emailChar = user.email[0]
+    if (emailChar) {
+      return emailChar.toUpperCase()
+    }
   }
 
   return '?'
@@ -58,28 +77,24 @@ function getUserInitials(user: UserAvatarProps['user']): string {
  * User avatar with image fallback to initials
  */
 export function UserAvatar({ user, size = 'md', className = '' }: UserAvatarProps) {
-  const sizeClasses = {
-    sm: 'h-8 w-8 text-xs',
-    md: 'h-10 w-10 text-sm',
-    lg: 'h-12 w-12 text-base',
-  }
-
+  const config = sizeConfig[size]
   const initials = getUserInitials(user)
 
   if (user.image) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
+      <Image
         src={user.image}
         alt={user.name || user.email || 'User'}
-        className={`${sizeClasses[size]} rounded-full object-cover ${className}`}
+        width={config.pixels}
+        height={config.pixels}
+        className={`${config.className} rounded-full object-cover ${className}`}
       />
     )
   }
 
   return (
     <div
-      className={`${sizeClasses[size]} flex items-center justify-center rounded-full bg-blue-600 font-semibold text-white ${className}`}
+      className={`${config.className} flex items-center justify-center rounded-full bg-blue-600 font-semibold text-white ${className}`}
     >
       {initials}
     </div>

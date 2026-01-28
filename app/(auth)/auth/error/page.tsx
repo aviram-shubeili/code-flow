@@ -1,6 +1,6 @@
 /**
  * Auth Error Page
- * 
+ *
  * Displays meaningful error messages for OAuth authentication failures.
  * Handles various error scenarios:
  * - Configuration errors (server misconfiguration)
@@ -75,7 +75,7 @@ const errorMessages: Record<string, { title: string; description: string }> = {
 export default async function AuthErrorPage({ searchParams }: AuthErrorPageProps) {
   const params = await searchParams
   const errorType = params.error || 'Default'
-  const error = errorMessages[errorType] || errorMessages.Default
+  const error = errorMessages[errorType] ?? errorMessages['Default']!
 
   // Log error for monitoring (in production, send to error tracking service)
   console.error('Auth error:', { errorType, timestamp: new Date().toISOString() })
@@ -107,13 +107,13 @@ export default async function AuthErrorPage({ searchParams }: AuthErrorPageProps
         </div>
 
         {/* Actions */}
-        <div className="mt-6 space-y-4">
-          <Link href="/auth/signin">
+        <div className="mt-6 flex flex-col gap-4">
+          <Link href="/auth/signin" className="w-full">
             <Button variant="primary" className="w-full">
               Try signing in again
             </Button>
           </Link>
-          <Link href="/">
+          <Link href="/" className="w-full">
             <Button variant="outline" className="w-full">
               Go to home page
             </Button>

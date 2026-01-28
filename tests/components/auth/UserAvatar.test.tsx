@@ -17,8 +17,9 @@ describe('UserAvatar', () => {
 
     render(<UserAvatar user={user} />)
     const img = screen.getByRole('img')
-    expect(img).toHaveAttribute('src', 'https://example.com/avatar.jpg')
+    // Next.js Image component transforms URL, so we check it contains the original
     expect(img).toHaveAttribute('alt', 'John Doe')
+    expect(img.getAttribute('src')).toContain('avatar.jpg')
   })
 
   it('renders initials from name when no image', () => {
@@ -108,9 +109,7 @@ describe('UserAvatar', () => {
     )
     expect(screen.getByAltText('john@example.com')).toBeInTheDocument()
 
-    rerender(
-      <UserAvatar user={{ name: null, email: null, image: 'https://example.com/3.jpg' }} />
-    )
+    rerender(<UserAvatar user={{ name: null, email: null, image: 'https://example.com/3.jpg' }} />)
     expect(screen.getByAltText('User')).toBeInTheDocument()
   })
 })

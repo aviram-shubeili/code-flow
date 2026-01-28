@@ -1,50 +1,45 @@
 /**
- * Auth.js v5 Configuration
+ * Auth.js v5 Configuration (Full - Node.js Runtime)
  * 
  * Configures NextAuth with GitHub OAuth provider and Prisma database adapter.
  * Uses database sessions (NOT JWT) as per architecture requirements.
+ * 
+ * This file extends auth.config.ts with database-specific features.
+ * - auth.config.ts: Edge-compatible (used by middleware)
+ * - auth.ts: Full config with database (used by API routes & server components)
  * 
  * Environment Variables Required:
  * - AUTH_SECRET: Generated with `npx auth secret`
  * - AUTH_GITHUB_ID: GitHub OAuth App Client ID
  * - AUTH_GITHUB_SECRET: GitHub OAuth App Client Secret
  * 
- * @see https://authjs.dev/
+ * @see https://authjs.dev/guides/edge-compatibility
  */
 
 import NextAuth from 'next-auth'
-import GitHub from 'next-auth/providers/github'
 
 import { PrismaAdapter } from '@auth/prisma-adapter'
 
 import { db } from '@/lib/database'
 import { prisma } from '@/lib/prisma'
 
+import authConfig from './auth.config'
+
 /**
- * NextAuth.js v5 configuration
+ * NextAuth.js v5 configuration (Full - with database adapter)
  * 
  * Key features:
+ * - Extends auth.config.ts with database-specific features
  * - GitHub OAuth with minimal scopes (read:user, user:email, repo:status)
  * - Database sessions with 7-day expiration
  * - UserProfile creation on first sign-in
  * - Access token stored in session for GitHub API requests
  */
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig, // Spread edge-compatible config
+
+  // Add database adapter (Node.js only - not available in Edge Runtime)
   adapter: PrismaAdapter(prisma),
-  
-  providers: [
-    GitHub({
-      // Request minimal OAuth scopes for PR monitoring
-      // read:user - Basic profile information
-      // user:email - Access to user email addresses
-      // repo:status - Repository status and PR information (read-only)
-      authorization: {
-        params: {
-          scope: 'read:user user:email repo:status',
-        },
-      },
-    }),
-  ],
 
   session: {
     // Use database sessions (NOT JWT) as per architecture
@@ -54,17 +49,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
 
   callbacks: {
+    ...authConfig.callbacks, // Keep edge-compatible callbacks
     /**
      * Session callback - adds GitHub access token to session
      * This allows server-side components to make authenticated GitHub API requests
+     * Runs in Node.js runtime (can access database)
      */
     async session({ session, user }) {
       try {
         // Fetch GitHub account to get access token
         const account = await prisma.account.findFirst({
-          where: { 
-            userId: user.id, 
-            provider: 'github' 
+          where: {
+            userId: user.id,
+            provider: 'github'
           },
         })
 
@@ -86,11 +83,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     /**
      * Sign-in callback - creates UserProfile on first sign-in
      * Uses DatabaseService to maintain data consistency
+     * Runs in Node.js runtime (can access database)
      */
     async signIn({ user, account, profile }) {
       try {
-        // Only process GitHub sign-ins
-        if (account?.provider !== 'github' || !profile) {
+        // Only process GitHub sign-ins with valid user.id
+        if (account?.provider !== 'github' || !profile || !user.id) {
           return true
         }
 
@@ -99,8 +97,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (!existingProfile) {
           // Create UserProfile for new users
-          const githubProfile = profile as { login: string; id: number }
-          
+          // GitHub profiles include login and id properties
+          const githubProfile = profile as unknown as { login: string; id: number }
+
           await db.createUserProfile({
             userId: user.id,
             githubId: githubProfile.id,

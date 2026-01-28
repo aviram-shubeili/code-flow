@@ -1,13 +1,13 @@
 /**
  * SignOutButton Component
- * 
+ *
  * Server-side component that uses Auth.js Server Actions to sign out users.
  * Follows the recommended pattern from Auth.js v5 docs.
- * 
+ *
  * Usage:
  * ```tsx
  * import { SignOutButton } from '@/components/auth'
- * 
+ *
  * export default function Page() {
  *   return <SignOutButton />
  * }
@@ -18,6 +18,11 @@ import { signOut } from '@/auth'
 import Button from '@/components/ui/Button'
 
 export interface SignOutButtonProps {
+  /**
+   * Redirect URL after sign-out
+   * @default '/'
+   */
+  redirectTo?: string
   /**
    * Button variant
    * @default 'outline'
@@ -39,6 +44,7 @@ export interface SignOutButtonProps {
  * Sign-out button using Server Actions (recommended Auth.js v5 pattern)
  */
 export function SignOutButton({
+  redirectTo = '/',
   variant = 'outline',
   size = 'md',
   children = 'Sign out',
@@ -47,7 +53,7 @@ export function SignOutButton({
     <form
       action={async () => {
         'use server'
-        await signOut()
+        await signOut({ redirectTo })
       }}
     >
       <Button type="submit" variant={variant} size={size}>

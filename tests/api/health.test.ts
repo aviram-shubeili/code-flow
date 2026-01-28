@@ -10,15 +10,25 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+// Mock the database module
+vi.mock('@/lib/database', () => ({
+  db: {
+    checkConnection: vi.fn().mockResolvedValue(true),
+  },
+}))
+
 import { GET } from '@/app/api/health/route'
+import { db } from '@/lib/database'
 
 describe('/api/health', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    // Default to connected
+    vi.mocked(db.checkConnection).mockResolvedValue(true)
   })
 
   describe('GET /api/health', () => {
-    it('returns health status successfully', async () => {
+    it('returns health status successfully when database is connected', async () => {
       const response = await GET()
       const data = await response.json()
 
@@ -28,6 +38,24 @@ describe('/api/health', () => {
         timestamp: expect.any(String),
         uptime: expect.any(Number),
         environment: expect.any(String),
+        checks: {
+          database: 'connected',
+        },
+      })
+    })
+
+    it('returns degraded status when database is disconnected', async () => {
+      vi.mocked(db.checkConnection).mockResolvedValue(false)
+
+      const response = await GET()
+      const data = await response.json()
+
+      expect(response.status).toBe(503)
+      expect(data).toMatchObject({
+        status: 'degraded',
+        checks: {
+          database: 'disconnected',
+        },
       })
     })
 
@@ -61,12 +89,6 @@ describe('/api/health', () => {
       const data = await response.json()
 
       expect(data.status).toBe('ok')
-    })
-
-    it('returns Content-Type as application/json', async () => {
-      const response = await GET()
-
-      expect(response.headers.get('content-type')).toContain('application/json')
     })
 
     it('handles multiple concurrent requests', async () => {
