@@ -8,7 +8,7 @@ CodeFlow is a VS Code extension that delivers a real-time pull request managemen
 
 **Target Market:** Software development teams using GitHub and VS Code, particularly those with 5+ developers working on shared repositories.
 
-**Key Value Proposition:** Reduce PR review cycle time by 50% through personalized dashboards, real-time in-editor updates, and AI-assisted PR insights.
+**Key Value Proposition:** Reduce PR review cycle time by 50% through personalized dashboards, real-time in-editor updates, and deeply integrated AI capabilities powered by GitHub Copilot SDK—transforming raw PR data into actionable intelligence.
 
 ## Problem Statement
 
@@ -32,9 +32,13 @@ CodeFlow transforms PR management through three core innovations:
 
 **In-Editor Experience:** A VS Code webview dashboard with quick actions keeps review work inside the editor, minimizing context switching.
 
-**Copilot-Powered Insights:** AI summaries and risk cues via GitHub Copilot SDK help reviewers assess changes faster without opening every file.
+**Copilot-Powered Intelligence:** Deep integration with GitHub Copilot SDK delivers multiple AI-driven capabilities:
+- **AI Pre-Flight Status:** Dashboard badges showing whether Copilot has already reviewed a PR, with comment counts visible before opening
+- **One-Click AI Review:** Trigger Copilot reviews directly from dashboard cards—eliminating the "empty page" problem
+- **Semantic Risk Labels:** AI-derived descriptors like "Refactor" (safe), "Critical Logic" (risky), or "Config Change" (low risk) replacing generic size labels
+- **Smart Summaries:** AI-generated TL;DR for each PR to accelerate triage decisions
 
-**Differentiation:** While tools like PullReminders and GitHub's built-in notifications focus on reminders, CodeFlow accelerates workflow directly inside VS Code with outcome-focused insights and AI assistance.
+**Differentiation:** While tools like PullReminders and GitHub's built-in notifications focus on reminders, CodeFlow accelerates workflow directly inside VS Code with outcome-focused insights and seamlessly integrated AI assistance—badges, buttons, and filters rather than chatbots.
 
 ## Target Users
 
@@ -93,14 +97,20 @@ CodeFlow transforms PR management through three core innovations:
 - **PAT GitHub Integration:** Secure token storage via VS Code SecretStorage
 - **Four-Section Dashboard:** Automated PR categorization (Needs Review, Returned to You, My PRs, Reviewed-Awaiting)
 - **Basic PR Cards:** Essential information display (title, author, reviewers, status, comment count)
-- **Copilot SDK Insights:** Optional AI summaries and risk cues when Copilot is available
+- **AI Pre-Flight Status:** Dashboard badges indicating Copilot review state with comment counts visible on cards
+- **One-Click AI Review:** Trigger Copilot reviews directly from dashboard without opening the PR
+- **Copilot SDK Insights:** AI summaries and semantic risk cues when Copilot is available
 - **Local Notifications:** VS Code notifications for key PR status changes
 - **Real-time Updates:** 60-second polling for PR status changes and dashboard refresh
 - **Review Outcome Templates:** Structured status messaging ("Approved", "Changes requested", "Comments to address")
 
 ### Out of Scope for MVP
 
-- LLM-powered feature detection and personalized PR highlighting
+- Living Interest Graph (user skill/expertise profiling for personalized prioritization)
+- Persona-Based AI Review ("Review as Security Expert" based on user profile)
+- AI Focus Category / Triage Assistant (dynamic high-priority section based on learned interests)
+- Smart Diff Hiding (AI-powered collapse of boilerplate/generated code)
+- Team Alignment Healer (relationship-based PR surfacing)
 - Complex code ownership parsing and subscription management
 - Advanced filtering, sorting, and grouping capabilities
 - 24-hour merge history dashboard for regression detection
@@ -115,13 +125,31 @@ MVP succeeds if a 5-person development team can complete their daily PR manageme
 
 ## Post-MVP Vision
 
-### Phase 2 Features
+### 3-Phase Intelligence Strategy
 
-- Interactive in-editor notifications with actionable buttons
-- Advanced PR filtering and grouping for large repository management
-- LLM-powered feature detection matching user-defined interest areas
-- Optional external notifications (Teams/Slack) via user-installed workflows
-- Basic analytics dashboard showing team review patterns
+CodeFlow's AI capabilities mature through a deliberate three-phase strategy:
+
+**Phase 1: Hands (Workflow Automation) — MVP**
+- AI Pre-Flight Status & One-Click Review (included in MVP)
+- Immediate value with low dependency on user data
+- Resolves the "Empty Page" problem and leverages existing Copilot capabilities
+
+**Phase 2: Memory (User Profiling)**
+- **Living Interest Graph:** Semantic user profile tracking expertise and interests (e.g., "Auth", "Payment Service")
+- **Continuous Interest Learning:** Hybrid explicit (onboarding) + implicit (merged PR analysis) learning
+- **Transparent Expertise Model:** Users can view and edit their "AI-perceived skills"
+- Foundation layer required to power advanced intelligence features
+
+**Phase 3: Brains (Dashboard Intelligence)**
+- **AI Focus Category / Triage Assistant:** Dynamic, high-signal section of "Must Do" items based on relevance, complexity, and urgency
+- **Persona-Based AI Review:** Tailored reviews using user's Interest Graph ("Review for security flaws because user is a security expert")
+- **Smart Diff Hiding:** AI-powered collapse of boilerplate, generated code, and simple refactors
+- **Semantic Risk Labels:** "Refactor" vs "Critical Logic" replacing generic size labels
+
+### Team Health Features (Phase 3+)
+
+- **Team Alignment Healer:** AI analyzes review patterns to surface PRs from disconnected teammates, optimizing for people connections
+- **Pre-Submission Coach:** Private "whisper" mode catching obvious issues before PR is visible to reviewers
 
 ### Long-term Vision
 
@@ -155,6 +183,11 @@ CodeFlow evolves into the central nervous system for development team workflows,
 - **Repository Structure:** Monorepo for rapid MVP development
 - **Service Architecture:** Extension host acts as the backend
 - **Integration Requirements:** GitHub API (GraphQL preferred), PAT authentication, Copilot SDK
+- **Copilot SDK Integration (Core):**
+  - Programmatic triggering of Copilot reviews via SDK
+  - Polling/listener service for Copilot review state and comment metadata
+  - State management for AI badge counts and review status on PR cards
+  - Graceful fallback when Copilot is unavailable
 - **Security/Compliance:** Secure token management via VS Code SecretStorage
 
 ## Constraints & Assumptions
@@ -206,6 +239,7 @@ Based on brainstorming session analysis using First Principles Thinking, Resourc
 ### C. References
 
 - Brainstorming Session Results (August 22, 2025)
+- **Copilot SDK Integration Brainstorming Session (January 23, 2026)** — Defines 3-Phase Intelligence Strategy, AI Pre-Flight features, Living Interest Graph, and Team Health concepts
 - GitHub API Documentation
 - VS Code Extension API Documentation
 - GitHub Copilot SDK Documentation
