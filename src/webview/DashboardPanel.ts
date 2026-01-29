@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { GitHubClient } from '../github/client';
 import { DashboardData } from '../types';
+import { NotificationService } from '../services/NotificationService';
 
 export class DashboardPanel {
 	public static currentPanel: DashboardPanel | undefined;
@@ -10,8 +11,9 @@ export class DashboardPanel {
 	private readonly _extensionUri: vscode.Uri;
 	private _disposables: vscode.Disposable[] = [];
 	private _githubClient: GitHubClient;
+	private _notificationService: NotificationService;
 
-	public static async createOrShow(extensionUri: vscode.Uri, githubClient: GitHubClient) {
+	public static async createOrShow(extensionUri: vscode.Uri, githubClient: GitHubClient, notificationService: NotificationService) {
 		const column = vscode.window.activeTextEditor
 			? vscode.window.activeTextEditor.viewColumn
 			: undefined;
@@ -35,7 +37,7 @@ export class DashboardPanel {
 			}
 		);
 
-		DashboardPanel.currentPanel = new DashboardPanel(panel, extensionUri, githubClient);
+		DashboardPanel.currentPanel = new DashboardPanel(panel, extensionUri, githubClient, notificationService);
 		await DashboardPanel.currentPanel.refresh();
 	}
 
@@ -45,15 +47,22 @@ export class DashboardPanel {
 		}
 	}
 
+	public static async updateIfVisible(data: DashboardData) {
+		if (DashboardPanel.currentPanel && DashboardPanel.currentPanel._panel.visible) {
+			DashboardPanel.currentPanel._panel.webview.postMessage({ command: 'updateData', data });
+		}
+	}
+
 	public static dispose() {
 		DashboardPanel.currentPanel?.dispose();
 		DashboardPanel.currentPanel = undefined;
 	}
 
-	private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, githubClient: GitHubClient) {
+	private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, githubClient: GitHubClient, notificationService: NotificationService) {
 		this._panel = panel;
 		this._extensionUri = extensionUri;
 		this._githubClient = githubClient;
+		this._notificationService = notificationService;
 
 		// Set the webview's initial html content
 		this._update();
@@ -83,6 +92,7 @@ export class DashboardPanel {
 	public async refresh() {
 		try {
 			const data = await this._githubClient.getDashboardData();
+			await this._notificationService.checkAndNotify(data);
 			this._panel.webview.postMessage({ command: 'updateData', data });
 		} catch (error: any) {
 			vscode.window.showErrorMessage(`Failed to refresh: ${error.message}`);
