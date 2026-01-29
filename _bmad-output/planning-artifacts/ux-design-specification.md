@@ -1,17 +1,20 @@
 ---
-stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 inputDocuments:
   - docs/brief.md
-  - docs/prd/goals-and-background-context.md
-  - docs/prd/epic-3-dashboard-ui-and-user-experience.md
-  - docs/prd/index.md
+  - docs/project-context.md
   - docs/front-end-spec.md
+  - _bmad-output/planning-artifacts/prd.md
+  - _bmad-output/analysis/architecture-decision-record-2026-01-28.md
+platformRevision: 2026-01-29
+platformNote: "Updated for VS Code Extension pivot per ADR 2026-01-28"
 ---
 
 # UX Design Specification: CodeFlow
 
-**Author:** Aviram
-**Date:** January 21, 2026
+**Author:** Aviram  
+**Date:** January 21, 2026  
+**Revised:** January 29, 2026 (VS Code Extension pivot)
 
 ---
 
@@ -52,17 +55,24 @@ Developers context-switch between GitHub (code review), chat tools (coordination
 
 ### Design Opportunities
 
-**1. Intelligent Prioritization as Competitive Moat**
-While competitors focus on generic reminders, CodeFlow can provide expertise-aware prioritization (future: AI-powered relevance matching to reviewer knowledge areas). MVP opportunity: Clear visual hierarchy based on PR age, team velocity impact, and reviewer capacity. Post-MVP: GitHub Copilot SDK integration for semantic code relevance.
+**1. AI-First Triage as Competitive Moat (Copilot SDK from Day 1)**
+CodeFlow is positioned as one of the first VS Code extensions to leverage GitHub Copilot SDK. MVP includes:
+- **AI Pre-Flight Status:** Badges showing Copilot review state before user opens PR
+- **One-Click AI Review:** Trigger Copilot reviews directly from dashboard cards
+- **Semantic Risk Labels:** AI-derived descriptors ("Refactor", "Critical Logic", "Config Change") replacing generic size labels
+- **AI Summaries:** TL;DR for each PR to accelerate triage decisions
 
-**2. Gentle Automation of Social Dynamics**
-Automate the "awkward reminder" problem with configurable escalation nudges that feel helpful rather than nagging. Borrow patterns from successful manual workflows (emoji reactions, status transparency) and automate them. Opportunity: Make PR coordination feel collaborative rather than confrontational.
+**2. Intelligent Prioritization Through Visual Hierarchy**
+Clear visual signals based on PR age, AI risk assessment, and Copilot comment counts. The interface guides reviewers to their most impactful review without manual scanning.
 
-**3. Outcome-Focused Communication**
-Transform notification fatigue into actionable clarity. Every message answers "what do I need to do?" rather than "what happened?" Opportunity: Create a new category of developer tool that's actually helpful rather than overwhelming.
+**3. Gentle Automation of Social Dynamics**
+Automate the "awkward reminder" problem with VS Code notifications that feel helpful rather than nagging. Phase 2 adds Slack/Teams integration via GitHub Actions.
 
-**4. Chat-Native Workflow Acceleration**
-Slack integration (MVP) validates chat-based coordination without complex enterprise approval processes. Opportunity: Design for where developers actually collaborate, then expand to Teams/Discord/etc. Pattern library from successful manual Teams emoji system provides validated UX foundation.
+**4. Outcome-Focused Communication**
+Transform notification fatigue into actionable clarity. Every message answers "what do I need to do?" rather than "what happened?" VS Code toasts and activity bar badges provide ambient awareness.
+
+**5. In-Editor Workflow Acceleration**
+Meet developers where they already are. No browser tab switching, no separate app. PR triage happens in the same window as code editing, reducing cognitive overhead.
 
 ## Core User Experience
 
@@ -80,28 +90,42 @@ CodeFlow's defining experience is the **instant clarity moment** - opening the d
 
 ### Platform Strategy
 
-**Primary Platform:** Web application optimized for desktop browsers (1440px+ primary, responsive down to 1024px minimum)
+**Primary Platform:** VS Code Extension with React webview dashboard
 
-**Input Paradigm:** Mouse/keyboard primary interaction model - power users will learn keyboard shortcuts for rapid navigation
+**Viewport Constraints:**
+- **Sidebar Panel:** 300-400px width (primary use case)
+- **Editor Panel:** 400-800px width (expanded view when docked in editor area)
+- **Full Panel:** 600-1200px width (bottom panel, less common)
+
+**Input Paradigm:** Keyboard-first with mouse support — developers are already in VS Code, hands on keyboard
 
 **Platform Rationale:**
-- Developers work primarily on desktop during code review workflows
-- Web-first enables rapid iteration and deployment without app store friction
-- Browser-based allows seamless deep linking from Slack notifications
-- Responsive design supports tablet usage (768px+) for on-the-go PR status checks
-- Mobile (320px+) is "graceful degradation" not primary target - mobile users primarily consume status, not perform deep reviews
+- **Zero context-switch:** Developers already live in VS Code during code work
+- **Copilot SDK access:** Extension host enables native Copilot integration for AI features
+- **PAT authentication:** No OAuth app approval friction — works immediately in enterprise
+- **VS Code Marketplace:** Built-in distribution channel with trusted install experience
+- **Theme integration:** Inherits user's VS Code theme (dark/light) automatically
 
-**Connectivity:** Online-only, real-time data model - offline functionality not required (code review inherently requires GitHub API access)
+**In-Editor Advantages:**
+- PR triage happens where code review actions begin
+- One click from dashboard → GitHub PR in browser (or use GitHub PR extension)
+- VS Code notifications appear in activity bar, not lost in browser tabs
+- Keyboard shortcuts integrate with VS Code's shortcut system
 
-**Browser Support:** Modern evergreen browsers (Chrome, Firefox, Safari, Edge) - last 2 versions, no legacy IE support needed
+**Connectivity:** Online-only — GitHub API access required for PR data, Copilot SDK requires authenticated CLI
+
+**Graceful Degradation:**
+- Core dashboard works without Copilot SDK (AI features hidden)
+- Cached data shown when GitHub API rate-limited
+- Clear "last updated" timestamps build trust
 
 ### Effortless Interactions
 
 **1. Zero-Thought Prioritization**
-Opening the dashboard immediately reveals "start here" - no scanning, no analysis paralysis, no decision fatigue. Visual hierarchy through urgency indicators, age badges, and strategic positioning eliminates "which PR?" questions.
+Opening the dashboard immediately reveals "start here" - no scanning, no analysis paralysis, no decision fatigue. Visual hierarchy through urgency indicators, AI risk labels, and strategic positioning eliminates "which PR?" questions.
 
-**2. Automatic Social Coordination**
-PR authors never manually ping reviewers. Configurable gentle nudges escalate automatically after defined periods (e.g., 24h → friendly Slack reminder, 48h → secondary escalation). The system handles awkward follow-ups while maintaining collaborative tone.
+**2. AI-Assisted Context**
+AI Pre-Flight badges and summaries provide context *before* clicking into a PR. One-Click AI Review triggers Copilot analysis directly from the dashboard. Semantic Risk Labels replace generic size indicators with meaningful descriptors.
 
 **3. Real-Time Status Synchronization**
 Dashboard updates reflect GitHub state within 60 seconds without manual refresh. Users never question "is this current?" - timestamp indicators and auto-refresh provide confidence.
@@ -109,25 +133,25 @@ Dashboard updates reflect GitHub state within 60 seconds without manual refresh.
 **4. One-Click Deep Links**
 Every PR card links directly to relevant GitHub context (review interface, specific comment threads, file diffs). No navigation hunting, no tab proliferation - click and you're exactly where you need to be.
 
-**5. Outcome-Focused Notifications**
-Slack messages answer "what do I need to do?" not "what happened?" - "3 comments need addressing in auth-refactor PR" vs "PR updated." Users scan notification, understand action, decide priority instantly.
+**5. Ambient Notifications**
+VS Code activity bar badges and toast notifications answer "what do I need to do?" not "what happened?" — "3 comments need addressing in auth-refactor PR" vs "PR updated." Phase 2 adds Slack/Teams via GitHub Actions for out-of-editor awareness.
 
 ### Critical Success Moments
 
 **1. First Dashboard Load (New User)**
-User authenticates, grants GitHub access, sees their first populated dashboard. **Success:** They immediately understand the four-section model and identify their first action within 30 seconds. **Failure:** Confusion about categorization logic or empty states that feel broken.
+User enters PAT, grants GitHub access, sees their first populated dashboard. **Success:** They immediately understand the four-section model and identify their first action within 30 seconds. AI badges and summaries provide instant context. **Failure:** Confusion about categorization logic or empty states that feel broken.
 
 **2. Reviewer Picks First PR (Decision Point)**
-User has 8 PRs in "Needs Review" section. **Success:** Visual hierarchy guides them to most important PR through age, urgency, team impact signals. They feel confident "this is the right one to review first." **Failure:** All 8 PRs look equally important, user picks randomly or oldest-first (decision paralysis not solved).
+User has 8 PRs in "Needs Review" section. **Success:** Visual hierarchy + AI Risk Labels guide them to most important PR. Semantic labels like "Critical Logic" signal priority. They feel confident "this is the right one to review first." **Failure:** All 8 PRs look equally important, user picks randomly (decision paralysis not solved).
 
 **3. Author Realizes PR Needs Re-Review (Returned to You)**
-Reviewers finished commenting 2 hours ago. **Success:** User opens CodeFlow, "Returned to You" section prominently shows PR with clear "3 unresolved comments" indicator. They immediately understand what needs addressing. **Failure:** User misses notification, PR sits idle for 24 hours, review cycle delays compound.
+Reviewers finished commenting 2 hours ago. **Success:** User opens CodeFlow, "Returned to You" section prominently shows PR with clear "3 unresolved comments" indicator. AI summary reminds them of context. **Failure:** User misses notification, PR sits idle for 24 hours, review cycle delays compound.
 
-**4. Automated Nudge Feels Helpful Not Nagging (Social Dynamics)**
-PR author's code sits unreviewed for 36 hours. **Success:** Automated Slack reminder to assigned reviewers feels helpful ("Friendly reminder: auth-refactor PR needs your review") without accusatory tone. Reviewers appreciate the nudge, author avoids manual DM awkwardness. **Failure:** Message feels robotic, accusatory, or spammy - reviewers ignore or resent notifications.
+**4. One-Click AI Review (AI-First Triage)**
+PR has no AI context yet. **Success:** User clicks "Start AI Review" from dashboard, sees immediate feedback, receives AI summary and risk label within seconds. They now have context without opening GitHub. **Failure:** AI feature is confusing or unavailable without clear fallback.
 
-**5. Team Adopts CodeFlow Collectively (Network Effect)**
-First team member starts using CodeFlow. **Success:** They invite teammates, demonstrate time savings, team adopts within 2 weeks as everyone benefits from mutual coordination improvements. **Failure:** Solo user gets limited value without team participation, abandons tool within first week.
+**5. Copilot Unavailable (Graceful Degradation)**
+User doesn't have Copilot CLI installed. **Success:** Dashboard works perfectly, AI features are simply hidden (not broken). User gets full value from categorization and visual hierarchy. Optional hint in settings about Copilot. **Failure:** Error messages, broken UI, feeling that tool requires Copilot.
 
 ### Experience Principles
 
@@ -375,7 +399,7 @@ Every emotional response depends on data reliability. One instance of stale data
 **Real-Time Updates (Linear/Slack)** - Essential for Trust:
 - 60-second polling without manual refresh
 - Supports "Earned Trust Through Accuracy" emotional principle
-- Technical implementation: Next.js API routes + client-side polling or WebSocket
+- Technical implementation: Extension host polling + webview message passing
 
 **What to Adapt for Our Context:**
 
@@ -432,12 +456,17 @@ This is a "themeable headless components" approach that gives you:
 
 ### Rationale for Selection
 
-**1. Aligns with Your Tech Stack**
-- Next.js native - Tailwind CSS has first-class Next.js support
+**1. Aligns with VS Code Extension Stack**
+- React + Vite for webview bundling (standard for VS Code extensions)
 - TypeScript - shadcn/ui components are fully typed
-- Vercel deployment - Tailwind optimizes automatically
+- Tailwind CSS works perfectly in webview context
 
-**2. Matches Developer Tool Aesthetic**
+**2. VS Code Theme Integration**
+- Tailwind can be configured to use VS Code CSS variables
+- Automatic dark/light mode based on user's VS Code theme
+- Colors inherit from `--vscode-*` CSS custom properties
+
+**3. Matches Developer Tool Aesthetic**
 - Linear uses Tailwind + Radix
 - GitHub's Primer design system has similar principles
 - Clean, minimal, typography-focused - matches inspiration analysis
@@ -668,10 +697,11 @@ This is CodeFlow's "swipe right" moment - the interaction that, if we nail it pe
 **The 3-Second Priority Recognition Flow:**
 
 **1. Initiation (Dashboard Open)**
-- **Trigger:** User navigates to CodeFlow URL or clicks from Slack notification
+- **Trigger:** User clicks CodeFlow icon in VS Code Activity Bar or uses command palette
 - **Visual:** Four-section grid loads with real-time PR counts in badges
+- **AI Context:** Pre-Flight badges show which PRs have AI reviews ready
 - **Invitation:** "Needs Review (5)" badge draws eyes immediately to actionable section
-- **First impression goal:** "I see PRs organized by what I need to do"
+- **First impression goal:** "I see PRs organized by what I need to do, with AI context ready"
 
 **2. Interaction (Scanning & Selection)**
 - **User action:** Eyes scan top-left "Needs Review" section first (F-pattern reading)
@@ -685,10 +715,10 @@ This is CodeFlow's "swipe right" moment - the interaction that, if we nail it pe
 
 **3. Feedback (Confirmation & Action)**
 - **Immediate:** Hover state changes (subtle background shift, cursor:pointer)
-- **Click action:** Opens GitHub PR in new tab (preserves dashboard state)
+- **Click action:** Opens GitHub PR in new tab (or GitHub PR extension if installed)
 - **Subtle update:** PR card gets "reviewing" state indicator (user's avatar appears)
-- **No jarring transition:** Dashboard stays open, user returns when done reviewing
-- **Outcome notification:** When user approves/comments on GitHub, Slack pings author with "3 comments need addressing"
+- **No jarring transition:** Dashboard stays open in VS Code, user returns when done reviewing
+- **Outcome notification:** When user approves/comments on GitHub, dashboard reflects change on next poll
 
 **4. Completion (Success State)**
 - **Return to dashboard:** PR moves from "Needs Review" to "Reviewed-Awaiting" section
@@ -822,25 +852,32 @@ spacing: {
 - **Visual Weight Guides Eyes:** Bold text = urgent, regular = standard
 - **Consistent Card Height:** Prevents jumping when scanning list
 
-**3. Responsive Grid Strategy**
+**3. Webview Layout Strategy**
 
-**Desktop (1440px+):** Four-section 2x2 grid
+**Sidebar Mode (300-400px):** Vertical stack with collapsible sections
+```
+[Section Tabs: NR | RY | MP | RA]
+[Active Section - PR Card List]
+[Compact cards, essential info only]
+```
+
+**Panel Mode (400-800px):** Two-column when space permits
 ```
 [Needs Review]     [Returned to You]
 [My PRs]           [Reviewed-Awaiting]
 ```
 
-**Tablet (768-1023px):** Two-column stacked
+**Full Panel Mode (800px+):** Four-section grid with expanded cards
 ```
 [Needs Review]     [Returned to You]
 [My PRs]           [Reviewed-Awaiting]
 ```
 
-**Mobile (320-767px):** Single column with tabs
-```
-[Tabs: NR | RY | MP | RA]
-[Active Section Content]
-```
+**Webview-Specific Considerations:**
+- No horizontal scroll — content must fit within panel width
+- Respect VS Code's theme variables for colors
+- Compact mode essential for sidebar use (most common)
+- Progressive disclosure even more critical in constrained space
 
 **Grid Gaps:**
 - Between sections: 24px (desktop), 16px (mobile)
@@ -1027,4 +1064,954 @@ Four distinct visual directions were evaluated, each interpreting the visual fou
    - Overlapping avatars (max 3 visible, "+2 more" for overflow)
    - Hover reveals full reviewer list
    - Indicates who has/hasn't reviewed
+
+## AI-First UX Patterns (Phase 1 — Copilot SDK)
+
+CodeFlow is positioned as one of the first VS Code extensions to leverage the GitHub Copilot SDK for PR intelligence. This section defines the UX patterns for AI features that ship in MVP.
+
+### AI Pre-Flight Status Badges
+
+**Purpose:** Show Copilot review state on PR cards *before* the user opens the PR, eliminating the "empty page" problem where users click into a PR with no context.
+
+**Visual Design:**
+- **Badge Position:** Upper-right corner of PR card, next to age badge
+- **States:**
+  - 🔵 `AI Reviewed` — Copilot has analyzed, comment count visible
+  - ⏳ `AI Pending` — Review triggered, awaiting completion
+  - ⚪ `No AI Review` — Not yet triggered (shows "Start AI Review" action)
+  - 🚫 `AI Unavailable` — Copilot SDK not available (graceful fallback)
+
+**Comment Count Display:**
+- When AI has reviewed: Show `💬 3` badge indicating Copilot comment count
+- Hover reveals: "3 Copilot suggestions available"
+- Distinct from human comments (different icon/color)
+
+**Interaction:**
+- Badge is *informational* — clicking the PR card opens full PR
+- Comment count creates anticipation: "I know what to expect before I click"
+
+### One-Click AI Review Trigger
+
+**Purpose:** Allow users to trigger Copilot reviews directly from the dashboard without opening the PR first.
+
+**Visual Design:**
+- **Button Position:** Inline with PR card actions (right side, on hover)
+- **Button States:**
+  - `✨ Start AI Review` — Primary action when no AI review exists
+  - `🔄 Refresh AI` — Secondary action when stale review
+  - `⏳ Reviewing...` — Loading state with subtle animation
+  - Hidden when Copilot SDK unavailable
+
+**Interaction Flow:**
+1. User sees PR card without AI review
+2. Hovers → "Start AI Review" button appears
+3. Clicks → Button shows spinner, triggers Copilot SDK
+4. Completion → Badge updates to "AI Reviewed" with comment count
+5. User now has context *before* opening PR on GitHub
+
+**Error Handling:**
+- Rate limit hit: "AI review queued, will complete shortly"
+- SDK unavailable: Button hidden, no error (graceful degradation)
+- Review failed: "AI review unavailable" with retry option
+
+### Semantic Risk Labels
+
+**Purpose:** Replace generic size labels (S/M/L, +500/-200) with AI-derived semantic descriptors that communicate *what* changed, not just *how much*.
+
+**Label Types:**
+| Label | Meaning | Visual |
+|-------|---------|--------|
+| `Refactor` | Structural changes, same behavior | 🔄 Blue badge |
+| `Critical Logic` | Core business logic changes | ⚠️ Amber badge |
+| `Config Change` | Configuration, env, settings | ⚙️ Gray badge |
+| `Tests Only` | Only test files modified | 🧪 Green badge |
+| `Docs Update` | Documentation changes | 📝 Purple badge |
+| `New Feature` | Additive functionality | ✨ Cyan badge |
+| `Bug Fix` | Defect correction | 🐛 Orange badge |
+| `Dependencies` | Package/dependency updates | 📦 Brown badge |
+
+**Visual Design:**
+- **Position:** Below PR title, before metadata row
+- **Size:** Compact badge (12px font, 4px padding)
+- **Fallback:** If AI unavailable, show traditional `+500 -200` diff stats
+
+**Confidence Indicator:**
+- High confidence: Solid badge
+- Low confidence: Outlined badge with `?` suffix (e.g., `Refactor?`)
+
+### AI Summaries (TL;DR)
+
+**Purpose:** Provide a 1-2 sentence summary of what the PR does, visible on hover or in expanded view.
+
+**Visual Design:**
+- **Display Mode:** Hidden by default, revealed on hover or card expansion
+- **Position:** Below PR title, above metadata
+- **Typography:** 12px, secondary text color, italic style
+- **Max Length:** 140 characters (one line in compact view)
+
+**Example Summaries:**
+- "Refactors authentication flow to use JWT tokens instead of session cookies"
+- "Adds rate limiting to API endpoints with configurable thresholds"
+- "Fixes null pointer exception in user profile loading"
+
+**Interaction:**
+- Hover: Summary fades in (200ms transition)
+- Click: Opens PR with full context
+- Truncation: If summary > 140 chars, show "..." with full text on hover
+
+### Graceful Degradation
+
+**Design Principle:** Core dashboard functionality works perfectly without Copilot SDK. AI features enhance but never block.
+
+**Degradation States:**
+
+**1. Copilot SDK Available + Authenticated:**
+- All AI features visible and functional
+- AI badges, summaries, risk labels, one-click reviews
+
+**2. Copilot SDK Available + Not Authenticated:**
+- AI features visible but show "Sign in to Copilot" prompt
+- One-time setup message in settings panel
+- Dashboard works normally without AI
+
+**3. Copilot SDK Not Installed:**
+- AI features completely hidden (not disabled — hidden)
+- No error messages, no "upgrade" nags
+- Dashboard is still valuable without AI
+- Subtle "Copilot features available" hint in settings
+
+**4. Copilot SDK Error/Rate Limited:**
+- AI badges show "AI Unavailable" state
+- Cached AI data shown with "Stale" indicator
+- Retry mechanism with exponential backoff
+- Never blocks user from core PR triage
+
+**Visual Consistency:**
+- Same card layout with or without AI features
+- Spacing adjusts gracefully when AI elements hidden
+- No jarring "missing feature" gaps
+
+### AI Feature Discovery
+
+**First-Time User with Copilot:**
+- Subtle sparkle animation on first AI badge
+- Tooltip: "AI-powered insights help you triage faster"
+- One-time, dismissible — never repeated
+
+**First-Time User without Copilot:**
+- No mention of AI features
+- Full dashboard value without AI
+- Settings panel mentions: "Enhance with GitHub Copilot" (optional)
+
+### AI UX Principles
+
+**1. AI Enhances, Never Blocks**
+Every AI feature has a non-AI fallback. Users should never feel the tool is broken without AI.
+
+**2. Transparency Over Magic**
+Show what AI is doing (review status, confidence levels). Never hide that AI generated content.
+
+**3. User Control**
+Users can trigger AI reviews when they want them, not forced automatically. Respect user autonomy.
+
+**4. Graceful Latency**
+AI operations take time. Show progress, allow other actions, never freeze the UI. Optimistic updates where safe.
+
+**5. Error Dignity**
+When AI fails, handle it gracefully. No scary error dialogs. Log for debugging, show simple "unavailable" states to users.
+
+## User Journey Flows
+
+### First-Time Setup Flow (Dana's Onboarding)
+
+**Goal:** PAT entered → Dashboard populated in under 60 seconds
+
+**Design Philosophy:** "Just works" magic with transparent escape hatches. The happy path feels effortless, but users can peek behind the curtain if needed.
+
+```mermaid
+flowchart TD
+    A[Open CodeFlow Extension] --> B{PAT in SecretStorage?}
+    B -->|No| C[Show Welcome + PAT Input]
+    B -->|Yes| D{Validate PAT Scopes}
+    
+    C --> E[User Enters PAT]
+    E --> D
+    
+    D -->|Valid| F{Copilot SDK Available?}
+    D -->|Invalid Scopes| G[Inline Fix Guidance]
+    D -->|Invalid Token| H[Clear Error + Retry]
+    
+    G --> I[Show Missing Scopes]
+    I --> J[Link: Generate New PAT]
+    J --> E
+    
+    H --> C
+    
+    F -->|Yes| K[Fetch PRs with AI Context]
+    F -->|No| L[Fetch PRs - Core Only]
+    
+    K --> M[Dashboard Loads with AI Badges]
+    L --> N[Dashboard Loads - Clean]
+    
+    M --> O[Success: Under 60s]
+    N --> O
+```
+
+**Key Design Decisions:**
+- No blocking "setup wizard" — validation happens inline
+- PAT scope errors show exactly what's missing + one-click fix link
+- Copilot availability silently determines AI feature visibility
+- User sees populated dashboard before any optional configuration
+
+### Daily Triage Flow (Maya's Reviewer Workflow)
+
+**Goal:** Open → Know priority → Take action in <30 seconds
+
+```mermaid
+flowchart TD
+    A[Click CodeFlow Icon] --> B[Dashboard Loads]
+    B --> C{Data Fresh?}
+    
+    C -->|Yes| D[Show 4-Section Grid]
+    C -->|Stale >5min| E[Show Cached + Refresh Banner]
+    
+    D --> F[Eyes Scan: Needs Review Section]
+    E --> F
+    
+    F --> G{PRs in Needs Review?}
+    
+    G -->|Yes| H[Visual Hierarchy Guides to Top PR]
+    G -->|No| I[Show Empty State: All Clear!]
+    
+    H --> J[See: Bold Title + Age Badge + AI Status]
+    J --> K{AI Review Available?}
+    
+    K -->|Yes| L[See AI Summary + Comment Count]
+    K -->|No| M[See Basic Metadata Only]
+    
+    L --> N[Confident Selection: This is the one]
+    M --> N
+    
+    N --> O[Click PR Card]
+    O --> P[Opens GitHub PR in Browser]
+    P --> Q[Complete Review on GitHub]
+    
+    Q --> R[Return to Dashboard]
+    R --> S[PR Moved to Reviewed-Awaiting]
+    S --> T[Badge Count Updated]
+    
+    T --> U{More PRs to Review?}
+    U -->|Yes| F
+    U -->|No| V[Triage Complete]
+```
+
+**Key Design Decisions:**
+- F-pattern scanning optimized (priority content top-left)
+- Visual weight (bold + size) signals urgency without color-only reliance
+- AI context enhances but never blocks the core loop
+- Dashboard state preserved when user returns from GitHub
+
+### Author Re-Review Flow (Eli's Response Loop)
+
+**Goal:** Notice review complete → Address feedback → Continue momentum
+
+```mermaid
+flowchart TD
+    A[Eli Working in VS Code] --> B{Notification Toast?}
+    
+    B -->|Yes| C[Toast: 3 comments on auth-refactor]
+    B -->|No| D[Opens CodeFlow Dashboard]
+    
+    C --> E[Click Toast]
+    E --> F[Dashboard Opens: Returned to You Highlighted]
+    
+    D --> F
+    
+    F --> G[See PR Card with Comment Count]
+    G --> H{AI Summary Available?}
+    
+    H -->|Yes| I[Read Summary: Context Refreshed]
+    H -->|No| J[See Comment Count + Reviewers]
+    
+    I --> K[Click PR Card]
+    J --> K
+    
+    K --> L[Opens GitHub PR]
+    L --> M[Address Comments]
+    M --> N[Push Update]
+    
+    N --> O[Return to Dashboard]
+    O --> P[PR Moves to My PRs Section]
+    P --> Q[Status: Changes Pushed, Awaiting Re-Review]
+    
+    Q --> R{Another Notification?}
+    R -->|Yes: Approved| S[PR Ready to Merge]
+    R -->|Yes: More Comments| F
+    R -->|No| T[Continue Other Work]
+```
+
+**Key Design Decisions:**
+- Notification message is outcome-focused ("3 comments need addressing")
+- "Returned to You" section gives immediate visibility without hunting
+- AI summary provides context refresh after time gap
+- Status updates reflect progress through review cycle
+
+### AI Review Trigger Flow (One-Click Innovation)
+
+**Goal:** See PR without AI context → Trigger review → Get context before opening PR
+
+```mermaid
+flowchart TD
+    A[View PR Card in Dashboard] --> B{AI Pre-Flight Badge?}
+    
+    B -->|AI Reviewed| C[See Comment Count + Summary]
+    B -->|No AI Review| D[Hover: Start AI Review Button Appears]
+    B -->|AI Unavailable| E[No AI Elements Shown]
+    
+    C --> F[Confident Context: Know What to Expect]
+    E --> F
+    
+    D --> G[Click: Start AI Review]
+    G --> H[Button Shows Spinner: Reviewing...]
+    
+    H --> I{Copilot SDK Response}
+    
+    I -->|Success| J[Badge Updates: AI Reviewed]
+    I -->|Rate Limited| K[Toast: Queued, will complete shortly]
+    I -->|Error| L[Badge: Retry Available]
+    
+    J --> M[Comment Count Appears]
+    M --> N[Summary Fades In]
+    N --> F
+    
+    K --> O[Background Retry with Backoff]
+    O --> J
+    
+    L --> P[User Can Click Retry or Proceed Without AI]
+    P --> F
+    
+    F --> Q[User Decides: Review Now or Later]
+    Q -->|Review Now| R[Click Card - GitHub PR]
+    Q -->|Later| S[Continue Scanning Other PRs]
+```
+
+**Key Design Decisions:**
+- AI trigger is discoverable on hover, not cluttering default view
+- Optimistic feedback (spinner) immediately confirms action
+- Errors never block — retry or proceed without AI
+- Context available *before* opening PR reduces wasted clicks
+
+### Journey Patterns
+
+**Navigation Patterns:**
+
+| Pattern | Usage | Implementation |
+|---------|-------|----------------|
+| **Section Focus** | Entry point directs to relevant section | Highlight "Returned to You" when coming from notification |
+| **Preserved State** | Dashboard survives external navigation | Keep scroll position, selection when returning from GitHub |
+| **Deep Link Entry** | Notifications link to specific context | Toast → Dashboard with target PR highlighted |
+
+**Decision Patterns:**
+
+| Pattern | Usage | Implementation |
+|---------|-------|----------------|
+| **Visual Weight Priority** | Guide eyes to most urgent item | Bold + larger badges for older PRs |
+| **Hover Reveal** | Show actions without cluttering default | AI trigger button appears on hover only |
+| **Progressive Context** | Essential → Details on demand | Title/age visible, comments/CI on hover |
+
+**Feedback Patterns:**
+
+| Pattern | Usage | Implementation |
+|---------|-------|----------------|
+| **Optimistic UI** | Show action result immediately | Spinner on AI trigger, assume success |
+| **State Migration** | Visual confirmation of progress | PR card animates to new section |
+| **Toast Notifications** | Outcome-focused status | "3 comments need addressing" not "PR updated" |
+
+### Flow Optimization Principles
+
+1. **Sub-30 Second Triage:** Every flow optimized for the "open → decide → act" loop completing in under 30 seconds
+
+2. **Zero Dead Ends:** Every error state has a recovery path; users never hit walls
+
+3. **Context Preservation:** AI summaries and state persistence reduce the "where was I?" problem
+
+4. **Ambient Awareness:** Notifications and badges provide information without demanding attention
+
+5. **Graceful Enhancement:** AI features appear when available, disappear when not — no "broken" states
+
+## Component Strategy
+
+### Design System Components
+
+**Foundation: Tailwind CSS + shadcn/ui (Radix UI primitives)**
+
+The following components are available from shadcn/ui and will be used as-is or with minimal customization:
+
+| Component | Our Usage |
+|-----------|-----------|
+| **Card** | Foundation for PR cards |
+| **Badge** | Status indicators, counts |
+| **Button** | Actions, AI triggers |
+| **Tabs** | Section navigation |
+| **Tooltip** | Hover reveals |
+| **Toast** | Notifications |
+| **Dialog** | Settings, confirmations |
+| **Command** | Command palette (Phase 2) |
+| **Skeleton** | Loading states |
+
+These components provide production-grade accessibility via Radix UI primitives, handle ARIA, keyboard navigation, and focus management out of the box.
+
+### Custom Components
+
+#### PR Card Component
+
+**Purpose:** The core building block — displays a single PR with all relevant context for triage decisions.
+
+**Anatomy:**
+```
+┌─────────────────────────────────────────────────┐
+│ [Risk Label]  [Age Badge]  [AI Status Badge]    │
+│ PR Title (typography weight indicates urgency)  │
+│ Author Avatar + Name • Repository Name          │
+│ ─────────────────────────────────────────────── │
+│ [AI Summary - visible on hover/expanded]        │
+│ ─────────────────────────────────────────────── │
+│ 📁 12 files  💬 3 comments  ✓ CI passed         │
+│ [Avatar Stack: Reviewers]                       │
+│              [Start AI Review] ← hover-reveal   │
+└─────────────────────────────────────────────────┘
+```
+
+**States:**
+
+| State | Visual Treatment |
+|-------|------------------|
+| **Default** | Standard card appearance |
+| **Hover** | Subtle background shift, action buttons appear |
+| **Urgent (48h+)** | Bold title, large age badge, warm amber tint |
+| **AI Reviewing** | Spinner overlay on AI badge |
+| **Highlighted** | Border accent (when linked from notification) |
+
+**Variants:**
+- **Compact** (sidebar, 300px) — Essential info only, stacked layout
+- **Standard** (panel, 400-600px) — Full metadata, horizontal layout
+- **Expanded** (on hover/click) — AI summary visible
+
+**Accessibility:**
+- ARIA: `role="article"`, `aria-label="Pull request: [title]"`
+- Keyboard: Tab-focusable, Enter to open, Space for quick action
+- Screen reader: "Pull request [title] by [author], [age] old, [status]"
+
+#### Age Badge Component
+
+**Purpose:** Visual urgency indicator using size + weight, not color alone.
+
+**States by Age:**
+
+| Age Range | Size | Background | Weight |
+|-----------|------|------------|--------|
+| **< 12h** | 12px | Gray 100 | Regular |
+| **12-24h** | 12px | Gray 200 | Regular |
+| **24-48h** | 14px | Amber 50 | Medium |
+| **48h+** | 16px | Amber 100 | Semi-bold |
+
+**Accessibility:**
+- ARIA: `aria-label="[X] hours since opened"`
+- Never color-only urgency (accessible to colorblind users)
+
+#### AI Status Badge Component
+
+**Purpose:** Pre-Flight indicator showing Copilot review state before opening PR.
+
+**States:**
+
+| State | Icon | Label | Comment Count |
+|-------|------|-------|---------------|
+| **Reviewed** | 🔵 | "AI Reviewed" | Yes (e.g., "💬 3") |
+| **Pending** | ⏳ | "Reviewing..." | No |
+| **Not Started** | ⚪ | Hidden (action on hover) | No |
+| **Unavailable** | — | Hidden entirely | No |
+
+**Accessibility:**
+- ARIA: `aria-label="AI review complete with [X] suggestions"`
+- Hidden states use `aria-hidden="true"`
+
+#### Section Header Component
+
+**Purpose:** Dashboard navigation with count badges and active state.
+
+**Anatomy:**
+```
+[ Needs Review (5) ] [ Returned to You (2) ] [ My PRs (3) ] [ Waiting (4) ]
+         ▲ active
+```
+
+**States:**
+
+| State | Visual |
+|-------|--------|
+| **Default** | Gray text, no underline |
+| **Active** | Primary color, underline, bold |
+| **Has Updates** | Subtle pulse on count badge |
+| **Empty** | Muted count "(0)" |
+
+**Responsive Behavior:**
+- **Sidebar:** Stacked vertically with icons
+- **Panel:** Horizontal tabs
+- **Full:** Horizontal with full labels
+
+**Accessibility:**
+- ARIA: `role="tablist"`, each tab `role="tab"`
+- Keyboard: Arrow keys navigate, Enter/Space activates
+
+#### Avatar Stack Component
+
+**Purpose:** Show reviewers with overlapping avatars, indicate review status.
+
+**Visual Indicators:**
+- **Reviewed (approved):** Green ring
+- **Reviewed (changes):** Yellow ring
+- **Reviewing:** No ring
+- **Overflow:** "+N more" text link
+
+**Accessibility:**
+- ARIA: `aria-label="Reviewers: [name] approved, [name] reviewing, and 2 more"`
+- Hover reveals tooltip with full list
+
+#### Risk Label Component
+
+**Purpose:** Semantic categorization replacing generic size labels.
+
+**Variants:**
+
+| Label | Icon | Color |
+|-------|------|-------|
+| **Refactor** | 🔄 | Blue |
+| **Critical Logic** | ⚠️ | Amber |
+| **Config Change** | ⚙️ | Gray |
+| **Tests Only** | 🧪 | Green |
+| **Docs Update** | 📝 | Purple |
+| **New Feature** | ✨ | Cyan |
+| **Bug Fix** | 🐛 | Orange |
+| **Dependencies** | 📦 | Brown |
+
+**Confidence Display:**
+- High: Solid badge
+- Low: Outlined badge with "?" suffix
+
+#### Empty State Component
+
+**Purpose:** Friendly messaging when sections have no items.
+
+**Variants:**
+
+| Section | Message | Tone |
+|---------|---------|------|
+| **Needs Review** | "All caught up! No PRs need your review." | Celebratory |
+| **Returned to You** | "Nothing returned. You're in the clear." | Reassuring |
+| **My PRs** | "No open PRs. Ready to ship something?" | Encouraging |
+| **Waiting** | "No PRs awaiting author response." | Neutral |
+
+**Accessibility:**
+- Not just visual — screen reader announces state
+- Includes subtle icon/illustration (optional)
+
+### Component Implementation Strategy
+
+**Foundation Layer (from shadcn/ui):**
+- Card, Badge, Button, Tabs, Toast, Tooltip, Skeleton, Dialog
+- Use as-is with Tailwind customization for our color tokens
+
+**Custom Component Layer:**
+- Built on top of shadcn/ui primitives
+- Use Tailwind utility classes for styling
+- Inherit VS Code theme variables for automatic dark/light mode
+
+**Composability Pattern:**
+```
+PR Card
+├── Risk Label (Badge variant)
+├── Age Badge (Badge variant)
+├── AI Status Badge (Custom)
+├── Avatar Stack (Custom)
+└── Card (shadcn/ui foundation)
+```
+
+### Implementation Roadmap
+
+**Phase 1 — Core Components (Week 1-2):**
+
+| Component | Needed For | Priority |
+|-----------|------------|----------|
+| PR Card | Every flow | Critical |
+| Section Header | Dashboard navigation | Critical |
+| Age Badge | Visual urgency | Critical |
+| Empty State | "All clear" moments | High |
+
+**Phase 2 — AI Components (Week 2-3):**
+
+| Component | Needed For | Priority |
+|-----------|------------|----------|
+| AI Status Badge | Pre-Flight display | High |
+| Risk Label | Semantic triage | High |
+| Progress Toast | AI review feedback | Medium |
+
+**Phase 3 — Enhancement Components (Week 3-4):**
+
+| Component | Needed For | Priority |
+|-----------|------------|----------|
+| Avatar Stack | Reviewer visibility | Medium |
+| Command Palette | Power user navigation | Future |
+
+## UX Consistency Patterns
+
+### Button Hierarchy
+
+**Visual Hierarchy:**
+
+| Type | Usage | Visual | Example |
+|------|-------|--------|---------|
+| **Primary** | Main action per context | Filled, Primary Blue | "Open in GitHub" |
+| **Secondary** | Supporting actions | Outlined, Gray border | "Refresh", "Copy Link" |
+| **Ghost** | Tertiary/subtle actions | Text only, hover shows background | "View Details" |
+| **Danger** | Destructive actions | Filled, Error Red | "Disconnect GitHub" |
+
+**Button Placement Rules:**
+- **PR Card Actions:** Primary right-aligned, secondary left-aligned
+- **Modal Actions:** Primary right, Cancel/secondary left
+- **Inline Actions:** Ghost style to minimize visual noise
+
+**Hover-Reveal Pattern:**
+- Actions that clutter default view appear only on hover
+- Example: "Start AI Review" button appears on PR card hover
+- Keyboard accessible via Tab navigation
+
+**States:**
+
+| State | Visual Treatment |
+|-------|------------------|
+| Default | Base styling |
+| Hover | Slight background shift, cursor pointer |
+| Active/Pressed | Darker shade, slight scale down |
+| Disabled | 50% opacity, cursor not-allowed |
+| Loading | Spinner replaces icon/text, disabled interaction |
+
+**Accessibility:**
+- Minimum 44px touch target on mobile
+- Focus ring: 2px solid Primary Blue
+- `aria-disabled` for loading states
+- `aria-busy="true"` during async operations
+
+### Feedback Patterns
+
+**Feedback Types:**
+
+| Type | Icon | Color | Duration | Example |
+|------|------|-------|----------|---------|
+| **Success** | ✓ | Green | 3s auto-dismiss | "PR refreshed" |
+| **Error** | ✗ | Red | Persistent (dismiss) | "GitHub API error" |
+| **Warning** | ⚠ | Amber | Persistent (dismiss) | "Rate limit approaching" |
+| **Info** | ℹ | Blue | 5s auto-dismiss | "Checking for updates..." |
+| **Progress** | Spinner | Blue | Until complete | "Triggering AI review..." |
+
+**Toast Notification Anatomy:**
+```
+┌────────────────────────────────────────┐
+│ [Icon] Message text here        [✕]   │
+│        [Action Link] (optional)        │
+└────────────────────────────────────────┘
+```
+
+**Toast Position:** Bottom-right (VS Code standard), max 3 stacked, oldest auto-dismiss
+
+**Inline Feedback:**
+- AI Status Badge changes state in-place
+- Age badges update without toast
+- Section count badges pulse briefly on change
+
+**Error Recovery:**
+- Every error includes recovery path
+- "Retry" action inline with error message
+- Never dead-end users
+
+**Accessibility:**
+- `role="alert"` for errors
+- `role="status"` for success/info
+- `aria-live="polite"` for non-urgent updates
+
+### Navigation Patterns
+
+**Section Navigation:**
+
+| Pattern | Usage | Implementation |
+|---------|-------|----------------|
+| **Tab Bar** | Four-section switching | Horizontal tabs with count badges |
+| **Direct Jump** | Keyboard shortcuts | 1-4 keys jump to sections |
+| **Deep Link Entry** | From notifications | Highlight target section/PR |
+
+**Keyboard Shortcuts:**
+
+| Key | Action |
+|-----|--------|
+| `1-4` | Jump to section by number |
+| `j/k` | Next/previous PR within section |
+| `Enter` | Open selected PR in GitHub |
+| `r` | Refresh data |
+| `?` | Show keyboard help overlay |
+
+**State Preservation:**
+- Scroll position maintained when returning from GitHub
+- Selected PR remembered across refreshes
+- Active section persisted in extension state
+
+**Responsive Navigation:**
+
+| Viewport | Navigation Style |
+|----------|------------------|
+| Sidebar (300-400px) | Vertical icon tabs |
+| Panel (400-600px) | Horizontal compact tabs |
+| Full (600px+) | Horizontal full labels |
+
+**Accessibility:**
+- `role="tablist"` + `role="tab"` semantics
+- Arrow key navigation between tabs
+- Focus management on section switch
+
+### Notification Patterns
+
+**Core Principle:** Outcome-focused, not event-focused
+
+| Don't Say | Say Instead |
+|-----------|-------------|
+| "PR updated" | "3 comments need addressing" |
+| "Review complete" | "auth-refactor approved — ready to merge" |
+| "CI finished" | "CI passed — PR ready for review" |
+
+**Notification Channels:**
+
+| Channel | Usage | Urgency |
+|---------|-------|---------|
+| **Toast** | Action confirmations, transient info | Low |
+| **Activity Bar Badge** | Aggregate counts needing attention | Medium |
+| **VS Code Info Message** | Important state changes | High |
+
+**Message Templates:**
+
+| Scenario | Template |
+|----------|----------|
+| **Review requested** | "[author] requested your review on [pr-title]" |
+| **Comments received** | "[count] new comments on [pr-title]" |
+| **PR approved** | "[pr-title] approved by [reviewer]" |
+| **Changes requested** | "[reviewer] requested changes on [pr-title]" |
+| **Ready to merge** | "[pr-title] is ready to merge" |
+
+**Notification Actions:**
+- Every notification includes action: "View PR" or "Open Dashboard"
+- Actions deep-link to relevant context
+
+**Accessibility:**
+- Notifications announced to screen readers
+- Action links keyboard accessible
+- No time-sensitive requirements (user can dismiss and act later)
+
+### Pattern Integration
+
+**Tailwind Utility Mapping:**
+
+| Pattern | Tailwind Classes |
+|---------|------------------|
+| Primary Button | `bg-primary text-white hover:bg-primary-hover` |
+| Success Toast | `bg-success/10 border-success text-success` |
+| Active Tab | `border-b-2 border-primary font-semibold` |
+| Focus Ring | `focus:ring-2 focus:ring-primary focus:ring-offset-2` |
+
+**shadcn/ui Component Usage:**
+
+| Pattern | Component |
+|---------|-----------|
+| Toast notifications | `Toast` with custom variants |
+| Button hierarchy | `Button` with `variant` prop |
+| Tab navigation | `Tabs` with custom styling |
+| Loading states | `Skeleton` for content, inline spinners for actions |
+
+## Responsive Design & Accessibility
+
+### Responsive Strategy
+
+CodeFlow lives inside VS Code — our "responsive" challenges are about panel viewport constraints, not device types.
+
+**Viewport Contexts:**
+
+| Panel Location | Width Range | Priority |
+|----------------|-------------|----------|
+| **Sidebar** | 300-400px | Primary (70% usage) |
+| **Editor Area** | 400-800px | Secondary |
+| **Bottom Panel** | 600-1200px | Occasional |
+
+#### Sidebar Mode (300-400px) — Primary Target
+
+Space is precious in the sidebar. Layout must be highly efficient.
+
+**Layout Adaptations:**
+- **Section Navigation:** Vertical icon tabs (not horizontal labels)
+- **PR Cards:** Compact variant — single column, stacked metadata
+- **AI Summaries:** Hidden by default, tap to expand
+- **Hover Actions:** Become always-visible touch targets
+
+**Information Hierarchy:**
+```
+┌─────────────────────────┐
+│ [≡] Needs Review (5)    │
+├─────────────────────────┤
+│ PR Title (bold)         │
+│ @author • 24h           │
+│ [Risk] [AI Status]      │
+│ 📁12  💬3  ✓CI          │
+└─────────────────────────┘
+```
+
+#### Editor Panel Mode (400-800px)
+
+More room to breathe — users voluntarily expand for detailed work.
+
+**Layout Adaptations:**
+- **Section Navigation:** Horizontal tabs with full labels
+- **PR Cards:** Standard variant — horizontal metadata row
+- **AI Summaries:** Visible on hover
+- **Two-column layout** possible if >600px
+
+#### Bottom Panel Mode (600-1200px)
+
+Rare but supported — users might dock CodeFlow at bottom.
+
+**Layout Adaptations:**
+- **Four-section grid** layout possible
+- **All PR cards visible** across sections
+- **Maximum information density** for power users
+
+### Breakpoint Strategy
+
+Custom breakpoints tuned for VS Code panel contexts:
+
+| Breakpoint | Trigger | Layout Change |
+|------------|---------|---------------|
+| **< 350px** | Ultra-compact sidebar | Icons only, minimal text |
+| **350-450px** | Standard sidebar | Compact cards, vertical nav |
+| **450-600px** | Expanded panel | Standard cards, horizontal nav |
+| **> 600px** | Full panel | Grid layout option, maximum density |
+
+**Implementation:** CSS container queries preferred over media queries (scoped to webview width, not device).
+
+### Accessibility Strategy
+
+#### Compliance Target: WCAG 2.1 AA
+
+**Rationale:** 
+- AA is industry standard for developer tools
+- Required by enterprise customers
+- Achievable without compromising design vision
+
+#### Color & Contrast
+
+| Requirement | Target | Implementation |
+|-------------|--------|----------------|
+| **Text contrast** | 4.5:1 minimum | GitHub-derived colors meet this |
+| **Large text** | 3:1 minimum | Headers pass |
+| **UI components** | 3:1 minimum | Buttons, badges verified |
+| **Focus indicators** | Visible | 2px Primary Blue ring |
+
+**Non-Color Urgency:** Age badges use size + weight (not just color) — accessible to colorblind users.
+
+#### Keyboard Navigation
+
+| Scope | Implementation |
+|-------|----------------|
+| **Full keyboard access** | All interactions reachable via Tab |
+| **Section shortcuts** | 1-4 keys for direct jump |
+| **Card navigation** | j/k to move between PRs |
+| **Action triggers** | Enter/Space to activate |
+| **Focus trap** | Modals trap focus until dismissed |
+
+#### Screen Reader Support
+
+| Element | ARIA Implementation |
+|---------|---------------------|
+| **Dashboard** | `role="application"`, `aria-label="CodeFlow Dashboard"` |
+| **Sections** | `role="tablist"` + `role="tabpanel"` |
+| **PR Cards** | `role="article"`, descriptive label |
+| **Badges** | `aria-label` with full context |
+| **Live updates** | `aria-live="polite"` for non-urgent |
+
+#### Motion & Animation
+
+| Requirement | Implementation |
+|-------------|----------------|
+| **Reduced motion** | Respect `prefers-reduced-motion` |
+| **No flashing** | Never flash > 3x per second |
+| **Optional animations** | Disable with user preference |
+
+### Testing Strategy
+
+#### Automated Testing
+
+| Tool | Purpose |
+|------|---------|
+| **axe-core** | Automated a11y audit in CI |
+| **eslint-plugin-jsx-a11y** | Catch issues during development |
+| **Lighthouse** | Performance + accessibility score |
+
+#### Manual Testing
+
+| Test Type | Frequency |
+|-----------|-----------|
+| **Keyboard-only navigation** | Every PR |
+| **Screen reader (NVDA/VoiceOver)** | Every release |
+| **High contrast mode** | Every major UI change |
+| **Zoom testing (200%)** | Every layout change |
+
+#### Panel Viewport Testing
+
+| Test | Method |
+|------|--------|
+| **Sidebar widths** | Manually resize VS Code sidebar |
+| **All panel locations** | Test sidebar, editor, bottom |
+| **Theme testing** | Dark, light, high contrast themes |
+
+### Implementation Guidelines
+
+#### Responsive Development
+
+```css
+/* Container query approach for VS Code webview */
+@container (max-width: 350px) { /* ultra-compact */ }
+@container (min-width: 350px) and (max-width: 450px) { /* sidebar */ }
+@container (min-width: 450px) and (max-width: 600px) { /* expanded */ }
+@container (min-width: 600px) { /* full panel */ }
+```
+
+**Key Principles:**
+- Use `rem` for typography (respects user font scaling)
+- Use `%` and `fr` for layout (adapts to container)
+- Test at 300px minimum (narrowest realistic sidebar)
+
+#### Accessibility Development
+
+**Semantic HTML Structure:**
+```html
+<nav role="tablist" aria-label="PR Categories">
+  <button role="tab" aria-selected="true">Needs Review</button>
+</nav>
+<section role="tabpanel" aria-labelledby="needs-review-tab">
+  <article aria-label="PR: Fix auth bug by @maya, 24 hours old">
+```
+
+**Focus Management:**
+- Auto-focus first PR when section switches
+- Return focus to trigger when modal closes
+- Skip links for power users
+
+**VS Code Theme Integration:**
+- Use `--vscode-*` CSS variables for theme colors
+- Automatic dark/light/high-contrast support
+- Never hardcode colors
 
