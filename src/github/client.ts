@@ -1,11 +1,13 @@
 import { graphql } from '@octokit/graphql';
+import { print } from 'graphql';
+import gql from 'graphql-tag';
 import { GitHubAuthProvider } from './auth';
 import { PullRequest, GitHubUser, DashboardData } from '../types';
 
 export class GitHubClient {
 	private graphqlWithAuth: typeof graphql | null = null;
 
-	constructor(private authProvider: GitHubAuthProvider) {}
+	constructor(private authProvider: GitHubAuthProvider) { }
 
 	private async getGraphQLClient() {
 		if (!this.graphqlWithAuth) {
@@ -24,7 +26,7 @@ export class GitHubClient {
 
 	async getCurrentUser(): Promise<GitHubUser> {
 		const client = await this.getGraphQLClient();
-		const response: any = await client(`
+		const response: any = await client(print(gql`
 			query {
 				viewer {
 					login
@@ -33,7 +35,7 @@ export class GitHubClient {
 					email
 				}
 			}
-		`);
+		`));
 		return response.viewer;
 	}
 
@@ -42,10 +44,11 @@ export class GitHubClient {
 		const client = await this.getGraphQLClient();
 
 		// Fetch PRs for review (assigned to user)
-		const needsReviewResponse: any = await client(`
-			query($login: String!) {
+		const needsReviewQuery = `type:pr state:open review-requested:${user.login}`;
+		const needsReviewResponse: any = await client(print(gql`
+			query($searchQuery: String!) {
 				search(
-					query: "type:pr state:open review-requested:$login"
+					query: $searchQuery
 					type: ISSUE
 					first: 20
 				) {
@@ -90,13 +93,14 @@ export class GitHubClient {
 					}
 				}
 			}
-		`, { login: user.login });
+		`), { searchQuery: needsReviewQuery });
 
 		// Fetch user's PRs
-		const myPRsResponse: any = await client(`
-			query($login: String!) {
+		const myPRsQuery = `type:pr state:open author:${user.login}`;
+		const myPRsResponse: any = await client(print(gql`
+			query($searchQuery: String!) {
 				search(
-					query: "type:pr state:open author:$login"
+					query: $searchQuery
 					type: ISSUE
 					first: 20
 				) {
@@ -140,7 +144,7 @@ export class GitHubClient {
 					}
 				}
 			}
-		`, { login: user.login });
+		`), { searchQuery: myPRsQuery });
 
 		const needsReview = this.transformPRs(needsReviewResponse.search.nodes || []);
 		const myPRs = this.transformPRs(myPRsResponse.search.nodes || []);

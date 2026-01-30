@@ -1,17 +1,31 @@
+import './github/navigatorShim';
 import * as vscode from 'vscode';
 import { GitHubAuthProvider } from './github/auth';
 import { GitHubClient } from './github/client';
 import { DashboardPanel } from './webview/DashboardPanel';
 import { NotificationService } from './services/NotificationService';
+import { DashboardViewProvider } from './webview/DashboardViewProvider';
+import { Logger } from './services/Logger';
 
 let pollingInterval: NodeJS.Timeout | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
-	console.log('CodeFlow extension is now active');
+	const outputChannel = Logger.init();
+	context.subscriptions.push(outputChannel);
+	Logger.info('CodeFlow extension is now active');
 
 	const authProvider = new GitHubAuthProvider(context);
 	const githubClient = new GitHubClient(authProvider);
 	const notificationService = new NotificationService(context);
+	const dashboardViewProvider = new DashboardViewProvider(
+		context.extensionUri,
+		githubClient,
+		notificationService
+	);
+
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider('codeflow.dashboard', dashboardViewProvider)
+	);
 
 	// Register commands
 	context.subscriptions.push(
@@ -30,6 +44,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand('codeflow.refresh', async () => {
 			await DashboardPanel.refresh();
+			await dashboardViewProvider.refresh();
 		})
 	);
 
@@ -42,9 +57,10 @@ export function activate(context: vscode.ExtensionContext) {
 					const data = await githubClient.getDashboardData();
 					await notificationService.checkAndNotify(data);
 					await DashboardPanel.updateIfVisible(data);
+					await dashboardViewProvider.updateIfVisible(data);
 				} catch (error) {
 					// Silent fail for background polling
-					console.error('Polling error:', error);
+					Logger.error('Polling error', error);
 				}
 			}, 60000); // 60 seconds
 		}
