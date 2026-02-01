@@ -1356,7 +1356,96 @@ flowchart TD
 - AI summary provides context refresh after time gap
 - Status updates reflect progress through review cycle
 
-### AI Review Trigger Flow (One-Click Innovation)
+### Custom AI Review with Instructions Flow (Phase 3 Feature)
+
+**Goal:** Configure personalized AI review → Run in background → Receive notification with results
+
+```mermaid
+flowchart TD
+    A[User Opens CodeFlow Dashboard] --> B[Sees Large PR Awaiting Review]
+    B --> C[Clicks Review with Copilot Button]
+    
+    C --> D[Review Instructions Dialog Opens]
+    D --> E[User Enters Custom Instructions]
+    E --> E1["Example: Make sure coding standards are kept"]
+    E1 --> F[User Approves/Starts Review]
+    
+    F --> G{Review Location?}
+    
+    G -->|Local| H[Review Happens in VS Code Extension]
+    G -->|Cloud| I[Review Happens on GitHub.com]
+    
+    H --> J[User Continues Working]
+    I --> J
+    
+    J --> K[Review Runs in Background]
+    K --> L[Copilot Analyzes PR with Custom Instructions]
+    
+    L --> M{Copilot Findings?}
+    
+    M -->|Issues Found| N[Copilot Adds Review Comments to PR]
+    M -->|No Issues| O[Copilot Approves PR]
+    
+    N --> P[Review Complete]
+    O --> P
+    
+    P --> Q[VS Code Notification Pops Up]
+    Q --> R[User Clicks Notification]
+    
+    R --> S[Dashboard Shows Review Summary]
+    S --> T{Summary Content}
+    
+    T -->|Comments Added| U["See: 5 comments added by Copilot"]
+    T -->|Approved| V["See: PR approved, no issues found"]
+    T -->|Mixed| W["See: 3 minor issues, 2 suggestions"]
+    
+    U --> X[User Reviews Copilot's Comments]
+    V --> X
+    W --> X
+    
+    X --> Y[User Decides Next Action]
+    Y -->|Add Own Review| Z[Opens PR in GitHub]
+    Y -->|Trust Copilot| AA[Moves to Next PR]
+    Y -->|Needs Changes| AB[Notifies PR Author]
+```
+
+**Key Design Decisions:**
+- Review instructions are saved as templates for reuse ("Check security", "Verify standards", etc.)
+- Cloud-based option allows users to close laptop while review runs
+- Notification includes summary metrics before opening full results
+- User maintains ultimate control — Copilot assists, user approves
+- Background processing preserves flow state — no blocking waits
+
+**UI Components Needed:**
+1. **Review Instructions Dialog:**
+   - Text area for custom instructions
+   - Template dropdown (saved instruction sets)
+   - Processing location toggle (Local/Cloud)
+   - Estimated time indicator
+
+2. **Background Progress Indicator:**
+   - Subtle badge on PR card showing "AI Reviewing..."
+   - Progress percentage if available from API
+   - Cancel option for running reviews
+
+3. **Completion Notification:**
+   - Toast notification with summary stats
+   - Quick action: "View Results" → Dashboard
+   - Dismissible but reopenable from dashboard
+
+4. **Review Results Summary Panel:**
+   - Comment count by severity (blocking, suggestions, nitpicks)
+   - Key findings highlight
+   - Link to full PR with Copilot comments
+   - Option to approve/request changes based on AI findings
+
+**Emotional Journey:**
+- **Initial:** Confidence — "I can customize the review focus"
+- **During:** Relief — "I can keep working, not blocked"
+- **Notification:** Anticipation — "Curious what Copilot found"
+- **Results:** Trust + Control — "AI did the grunt work, I make final call"
+
+### AI Review Trigger Flow (One-Click Innovation — MVP)
 
 **Goal:** See PR without AI context → Trigger review → Get context before opening PR
 
