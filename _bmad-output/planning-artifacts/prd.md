@@ -105,6 +105,9 @@ The MVP implements **Phase 1 (Hands/Workflow Automation)** of a 3‑phase AI str
 
 - **AI Focus Category / Triage Assistant:** Dynamic, high‑signal section of "Must Do" items based on relevance, complexity, and urgency
 - **Persona‑Based AI Review:** Tailored reviews using user's Interest Graph ("Review for security flaws because user is a security expert")
+- **Custom AI Review Instructions:** Allow users to provide specific instructions for Copilot reviews (e.g., "make sure coding standards are kept", "focus on security vulnerabilities", "check for performance issues")
+- **Background AI Review Processing:** Trigger Copilot reviews that run asynchronously (local or cloud‑based), allowing users to continue working while review happens in the background
+- **Review Completion Notifications:** Notify users when background AI reviews complete with summary of findings and comments added
 - **Smart Diff Hiding:** AI‑powered collapse of boilerplate, generated code, and simple refactors
 - Team‑level bottleneck view with AI insights
 
