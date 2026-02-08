@@ -43,9 +43,9 @@ development_status:
   # Epic 1: Project Foundation & Extension Scaffold
   epic-1: in-progress
   1-1-extension-scaffold-with-yo-code: done
-  1-2-webview-ui-foundation-react-vite-tailwind: ready-for-dev
-  1-3-extension-webview-communication-contract: backlog
-  1-4-graphql-code-generator-setup: backlog
+  1-2-webview-ui-foundation-react-vite-tailwind: done
+  1-3-extension-webview-communication-contract: ready-for-dev
+  1-4-graphql-code-generator-setup: ready-for-dev
   1-5-testing-infrastructure: backlog
   1-6-ci-pipeline-github-actions: backlog
   1-7-development-workflow-build-configuration: backlog

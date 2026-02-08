@@ -31,3 +31,5 @@ Thumbs.db
 
 # Playwright MCP debug files
 .playwright-mcp/
+
+.vscode-test/
