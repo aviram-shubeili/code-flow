@@ -1,63 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CodeFlow
 
-## Getting Started
+PR management dashboard for VS Code - streamline pull request reviews inside your editor.
 
-First, run the development server:
+## Features
+
+- **PR Dashboard**: View and manage pull requests organized by workflow state
+- **Theme Integration**: Automatically inherits your VS Code theme (dark/light)
+- **AI-Powered Summaries**: (Coming soon) Copilot SDK integration for PR insights
+
+## Development
+
+### Prerequisites
+
+- Node.js 18+
+- VS Code 1.109+
+
+### Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Install root dependencies
+npm install
+
+# Install webview dependencies
+cd webview-ui && npm install && cd ..
+
+# Build everything
+npm run build:webview && npm run compile
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Development Workflow (HMR)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+For the best development experience with Hot Module Replacement:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Terminal 1 - Start Vite dev server:**
 
-## Learn More
+```bash
+npm run dev:webview
+```
 
-To learn more about Next.js, take a look at the following resources:
+**Terminal 2 - Launch extension:**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Press `F5` to launch "Run Extension (Dev Mode)"
+2. Run command: `CodeFlow: Open Dashboard`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The webview will load from the Vite dev server (`localhost:5173`) and support HMR - changes to React components will appear immediately without reloading.
 
-## Deploy on Vercel
+### Build Commands
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Command                 | Description                         |
+| ----------------------- | ----------------------------------- |
+| `npm run compile`       | Type-check + lint + build extension |
+| `npm run watch`         | Watch mode for extension host       |
+| `npm run dev:webview`   | Start Vite dev server for webview   |
+| `npm run build:webview` | Build webview for production        |
+| `npm run lint`          | Run ESLint                          |
+| `npm run lint:fix`      | Auto-fix lint issues                |
+| `npm run format`        | Run Prettier                        |
+| `npm run test`          | Run tests                           |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Project Structure
 
-## Branch Protection
+```
+code-flow/
+├── src/                    # Extension host (Node.js)
+│   ├── extension.ts        # Entry point
+│   └── webview/            # Webview panel management
+├── webview-ui/             # React webview (Vite + Tailwind)
+│   └── src/
+│       ├── components/     # React components
+│       └── globals.css     # VS Code theme integration
+├── dist/                   # Built extension
+└── package.json
+```
 
-The `main` branch is protected with the following rules:
+## Extension Commands
 
-### Required Status Checks
+- `CodeFlow: Open Dashboard` - Open the PR management dashboard
 
-- **CI workflow** (`ci` job) must pass before merging
+## Release Notes
 
-### Branch Protection Settings
+### 0.0.1
 
-Configure these in GitHub Repository Settings → Branches → Add branch protection rule:
+- Initial extension scaffold
+- React webview with Vite + Tailwind + shadcn/ui
+- VS Code theme integration
+- Dashboard panel management
 
-1. **Branch name pattern:** `main`
-2. **Require a pull request before merging:** ✅ Enabled
-3. **Require status checks to pass before merging:** ✅ Enabled
-   - Required check: `ci`
-4. **Do not allow force pushes:** ✅ Enabled
+---
 
-### CI Workflow
-
-The CI workflow (`.github/workflows/ci.yml`) runs on all pull requests to `main` and executes:
-
-- Type checking (`npx tsc --noEmit`)
-- Linting (`npm run lint`)
-- Tests (`npm run test`)
-- Build validation (`npm run build`)
+**Enjoy!**
