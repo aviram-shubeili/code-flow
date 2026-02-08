@@ -9,13 +9,20 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCommand:code-flow.helloWorld",
+    "onCommand:code-flow.openDashboard"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "code-flow.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "code-flow.openDashboard",
+        "title": "CodeFlow: Open Dashboard"
       }
     ]
   },
@@ -25,7 +32,7 @@
     "watch": "npm-run-all -p watch:*",
     "watch:esbuild": "node esbuild.js --watch",
     "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
-    "package": "npm run check-types && npm run lint && node esbuild.js --production",
+    "package": "npm run build:webview && npm run check-types && npm run lint && node esbuild.js --production",
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
@@ -33,7 +40,9 @@
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "format": "prettier --write \"src/**/*.ts\"",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "dev:webview": "cd webview-ui && npm run dev",
+    "build:webview": "cd webview-ui && npm run build"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",

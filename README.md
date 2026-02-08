@@ -1,71 +1,91 @@
-# code-flow README
+# CodeFlow
 
-This is the README for your extension "code-flow". After writing up a brief description, we recommend including the following sections.
+PR management dashboard for VS Code - streamline pull request reviews inside your editor.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- **PR Dashboard**: View and manage pull requests organized by workflow state
+- **Theme Integration**: Automatically inherits your VS Code theme (dark/light)
+- **AI-Powered Summaries**: (Coming soon) Copilot SDK integration for PR insights
 
-For example if there is an image subfolder under your extension project workspace:
+## Development
 
-\!\[feature X\]\(images/feature-x.png\)
+### Prerequisites
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+- Node.js 18+
+- VS Code 1.109+
 
-## Requirements
+### Setup
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+```bash
+# Install root dependencies
+npm install
 
-## Extension Settings
+# Install webview dependencies
+cd webview-ui && npm install && cd ..
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+# Build everything
+npm run build:webview && npm run compile
+```
 
-For example:
+### Development Workflow (HMR)
 
-This extension contributes the following settings:
+For the best development experience with Hot Module Replacement:
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+**Terminal 1 - Start Vite dev server:**
 
-## Known Issues
+```bash
+npm run dev:webview
+```
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+**Terminal 2 - Launch extension:**
+
+1. Press `F5` to launch "Run Extension (Dev Mode)"
+2. Run command: `CodeFlow: Open Dashboard`
+
+The webview will load from the Vite dev server (`localhost:5173`) and support HMR - changes to React components will appear immediately without reloading.
+
+### Build Commands
+
+| Command                 | Description                         |
+| ----------------------- | ----------------------------------- |
+| `npm run compile`       | Type-check + lint + build extension |
+| `npm run watch`         | Watch mode for extension host       |
+| `npm run dev:webview`   | Start Vite dev server for webview   |
+| `npm run build:webview` | Build webview for production        |
+| `npm run lint`          | Run ESLint                          |
+| `npm run lint:fix`      | Auto-fix lint issues                |
+| `npm run format`        | Run Prettier                        |
+| `npm run test`          | Run tests                           |
+
+### Project Structure
+
+```
+code-flow/
+├── src/                    # Extension host (Node.js)
+│   ├── extension.ts        # Entry point
+│   └── webview/            # Webview panel management
+├── webview-ui/             # React webview (Vite + Tailwind)
+│   └── src/
+│       ├── components/     # React components
+│       └── globals.css     # VS Code theme integration
+├── dist/                   # Built extension
+└── package.json
+```
+
+## Extension Commands
+
+- `CodeFlow: Open Dashboard` - Open the PR management dashboard
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+### 0.0.1
 
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+- Initial extension scaffold
+- React webview with Vite + Tailwind + shadcn/ui
+- VS Code theme integration
+- Dashboard panel management
 
 ---
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
 
 **Enjoy!**
