@@ -1,6 +1,6 @@
 # Story 1.2: Webview UI Foundation (React + Vite + Tailwind)
 
-Status: review
+Status: done
 
 ---
 
@@ -59,6 +59,7 @@ so that I can build the dashboard UI with fast iteration.
     }
     ```
   - [x] Verify dark/light mode works automatically from VS Code theme
+  - [x] Remove unused Vite starter CSS to avoid theme overrides
 
 - [x] **Task 3: Initialize shadcn/ui with required components** (AC: #3)
   - [x] Run `npx shadcn@latest init`
@@ -70,10 +71,12 @@ so that I can build the dashboard UI with fast iteration.
 - [x] **Task 4: Create webview panel management in extension host** (AC: #5)
   - [x] Create `src/webview/dashboard-panel.ts` for WebviewPanel management
   - [x] Create `src/webview/webview-provider.ts` for HTML/script injection
-  - [x] Add command `codeflow.openDashboard` to `package.json`
+  - [x] Add command `code-flow.openDashboard` to `package.json`
   - [x] Register command in `extension.ts`
+  - [x] Add activation events for dashboard command
   - [x] Configure webview to load from Vite dev server in development mode
   - [x] Configure webview to load bundled assets in production mode
+  - [x] Ensure CSP allows bundled scripts and chunks
 
 - [x] **Task 5: Create Hello CodeFlow placeholder component** (AC: #5, #7)
   - [x] Create `webview-ui/src/components/HelloCodeFlow.tsx` (PascalCase)
@@ -508,6 +511,11 @@ Claude Opus 4.5 (github-copilot/claude-opus-4.5)
 - Task 5: Created HelloCodeFlow component using Card, Button, and Badge components with theme-aware styling.
 - Task 6: Added dev:webview and build:webview scripts. Updated launch.json with Dev Mode configuration. Documented HMR workflow in README.
 - Task 7: Verified all naming conventions: PascalCase for React components, kebab-case for utilities/services.
+- Review fixes: Added activation events for commands, adjusted CSP to allow bundled chunks, removed unused Vite starter CSS, aligned utils.ts with semicolon rule.
+
+### Review Follow-ups (AI)
+
+- [ ] [AI-Review][Medium] Update story File List to include additional story and sprint status artifacts or confirm they are out of scope. `_bmad-output/implementation-artifacts/1-2-webview-ui-foundation-react-vite-tailwind.md`
 
 ### Change Log
 
@@ -515,6 +523,7 @@ Claude Opus 4.5 (github-copilot/claude-opus-4.5)
 | ---------- | ---------------------------------------------- | --------------------------- |
 | 2026-02-08 | Story created with comprehensive context       | SM Agent (Claude Opus 4.5)  |
 | 2026-02-08 | All tasks completed - webview foundation ready | Dev Agent (Claude Opus 4.5) |
+| 2026-02-08 | Review fixes applied and story completed       | Review Agent (OpenCode)     |
 
 ### File List
 
@@ -522,6 +531,8 @@ _Files created/modified:_
 
 ```
 code-flow/
+├── AGENTS.md                         # UNTRACKED - Repo instructions
+├── nul                               # UNTRACKED - unexpected file
 ├── src/
 │   ├── extension.ts                  # MODIFIED - Added openDashboard command
 │   └── webview/                      # NEW
@@ -557,6 +568,11 @@ code-flow/
 ├── package.json                      # MODIFIED - Added scripts and commands
 ├── tsconfig.json                     # MODIFIED - Excluded webview-ui
 ├── README.md                         # MODIFIED - HMR workflow documentation
+├── _bmad-output/
+│   └── implementation-artifacts/
+│       ├── 1-3-extension-webview-communication-contract.md # NEW - out of scope for Story 1.2
+│       ├── 1-4-graphql-code-generator-setup.md             # NEW - out of scope for Story 1.2
+│       └── sprint-status.yaml                              # MODIFIED - story tracking
 └── .vscode/
     └── launch.json                   # MODIFIED - Added Dev Mode config
 ```
