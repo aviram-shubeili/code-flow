@@ -1,63 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# code-flow README
 
-## Getting Started
+This is the README for your extension "code-flow". After writing up a brief description, we recommend including the following sections.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+For example if there is an image subfolder under your extension project workspace:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+\!\[feature X\]\(images/feature-x.png\)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
 
-## Learn More
+## Requirements
 
-To learn more about Next.js, take a look at the following resources:
+If you have any requirements or dependencies, add a section describing those and how to install and configure them.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Extension Settings
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
 
-## Deploy on Vercel
+For example:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This extension contributes the following settings:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+* `myExtension.enable`: Enable/disable this extension.
+* `myExtension.thing`: Set to `blah` to do something.
 
-## Branch Protection
+## Known Issues
 
-The `main` branch is protected with the following rules:
+Calling out known issues can help limit users opening duplicate issues against your extension.
 
-### Required Status Checks
+## Release Notes
 
-- **CI workflow** (`ci` job) must pass before merging
+Users appreciate release notes as you update your extension.
 
-### Branch Protection Settings
+### 1.0.0
 
-Configure these in GitHub Repository Settings → Branches → Add branch protection rule:
+Initial release of ...
 
-1. **Branch name pattern:** `main`
-2. **Require a pull request before merging:** ✅ Enabled
-3. **Require status checks to pass before merging:** ✅ Enabled
-   - Required check: `ci`
-4. **Do not allow force pushes:** ✅ Enabled
+### 1.0.1
 
-### CI Workflow
+Fixed issue #.
 
-The CI workflow (`.github/workflows/ci.yml`) runs on all pull requests to `main` and executes:
+### 1.1.0
 
-- Type checking (`npx tsc --noEmit`)
-- Linting (`npm run lint`)
-- Tests (`npm run test`)
-- Build validation (`npm run build`)
+Added features X, Y, and Z.
+
+---
+
+## Following extension guidelines
+
+Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+
+* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+
+## Working with Markdown
+
+You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
+
+* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
+* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
+* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
+
+## For more information
+
+* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
+* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+
+**Enjoy!**
